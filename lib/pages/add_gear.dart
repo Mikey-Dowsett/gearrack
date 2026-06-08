@@ -1,0 +1,537 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_colors.dart';
+import '../models/category.dart';
+import '../models/condition.dart';
+
+class AddGearPage extends StatefulWidget {
+  const AddGearPage({Key? key}) : super(key: key);
+
+  @override
+  State<AddGearPage> createState() => _AddGearPageState();
+}
+
+class _AddGearPageState extends State<AddGearPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  Category? _selectedCategory;
+  Condition? _selectedCondition;
+
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _weightController = TextEditingController();
+  final TextEditingController _brandController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _purchaseYearController = TextEditingController();
+  final TextEditingController _quantityController = TextEditingController();
+  final TextEditingController _notesController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _weightController.dispose();
+    _brandController.dispose();
+    _priceController.dispose();
+    _purchaseYearController.dispose();
+    _quantityController.dispose();
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  String _prettyEnumName(Enum e) {
+    final name = e.name;
+    return name.replaceAllMapped(
+      RegExp(r'([a-z])([A-Z])'),
+      (m) => '${m[1]} ${m[2]}',
+    );
+  }
+
+  final Map<Category, FaIconData> _categoryIcons = {
+    Category.Backpack: FontAwesomeIcons.suitcase,
+    Category.Shelter: FontAwesomeIcons.tent,
+    Category.Sleep: FontAwesomeIcons.bed,
+    Category.Bags: FontAwesomeIcons.suitcase,
+    Category.TopLayer: FontAwesomeIcons.tshirt,
+    Category.BottomLayer: FontAwesomeIcons.socks,
+    Category.Insulation: FontAwesomeIcons.snowflake,
+    Category.RainGear: FontAwesomeIcons.umbrella,
+    Category.Accessories: FontAwesomeIcons.gem,
+    Category.Footwear: FontAwesomeIcons.shoePrints,
+    Category.Cookwear: FontAwesomeIcons.utensils,
+    Category.Storage: FontAwesomeIcons.box,
+    Category.Hydration: FontAwesomeIcons.tint,
+    Category.Navigation: FontAwesomeIcons.compass,
+    Category.Communication: FontAwesomeIcons.phone,
+    Category.FirstAid: FontAwesomeIcons.firstAid,
+    Category.Emergency: FontAwesomeIcons.exclamationTriangle,
+    Category.Fire: FontAwesomeIcons.fire,
+    Category.Lighting: FontAwesomeIcons.lightbulb,
+    Category.Repair: FontAwesomeIcons.wrench,
+    Category.Power: FontAwesomeIcons.bolt,
+    Category.Electronics: FontAwesomeIcons.plug,
+    Category.Toiletries: FontAwesomeIcons.soap,
+    Category.Climbing: FontAwesomeIcons.hiking,
+    Category.Snow: FontAwesomeIcons.snowflake,
+    Category.Misc: FontAwesomeIcons.ellipsis,
+  };
+
+  final Map<Condition, FaIconData> _conditionIcons = {
+    Condition.Good: FontAwesomeIcons.check,
+    Condition.Worn: FontAwesomeIcons.rotate,
+    Condition.Retired: FontAwesomeIcons.trash,
+  };
+
+  Widget _fieldLabel(
+    BuildContext context,
+    String label, {
+    bool required = false,
+  }) {
+    final colors = AppColors.of(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: AppTextStyles.labelMedium.copyWith(color: colors.onBackground),
+        ),
+        if (required) ...[
+          SizedBox(width: 4.sp),
+          Text(
+            '*',
+            style: AppTextStyles.labelMedium.copyWith(color: colors.error),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildLabeledField(
+    BuildContext context, {
+    required String label,
+    required String hint,
+    bool requiredField = false,
+    TextInputType? keyboardType,
+    TextEditingController? controller,
+    int? minLines,
+    int? maxLines,
+    bool expands = false,
+  }) {
+    final colors = AppColors.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _fieldLabel(context, label, required: requiredField),
+        SizedBox(height: 6.sp),
+        // Use the TextFormField's outline border so we can show a red outline
+        // when validation fails, but hide the default error text.
+        TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
+          minLines: minLines,
+          maxLines: maxLines,
+          expands: expands,
+          validator: requiredField
+              ? (value) {
+                  if (value == null || value.trim().isEmpty) return 'Required';
+                  return null;
+                }
+              : null,
+          style: AppTextStyles.bodyLarge.copyWith(color: colors.onSurface),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: colors.surface,
+            hintText: hint,
+            hintStyle: AppTextStyles.labelMedium.copyWith(
+              color: colors.textSecondary,
+            ),
+            // Outline borders — use the error color for errorBorder
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(color: colors.border, width: 2.0),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(color: colors.primary, width: 2.0),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(color: colors.error, width: 2.0),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(color: colors.error, width: 2.0),
+            ),
+            // Hide the textual error message (we indicate errors via the outline)
+            errorStyle: TextStyle(height: 0, fontSize: 0),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 12.sp,
+              vertical: 14.sp,
+            ),
+          ),
+        ),
+        SizedBox(height: 12.sp),
+      ],
+    );
+  }
+
+  Widget _rowOfTwoFields(
+    BuildContext context,
+    Widget left,
+    Widget right, {
+    double spacing = 8.0,
+  }) {
+    // Use LayoutBuilder so we measure available width and give each child
+    // an explicit width. This avoids Expanded/Flexible issues inside
+    // unbounded / nested layout scenarios.
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final totalSpacing = spacing.sp;
+        final width = constraints.maxWidth;
+        final childWidth = (width - totalSpacing) / 2.0;
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(width: childWidth, child: left),
+            SizedBox(width: totalSpacing),
+            SizedBox(width: childWidth, child: right),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildCategoryField(BuildContext context, bool required) {
+    final colors = AppColors.of(context);
+
+    return FormField<Category>(
+      initialValue: _selectedCategory,
+      validator: (value) => value == null ? 'Required' : null,
+      builder: (field) {
+        final hasError = field.hasError;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _fieldLabel(context, 'Category', required: required),
+            SizedBox(height: 6.sp),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(8.sp),
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(
+                  color: hasError ? colors.error : colors.border,
+                  width: 2.0,
+                ),
+              ),
+              child: Wrap(
+                spacing: 8.sp,
+                runSpacing: 8.sp,
+                children: Category.values.map((c) {
+                  final selected = field.value == c;
+                  final icon = _categoryIcons[c] ?? FontAwesomeIcons.box;
+                  return ChoiceChip(
+                    label: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _prettyEnumName(c),
+                          style: AppTextStyles.labelMedium.copyWith(
+                            color: selected
+                                ? colors.onPrimary
+                                : colors.onSurface,
+                          ),
+                        ),
+                        SizedBox(width: 6.sp),
+                        FaIcon(
+                          icon,
+                          size: 14.sp,
+                          color: selected ? colors.onPrimary : colors.onSurface,
+                        ),
+                      ],
+                    ),
+                    selected: selected,
+                    onSelected: (s) {
+                      field.didChange(s ? c : null);
+                      setState(() {
+                        _selectedCategory = s ? c : null;
+                      });
+                    },
+                    backgroundColor: colors.surface,
+                    selectedColor: colors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(
+                        color: selected ? colors.primary : colors.border,
+                        width: 2.0,
+                      ),
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.sp,
+                      vertical: 8.sp,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            SizedBox(height: 12.sp),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildConditionField(BuildContext context, bool required) {
+    final colors = AppColors.of(context);
+
+    return FormField<Condition>(
+      initialValue: _selectedCondition,
+      validator: (value) => value == null ? 'Required' : null,
+      builder: (field) {
+        final hasError = field.hasError;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _fieldLabel(context, 'Condition', required: required),
+            SizedBox(height: 6.sp),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(8.sp),
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(
+                  color: hasError ? colors.error : colors.border,
+                  width: 2.0,
+                ),
+              ),
+              child: Wrap(
+                spacing: 8.sp,
+                runSpacing: 8.sp,
+                children: Condition.values.map((c) {
+                  final selected = field.value == c;
+                  final icon = _conditionIcons[c] ?? FontAwesomeIcons.question;
+                  return ChoiceChip(
+                    label: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _prettyEnumName(c),
+                          style: AppTextStyles.labelMedium.copyWith(
+                            color: selected
+                                ? colors.onPrimary
+                                : colors.onSurface,
+                          ),
+                        ),
+                        SizedBox(width: 6.sp),
+                        FaIcon(
+                          icon,
+                          size: 14.sp,
+                          color: selected ? colors.onPrimary : colors.onSurface,
+                        ),
+                      ],
+                    ),
+                    selected: selected,
+                    onSelected: (s) {
+                      field.didChange(s ? c : null);
+                      setState(() {
+                        _selectedCondition = s ? c : null;
+                      });
+                    },
+                    backgroundColor: colors.surface,
+                    selectedColor: colors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(
+                        color: selected ? colors.primary : colors.border,
+                        width: 2.0,
+                      ),
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.sp,
+                      vertical: 8.sp,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            SizedBox(height: 12.sp),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+    // Shared fixed height for bottom-sheet buttons so they always match
+    final double buttonHeight = 56.sp;
+
+    return Scaffold(
+      backgroundColor: colors.background,
+      appBar: AppBar(
+        title: Text('Add Gear', style: AppTextStyles.bodyMedium),
+        backgroundColor: colors.background,
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(8.sp),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildLabeledField(
+                context,
+                label: 'Name',
+                hint: 'Enter gear name',
+                requiredField: true,
+                controller: _nameController,
+              ),
+              _buildLabeledField(
+                context,
+                label: 'Brand',
+                hint: 'Brand (optional)',
+                requiredField: false,
+                controller: _brandController,
+              ),
+              _buildCategoryField(context, true),
+              _rowOfTwoFields(
+                context,
+                _buildLabeledField(
+                  context,
+                  label: 'Weight',
+                  hint: 'Weight in kg (e.g. 1.2)',
+                  requiredField: true,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  controller: _weightController,
+                ),
+                _buildLabeledField(
+                  context,
+                  label: 'Price',
+                  hint: '\$ 0',
+                  requiredField: false,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  controller: _priceController,
+                ),
+              ),
+              _rowOfTwoFields(
+                context,
+                _buildLabeledField(
+                  context,
+                  label: 'Purchase Year',
+                  hint: '2026',
+                  requiredField: false,
+                  keyboardType: TextInputType.numberWithOptions(decimal: false),
+                  controller: _purchaseYearController,
+                ),
+                _buildLabeledField(
+                  context,
+                  label: 'Quantity',
+                  hint: '1',
+                  requiredField: false,
+                  keyboardType: TextInputType.numberWithOptions(decimal: false),
+                  controller: _quantityController,
+                ),
+              ),
+              _buildConditionField(context, true),
+              _buildLabeledField(
+                context,
+                label: 'Notes',
+                hint: 'Storage, care, quirks, etc...',
+                requiredField: false,
+                keyboardType: TextInputType.multiline,
+                controller: _notesController,
+                minLines: 1,
+                maxLines: null,
+              ),
+              SizedBox(
+                height: 100.sp,
+              ), //Needs to be at the bottom so the bottom sheet doesn't cover it
+            ],
+          ),
+        ),
+      ),
+      bottomSheet: SafeArea(
+        left: false,
+        right: false,
+        bottom: true,
+        child: Container(
+          margin: EdgeInsets.zero,
+          padding: EdgeInsets.symmetric(horizontal: 32.sp, vertical: 8.sp),
+          color: colors.background,
+          child: Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: colors.border, width: 2.0),
+                    backgroundColor: colors.surface,
+                    foregroundColor: colors.onSurface,
+                    minimumSize: Size.fromHeight(buttonHeight),
+                    padding: EdgeInsets.symmetric(vertical: 0.sp),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.sp),
+                    ),
+                  ),
+                  onPressed: () {
+                    // Cancel / close page
+                    Navigator.of(context).pop();
+                  },
+                  child: FaIcon(
+                    size: 25.sp,
+                    FontAwesomeIcons.xmark,
+                    color: colors.onSurface,
+                  ),
+                ),
+              ),
+              SizedBox(width: 8.sp),
+              Expanded(
+                flex: 5,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
+                    minimumSize: Size.fromHeight(buttonHeight),
+                    padding: EdgeInsets.symmetric(vertical: 0.sp),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.sp),
+                    ),
+                  ),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      // TODO: construct Gear object and persist it
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('Saved Gear!')));
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FaIcon(
+                        FontAwesomeIcons.check,
+                        color: colors.onPrimary,
+                        size: 25.sp,
+                      ),
+                      SizedBox(width: 8.sp),
+                      Text(
+                        'Save Gear',
+                        style: AppTextStyles.bodyLarge.copyWith(
+                          color: colors.onPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
