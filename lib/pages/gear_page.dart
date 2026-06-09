@@ -2,25 +2,64 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../models/gear.dart';
+import '../models/gear_item.dart';
+import '../models/category.dart';
+import '../database/category_dao.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/info_card.dart';
+import '../utils/icon_registry.dart';
 
-class GearPage extends StatelessWidget {
-  final Gear gear;
+class GearPage extends StatefulWidget {
+  final GearItem gear;
 
   const GearPage({super.key, required this.gear});
 
   @override
+  State<GearPage> createState() => _GearPageState();
+}
+
+class _GearPageState extends State<GearPage> {
+  Category? _category;
+  bool _isLoadingCategory = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCategory();
+  }
+
+  Future<void> _loadCategory() async {
+    try {
+      final dao = await CategoryDao.create();
+      final cat = await dao.getById(widget.gear.categoryId);
+      setState(() {
+        _category = cat;
+        _isLoadingCategory = false;
+      });
+    } catch (e) {
+      setState(() => _isLoadingCategory = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
-    final age = DateTime.now().year - gear.purchaseYear;
+    final gear = widget.gear;
+    final age = gear.purchaseYear != null
+        ? DateTime.now().year - gear.purchaseYear!
+        : 0;
+
+    final categoryName = _category?.name ?? gear.categoryId;
+    final categoryIconKey = _category?.icon ?? 'box';
 
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: Text(gear.category.name, style: AppTextStyles.bodyLarge),
+        title: Text(
+          _isLoadingCategory ? 'Loading...' : categoryName,
+          style: AppTextStyles.bodyLarge,
+        ),
         backgroundColor: colors.background,
       ),
       body: SingleChildScrollView(
@@ -35,7 +74,7 @@ class GearPage extends StatelessWidget {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
-                        end: Alignment(-0.9, -0.9),
+                        end: const Alignment(-0.9, -0.9),
                         stops: [0.0, 0.5, 0.5, 1.0],
                         colors: [
                           colors.surfaceRaised,
@@ -48,7 +87,7 @@ class GearPage extends StatelessWidget {
                     ),
                   ),
                   FaIcon(
-                    gear.icon as FaIconData,
+                    IconRegistry.resolve(categoryIconKey),
                     size: 75.sp,
                     color: colors.primary,
                   ),
@@ -62,29 +101,31 @@ class GearPage extends StatelessWidget {
                 children: [
                   InfoCard(
                     icon: FontAwesomeIcons.shop,
-                    title: gear.brand,
+                    title: gear.brand ?? 'No brand',
                     value: gear.name,
                   ),
-                  if (gear.isPack)
+                  if (gear.isPack && gear.capacityLiters != null)
                     InfoCard(
                       icon: FontAwesomeIcons.boxOpen,
                       title: 'Capacity',
-                      value: '${gear.capacity} L',
+                      value: '${gear.capacityLiters!.toStringAsFixed(0)} L',
                     ),
                   Row(
                     children: [
                       Flexible(
                         child: InfoCard(
-                          icon: FontAwesomeIcons.balanceScale,
+                          icon: FontAwesomeIcons.scaleBalanced,
                           title: 'Weight',
-                          value: '${gear.weight} kg',
+                          value: '${gear.weightGrams.toStringAsFixed(0)} g',
                         ),
                       ),
                       Flexible(
                         child: InfoCard(
                           icon: FontAwesomeIcons.tag,
                           title: 'Price',
-                          value: '\$${gear.price} ',
+                          value: gear.price != null
+                              ? '\$${gear.price!.toStringAsFixed(2)}'
+                              : '—',
                         ),
                       ),
                     ],
@@ -95,7 +136,7 @@ class GearPage extends StatelessWidget {
                         child: InfoCard(
                           icon: FontAwesomeIcons.box,
                           title: 'Quantity',
-                          value: 'x${gear.quantity} ',
+                          value: 'x${gear.quantity}',
                         ),
                       ),
                       Flexible(
@@ -110,13 +151,14 @@ class GearPage extends StatelessWidget {
                   InfoCard(
                     icon: FontAwesomeIcons.certificate,
                     title: 'Condition',
-                    value: gear.condition.name,
+                    value: gear.condition,
                   ),
-                  InfoCard(
-                    icon: FontAwesomeIcons.solidNoteSticky,
-                    title: 'Notes',
-                    value: gear.notes,
-                  ),
+                  if (gear.notes != null && gear.notes!.isNotEmpty)
+                    InfoCard(
+                      icon: FontAwesomeIcons.solidNoteSticky,
+                      title: 'Notes',
+                      value: gear.notes!,
+                    ),
                 ],
               ),
             ),

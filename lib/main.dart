@@ -1,14 +1,29 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gearrack/pages/home_page.dart';
 import 'package:gearrack/pages/search_page.dart';
 import 'package:gearrack/pages/profile_page.dart';
 import 'package:gearrack/theme/app_theme.dart';
+import 'package:gearrack/database/database_helper.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // On desktop platforms, sqflite needs the FFI backend.
+  // Mobile (Android/iOS) uses the native plugin automatically.
+  if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
+
+  // Initialize the database before running the app.
+  await DatabaseHelper.instance.database;
+
   SystemChrome.setEnabledSystemUIMode(
     SystemUiMode.immersiveSticky,
     overlays: [SystemUiOverlay.top],

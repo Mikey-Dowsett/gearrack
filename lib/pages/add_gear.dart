@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:uuid/uuid.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_colors.dart';
 import '../models/category.dart';
 import '../models/condition.dart';
+import '../models/gear_item.dart';
+import '../database/gear_item_dao.dart';
+import '../database/category_dao.dart';
+import '../utils/icon_registry.dart';
 
 class AddGearPage extends StatefulWidget {
   const AddGearPage({Key? key}) : super(key: key);
@@ -15,8 +20,11 @@ class AddGearPage extends StatefulWidget {
 
 class _AddGearPageState extends State<AddGearPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final _uuid = const Uuid();
+
   Category? _selectedCategory;
   Condition? _selectedCondition;
+  List<Category> _categories = [];
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
@@ -25,6 +33,26 @@ class _AddGearPageState extends State<AddGearPage> {
   final TextEditingController _purchaseYearController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      final dao = await CategoryDao.create();
+      final cats = await dao.getAll();
+      setState(() => _categories = cats);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load categories: $e')),
+        );
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -45,35 +73,6 @@ class _AddGearPageState extends State<AddGearPage> {
       (m) => '${m[1]} ${m[2]}',
     );
   }
-
-  final Map<Category, FaIconData> _categoryIcons = {
-    Category.Backpack: FontAwesomeIcons.suitcase,
-    Category.Shelter: FontAwesomeIcons.tent,
-    Category.Sleep: FontAwesomeIcons.bed,
-    Category.Bags: FontAwesomeIcons.suitcase,
-    Category.TopLayer: FontAwesomeIcons.tshirt,
-    Category.BottomLayer: FontAwesomeIcons.socks,
-    Category.Insulation: FontAwesomeIcons.snowflake,
-    Category.RainGear: FontAwesomeIcons.umbrella,
-    Category.Accessories: FontAwesomeIcons.gem,
-    Category.Footwear: FontAwesomeIcons.shoePrints,
-    Category.Cookwear: FontAwesomeIcons.utensils,
-    Category.Storage: FontAwesomeIcons.box,
-    Category.Hydration: FontAwesomeIcons.tint,
-    Category.Navigation: FontAwesomeIcons.compass,
-    Category.Communication: FontAwesomeIcons.phone,
-    Category.FirstAid: FontAwesomeIcons.firstAid,
-    Category.Emergency: FontAwesomeIcons.exclamationTriangle,
-    Category.Fire: FontAwesomeIcons.fire,
-    Category.Lighting: FontAwesomeIcons.lightbulb,
-    Category.Repair: FontAwesomeIcons.wrench,
-    Category.Power: FontAwesomeIcons.bolt,
-    Category.Electronics: FontAwesomeIcons.plug,
-    Category.Toiletries: FontAwesomeIcons.soap,
-    Category.Climbing: FontAwesomeIcons.hiking,
-    Category.Snow: FontAwesomeIcons.snowflake,
-    Category.Misc: FontAwesomeIcons.ellipsis,
-  };
 
   final Map<Condition, FaIconData> _conditionIcons = {
     Condition.Good: FontAwesomeIcons.check,
@@ -123,29 +122,24 @@ class _AddGearPageState extends State<AddGearPage> {
       children: [
         _fieldLabel(context, label, required: requiredField),
         SizedBox(height: 6.sp),
-        // Use the TextFormField's outline border so we can show a red outline
-        // when validation fails, but hide the default error text.
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
           minLines: minLines,
           maxLines: maxLines,
           expands: expands,
-          validator: requiredField
-              ? (value) {
-                  if (value == null || value.trim().isEmpty) return 'Required';
-                  return null;
-                }
-              : null,
           style: AppTextStyles.bodyLarge.copyWith(color: colors.onSurface),
           decoration: InputDecoration(
-            filled: true,
-            fillColor: colors.surface,
             hintText: hint,
-            hintStyle: AppTextStyles.labelMedium.copyWith(
+            hintStyle: AppTextStyles.bodyMedium.copyWith(
               color: colors.textSecondary,
             ),
-            // Outline borders — use the error color for errorBorder
+            filled: true,
+            fillColor: colors.surface,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(color: colors.border, width: 2.0),
+            ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide(color: colors.border, width: 2.0),
@@ -154,50 +148,30 @@ class _AddGearPageState extends State<AddGearPage> {
               borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide(color: colors.primary, width: 2.0),
             ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(color: colors.error, width: 2.0),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(color: colors.error, width: 2.0),
-            ),
-            // Hide the textual error message (we indicate errors via the outline)
-            errorStyle: TextStyle(height: 0, fontSize: 0),
             contentPadding: EdgeInsets.symmetric(
-              horizontal: 12.sp,
+              horizontal: 16.sp,
               vertical: 14.sp,
             ),
           ),
+          validator: (value) {
+            if (requiredField && (value == null || value.trim().isEmpty)) {
+              return 'Required';
+            }
+            return null;
+          },
         ),
         SizedBox(height: 12.sp),
       ],
     );
   }
 
-  Widget _rowOfTwoFields(
-    BuildContext context,
-    Widget left,
-    Widget right, {
-    double spacing = 8.0,
-  }) {
-    // Use LayoutBuilder so we measure available width and give each child
-    // an explicit width. This avoids Expanded/Flexible issues inside
-    // unbounded / nested layout scenarios.
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final totalSpacing = spacing.sp;
-        final width = constraints.maxWidth;
-        final childWidth = (width - totalSpacing) / 2.0;
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(width: childWidth, child: left),
-            SizedBox(width: totalSpacing),
-            SizedBox(width: childWidth, child: right),
-          ],
-        );
-      },
+  Widget _rowOfTwoFields(BuildContext context, Widget left, Widget right) {
+    return Row(
+      children: [
+        Expanded(child: left),
+        SizedBox(width: 8.sp),
+        Expanded(child: right),
+      ],
     );
   }
 
@@ -206,7 +180,7 @@ class _AddGearPageState extends State<AddGearPage> {
 
     return FormField<Category>(
       initialValue: _selectedCategory,
-      validator: (value) => value == null ? 'Required' : null,
+      validator: (value) => required && value == null ? 'Required' : null,
       builder: (field) {
         final hasError = field.hasError;
         return Column(
@@ -225,55 +199,67 @@ class _AddGearPageState extends State<AddGearPage> {
                   width: 2.0,
                 ),
               ),
-              child: Wrap(
-                spacing: 8.sp,
-                runSpacing: 8.sp,
-                children: Category.values.map((c) {
-                  final selected = field.value == c;
-                  final icon = _categoryIcons[c] ?? FontAwesomeIcons.box;
-                  return ChoiceChip(
-                    label: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          _prettyEnumName(c),
-                          style: AppTextStyles.labelMedium.copyWith(
-                            color: selected
-                                ? colors.onPrimary
-                                : colors.onSurface,
-                          ),
+              child: _categories.isEmpty
+                  ? Padding(
+                      padding: EdgeInsets.all(12.sp),
+                      child: Text(
+                        'Loading categories...',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: colors.textSecondary,
                         ),
-                        SizedBox(width: 6.sp),
-                        FaIcon(
-                          icon,
-                          size: 14.sp,
-                          color: selected ? colors.onPrimary : colors.onSurface,
-                        ),
-                      ],
-                    ),
-                    selected: selected,
-                    onSelected: (s) {
-                      field.didChange(s ? c : null);
-                      setState(() {
-                        _selectedCategory = s ? c : null;
-                      });
-                    },
-                    backgroundColor: colors.surface,
-                    selectedColor: colors.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(
-                        color: selected ? colors.primary : colors.border,
-                        width: 2.0,
                       ),
+                    )
+                  : Wrap(
+                      spacing: 8.sp,
+                      runSpacing: 8.sp,
+                      children: _categories.map((c) {
+                        final selected = field.value == c;
+                        final icon = IconRegistry.resolve(c.icon);
+                        return ChoiceChip(
+                          label: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                c.name,
+                                style: AppTextStyles.labelMedium.copyWith(
+                                  color: selected
+                                      ? colors.onPrimary
+                                      : colors.onSurface,
+                                ),
+                              ),
+                              SizedBox(width: 6.sp),
+                              FaIcon(
+                                icon,
+                                size: 14.sp,
+                                color: selected
+                                    ? colors.onPrimary
+                                    : colors.onSurface,
+                              ),
+                            ],
+                          ),
+                          selected: selected,
+                          onSelected: (s) {
+                            field.didChange(s ? c : null);
+                            setState(() {
+                              _selectedCategory = s ? c : null;
+                            });
+                          },
+                          backgroundColor: colors.surface,
+                          selectedColor: colors.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side: BorderSide(
+                              color: selected ? colors.primary : colors.border,
+                              width: 2.0,
+                            ),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12.sp,
+                            vertical: 8.sp,
+                          ),
+                        );
+                      }).toList(),
                     ),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 12.sp,
-                      vertical: 8.sp,
-                    ),
-                  );
-                }).toList(),
-              ),
             ),
             SizedBox(height: 12.sp),
           ],
@@ -287,7 +273,7 @@ class _AddGearPageState extends State<AddGearPage> {
 
     return FormField<Condition>(
       initialValue: _selectedCondition,
-      validator: (value) => value == null ? 'Required' : null,
+      validator: (value) => required && value == null ? 'Required' : null,
       builder: (field) {
         final hasError = field.hasError;
         return Column(
@@ -363,6 +349,51 @@ class _AddGearPageState extends State<AddGearPage> {
     );
   }
 
+  Future<void> _saveGear() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (_selectedCategory == null || _selectedCondition == null) return;
+
+    final now = DateTime.now();
+    final gearItem = GearItem(
+      id: _uuid.v4(),
+      name: _nameController.text.trim(),
+      brand: _brandController.text.trim().isEmpty
+          ? null
+          : _brandController.text.trim(),
+      categoryId: _selectedCategory!.id,
+      isPack: false,
+      weightGrams: double.tryParse(_weightController.text.trim()) ?? 0,
+      price: double.tryParse(_priceController.text.trim()),
+      purchaseYear: int.tryParse(_purchaseYearController.text.trim()),
+      quantity: int.tryParse(_quantityController.text.trim()) ?? 1,
+      condition: _selectedCondition!.name,
+      notes: _notesController.text.trim().isEmpty
+          ? null
+          : _notesController.text.trim(),
+      createdAt: now,
+      updatedAt: now,
+    );
+
+    try {
+      final dao = await GearItemDao.create();
+      await dao.insert(gearItem);
+
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Saved Gear!')));
+        Navigator.of(context).pop(gearItem);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
@@ -386,7 +417,7 @@ class _AddGearPageState extends State<AddGearPage> {
               _buildLabeledField(
                 context,
                 label: 'Name',
-                hint: 'Enter gear name',
+                hint: 'Gear Name',
                 requiredField: true,
                 controller: _nameController,
               ),
@@ -403,7 +434,7 @@ class _AddGearPageState extends State<AddGearPage> {
                 _buildLabeledField(
                   context,
                   label: 'Weight',
-                  hint: 'Weight in kg (e.g. 1.2)',
+                  hint: 'Weight in grams (e.g. 1500)',
                   requiredField: true,
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   controller: _weightController,
@@ -500,15 +531,7 @@ class _AddGearPageState extends State<AddGearPage> {
                       borderRadius: BorderRadius.circular(10.sp),
                     ),
                   ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // TODO: construct Gear object and persist it
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text('Saved Gear!')));
-                      Navigator.of(context).pop();
-                    }
-                  },
+                  onPressed: _saveGear,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

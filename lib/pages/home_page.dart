@@ -1,68 +1,95 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../widgets/gear_card.dart';
-import '../theme/app_colors.dart';
-import '../models/gear.dart';
-import '../models/category.dart';
-import '../models/condition.dart';
-import '../pages/add_gear.dart';
+import 'package:gearrack/database/gear_item_dao.dart';
+import 'package:gearrack/models/gear_item.dart';
+import 'package:gearrack/widgets/gear_card.dart';
+import 'package:gearrack/theme/app_colors.dart';
+import 'package:gearrack/pages/add_gear.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<GearItem> _gearItems = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadGear();
+  }
+
+  Future<void> _loadGear() async {
+    setState(() => _isLoading = true);
+    try {
+      final dao = await GearItemDao.create();
+      final items = await dao.getAll();
+      setState(() {
+        _gearItems = items;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to load gear: $e')));
+      }
+    }
+  }
+
+  Future<void> _navigateToAddGear() async {
+    final result = await Navigator.push<GearItem>(
+      context,
+      MaterialPageRoute(builder: (context) => const AddGearPage()),
+    );
+
+    // If a new gear item was added, refresh the list
+    if (result != null) {
+      _loadGear();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
 
-    final shelterfakeGear = Gear(
-      'Big Agnes Copper Spur',
-      'Big Agnes',
-      Category.Shelter,
-      false,
-      0,
-      1.73,
-      350.0,
-      2023,
-      1,
-      Condition.Good,
-      'Lightweight 3-season tent. Says it fits 3 but it\'s more comfortable with only two people.',
-      FontAwesomeIcons.tent,
-    );
-
-    final packGear = Gear(
-      'Osprey Atmos AG 65L',
-      'Osprey',
-      Category.Backpack,
-      true,
-      65,
-      2.24,
-      299.95,
-      2022,
-      1,
-      Condition.Worn,
-      'Comfortable 65L pack with great weight distribution. Perfect for week-long backpacking trips. One of the straps is getting close to snapping. The front pocket zipper is also broken. I think there is also a hole somewhere because it\'s leaking water when it rains.',
-      FontAwesomeIcons.suitcase,
-    );
-
     return Scaffold(
       backgroundColor: colors.background,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            GearCard(gear: shelterfakeGear),
-            GearCard(gear: packGear),
-          ],
-        ),
-      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _gearItems.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'No gear yet',
+                    style: TextStyle(color: colors.textSecondary, fontSize: 18),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Tap + to add your first item',
+                    style: TextStyle(color: colors.textSecondary, fontSize: 14),
+                  ),
+                ],
+              ),
+            )
+          : RefreshIndicator(
+              onRefresh: _loadGear,
+              child: ListView.builder(
+                itemCount: _gearItems.length,
+                itemBuilder: (context, index) {
+                  return GearCard(gear: _gearItems[index]);
+                },
+              ),
+            ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddGearPage()),
-          );
-        },
-        child: Icon(Icons.add),
+        onPressed: _navigateToAddGear,
+        child: const Icon(Icons.add),
       ),
     );
   }
