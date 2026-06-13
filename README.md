@@ -5,7 +5,8 @@ A cross-platform Flutter application for managing your outdoor and camping gear.
 ## Features
 
 - **Gear Library** — Maintain a searchable inventory of all your gear with details such as brand, weight (in grams), price, purchase year, condition, and custom notes.
-- **Pack Builder** — Create packs (packing lists) from your gear library. Check items off as you pack, with automatic sorting and quantity tracking.
+- **Pack Management System** — Create pack projects (e.g. backpacks) and build packing lists against them. An autocomplete search helps you quickly find and add gear items from your library. Items remain in an unsaved draft state until you hit Enter, giving you full control before persisting.
+- **Custom Packing Lists** — Create reusable, free-form packing lists for specific trips or scenarios. List items can reference existing gear from your library (with autocomplete) or be custom entries with their own label and weight. Check items off as you pack.
 - **Custom Categories** — Organize gear with user-configurable categories, each with its own icon and color.
 - **Search & Filter** — Quickly find gear by name, category, or condition.
 - **Cross-Platform** — Runs on Android, iOS, Linux, macOS, and Windows.
