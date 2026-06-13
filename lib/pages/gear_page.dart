@@ -9,6 +9,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/info_card.dart';
 import '../utils/icon_registry.dart';
+import 'add_gear.dart';
 
 class GearPage extends StatefulWidget {
   final GearItem gear;
@@ -20,19 +21,21 @@ class GearPage extends StatefulWidget {
 }
 
 class _GearPageState extends State<GearPage> {
+  late GearItem _gear;
   Category? _category;
   bool _isLoadingCategory = true;
 
   @override
   void initState() {
     super.initState();
+    _gear = widget.gear;
     _loadCategory();
   }
 
   Future<void> _loadCategory() async {
     try {
       final dao = await CategoryDao.create();
-      final cat = await dao.getById(widget.gear.categoryId);
+      final cat = await dao.getById(_gear.categoryId);
       setState(() {
         _category = cat;
         _isLoadingCategory = false;
@@ -42,10 +45,25 @@ class _GearPageState extends State<GearPage> {
     }
   }
 
+  Future<void> _navigateToEdit() async {
+    final result = await Navigator.push<GearItem>(
+      context,
+      MaterialPageRoute(builder: (_) => AddGearPage(gear: _gear)),
+    );
+
+    if (result != null && mounted) {
+      setState(() {
+        _gear = result;
+        _isLoadingCategory = true;
+      });
+      _loadCategory();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
-    final gear = widget.gear;
+    final gear = _gear;
     final age = gear.purchaseYear != null
         ? DateTime.now().year - gear.purchaseYear!
         : 0;
@@ -61,110 +79,118 @@ class _GearPageState extends State<GearPage> {
           style: AppTextStyles.bodyLarge,
         ),
         backgroundColor: colors.background,
+        actions: [
+          IconButton(
+            icon: FaIcon(FontAwesomeIcons.pen, size: 10.sp),
+            onPressed: _navigateToEdit,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 200.h,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: const Alignment(-0.9, -0.9),
-                        stops: [0.0, 0.5, 0.5, 1.0],
-                        colors: [
-                          colors.surfaceRaised,
-                          colors.surfaceRaised,
-                          colors.surfaceSunken,
-                          colors.surfaceSunken,
-                        ],
-                        tileMode: TileMode.repeated,
-                      ),
-                    ),
-                  ),
-                  FaIcon(
-                    IconRegistry.resolve(categoryIconKey),
-                    size: 75.sp,
-                    color: colors.primary,
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(8.sp),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  InfoCard(
-                    icon: FontAwesomeIcons.shop,
-                    title: gear.brand ?? 'No brand',
-                    value: gear.name,
-                  ),
-                  if (gear.isPack && gear.capacityLiters != null)
-                    InfoCard(
-                      icon: FontAwesomeIcons.boxOpen,
-                      title: 'Capacity',
-                      value: '${gear.capacityLiters!.toStringAsFixed(0)} L',
+                  SizedBox(
+                    height: 200.h,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: const Alignment(-0.9, -0.9),
+                              stops: [0.0, 0.5, 0.5, 1.0],
+                              colors: [
+                                colors.surfaceRaised,
+                                colors.surfaceRaised,
+                                colors.surfaceSunken,
+                                colors.surfaceSunken,
+                              ],
+                              tileMode: TileMode.repeated,
+                            ),
+                          ),
+                        ),
+                        FaIcon(
+                          IconRegistry.resolve(categoryIconKey),
+                          size: 75.sp,
+                          color: colors.primary,
+                        ),
+                      ],
                     ),
-                  Row(
-                    children: [
-                      Flexible(
-                        child: InfoCard(
-                          icon: FontAwesomeIcons.scaleBalanced,
-                          title: 'Weight',
-                          value: '${gear.weightGrams.toStringAsFixed(0)} g',
-                        ),
-                      ),
-                      Flexible(
-                        child: InfoCard(
-                          icon: FontAwesomeIcons.tag,
-                          title: 'Price',
-                          value: gear.price != null
-                              ? '\$${gear.price!.toStringAsFixed(2)}'
-                              : '—',
-                        ),
-                      ),
-                    ],
                   ),
-                  Row(
-                    children: [
-                      Flexible(
-                        child: InfoCard(
-                          icon: FontAwesomeIcons.box,
-                          title: 'Quantity',
-                          value: 'x${gear.quantity}',
+                  Padding(
+                    padding: EdgeInsets.all(8.sp),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InfoCard(
+                          icon: FontAwesomeIcons.shop,
+                          title: gear.brand ?? 'No brand',
+                          value: gear.name,
                         ),
-                      ),
-                      Flexible(
-                        child: InfoCard(
-                          icon: FontAwesomeIcons.clock,
-                          title: 'Age',
-                          value: '${age} yrs',
+                        if (gear.isPack && gear.capacityLiters != null)
+                          InfoCard(
+                            icon: FontAwesomeIcons.boxOpen,
+                            title: 'Capacity',
+                            value:
+                                '${gear.capacityLiters!.toStringAsFixed(0)} L',
+                          ),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: InfoCard(
+                                icon: FontAwesomeIcons.scaleBalanced,
+                                title: 'Weight',
+                                value:
+                                    '${gear.weightGrams.toStringAsFixed(0)} g',
+                              ),
+                            ),
+                            Flexible(
+                              child: InfoCard(
+                                icon: FontAwesomeIcons.tag,
+                                title: 'Price',
+                                value: gear.price != null
+                                    ? '\$${gear.price!.toStringAsFixed(2)}'
+                                    : '—',
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  InfoCard(
-                    icon: FontAwesomeIcons.certificate,
-                    title: 'Condition',
-                    value: gear.condition,
-                  ),
-                  if (gear.notes != null && gear.notes!.isNotEmpty)
-                    InfoCard(
-                      icon: FontAwesomeIcons.solidNoteSticky,
-                      title: 'Notes',
-                      value: gear.notes!,
+                        Row(
+                          children: [
+                            Flexible(
+                              child: InfoCard(
+                                icon: FontAwesomeIcons.box,
+                                title: 'Quantity',
+                                value: 'x${gear.quantity}',
+                              ),
+                            ),
+                            Flexible(
+                              child: InfoCard(
+                                icon: FontAwesomeIcons.clock,
+                                title: 'Age',
+                                value: '${age} yrs',
+                              ),
+                            ),
+                          ],
+                        ),
+                        InfoCard(
+                          icon: FontAwesomeIcons.certificate,
+                          title: 'Condition',
+                          value: gear.condition,
+                        ),
+                        if (gear.notes != null && gear.notes!.isNotEmpty)
+                          InfoCard(
+                            icon: FontAwesomeIcons.solidNoteSticky,
+                            title: 'Notes',
+                            value: gear.notes!,
+                          ),
+                      ],
                     ),
+                  ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }

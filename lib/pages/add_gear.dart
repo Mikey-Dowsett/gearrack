@@ -12,7 +12,11 @@ import '../database/category_dao.dart';
 import '../utils/icon_registry.dart';
 
 class AddGearPage extends StatefulWidget {
-  const AddGearPage({Key? key}) : super(key: key);
+  final GearItem? gear;
+
+  const AddGearPage({Key? key, this.gear}) : super(key: key);
+
+  bool get isEditing => gear != null;
 
   @override
   State<AddGearPage> createState() => _AddGearPageState();
@@ -44,7 +48,14 @@ class _AddGearPageState extends State<AddGearPage> {
     try {
       final dao = await CategoryDao.create();
       final cats = await dao.getAll();
-      setState(() => _categories = cats);
+      setState(() {
+        _categories = cats;
+      });
+      // After categories are loaded, populate fields if editing.
+      final gear = widget.gear;
+      if (gear != null) {
+        _populateFields(gear);
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -52,6 +63,28 @@ class _AddGearPageState extends State<AddGearPage> {
         );
       }
     }
+  }
+
+  void _populateFields(GearItem gear) {
+    _nameController.text = gear.name;
+    _brandController.text = gear.brand ?? '';
+    _weightController.text = gear.weightGrams.toString();
+    _priceController.text = gear.price?.toString() ?? '';
+    _purchaseYearController.text = gear.purchaseYear?.toString() ?? '';
+    _quantityController.text = gear.quantity.toString();
+    _notesController.text = gear.notes ?? '';
+
+    setState(() {
+      _selectedCategory = _categories.firstWhere(
+        (c) => c.id == gear.categoryId,
+        orElse: () => _categories.first,
+      );
+
+      _selectedCondition = Condition.values.firstWhere(
+        (c) => c.name == gear.condition,
+        orElse: () => Condition.Good,
+      );
+    });
   }
 
   @override
@@ -179,6 +212,7 @@ class _AddGearPageState extends State<AddGearPage> {
     final colors = AppColors.of(context);
 
     return FormField<Category>(
+      key: ValueKey('category_${_selectedCategory?.id}'),
       initialValue: _selectedCategory,
       validator: (value) => required && value == null ? 'Required' : null,
       builder: (field) {
@@ -272,6 +306,7 @@ class _AddGearPageState extends State<AddGearPage> {
     final colors = AppColors.of(context);
 
     return FormField<Condition>(
+      key: ValueKey('condition_${_selectedCondition?.name}'),
       initialValue: _selectedCondition,
       validator: (value) => required && value == null ? 'Required' : null,
       builder: (field) {
@@ -355,14 +390,16 @@ class _AddGearPageState extends State<AddGearPage> {
     if (_selectedCategory == null || _selectedCondition == null) return;
 
     final now = DateTime.now();
+    final isEditing = widget.gear != null;
     final gearItem = GearItem(
-      id: _uuid.v4(),
+      id: isEditing ? widget.gear!.id : _uuid.v4(),
       name: _nameController.text.trim(),
       brand: _brandController.text.trim().isEmpty
           ? null
           : _brandController.text.trim(),
       categoryId: _selectedCategory!.id,
-      isPack: false,
+      isPack: isEditing ? widget.gear!.isPack : false,
+      capacityLiters: isEditing ? widget.gear!.capacityLiters : null,
       weightGrams: double.tryParse(_weightController.text.trim()) ?? 0,
       price: double.tryParse(_priceController.text.trim()),
       purchaseYear: int.tryParse(_purchaseYearController.text.trim()),
@@ -371,18 +408,23 @@ class _AddGearPageState extends State<AddGearPage> {
       notes: _notesController.text.trim().isEmpty
           ? null
           : _notesController.text.trim(),
-      createdAt: now,
+      imageUrl: isEditing ? widget.gear!.imageUrl : null,
+      createdAt: isEditing ? widget.gear!.createdAt : now,
       updatedAt: now,
     );
 
     try {
       final dao = await GearItemDao.create();
-      await dao.insert(gearItem);
+      if (isEditing) {
+        await dao.update(gearItem);
+      } else {
+        await dao.insert(gearItem);
+      }
 
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Saved Gear!')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(isEditing ? 'Updated Gear!' : 'Saved Gear!')),
+        );
         Navigator.of(context).pop(gearItem);
       }
     } catch (e) {
@@ -403,7 +445,10 @@ class _AddGearPageState extends State<AddGearPage> {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: Text('Add Gear', style: AppTextStyles.bodyMedium),
+        title: Text(
+          widget.gear != null ? 'Edit Gear' : 'Add Gear',
+          style: AppTextStyles.bodyMedium,
+        ),
         backgroundColor: colors.background,
         elevation: 0,
       ),
@@ -542,7 +587,7 @@ class _AddGearPageState extends State<AddGearPage> {
                       ),
                       SizedBox(width: 8.sp),
                       Text(
-                        'Save Gear',
+                        widget.gear != null ? 'Update Gear' : 'Save Gear',
                         style: AppTextStyles.bodyLarge.copyWith(
                           color: colors.onPrimary,
                         ),

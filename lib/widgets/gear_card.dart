@@ -9,8 +9,9 @@ import '../models/condition.dart';
 
 class GearCard extends StatelessWidget {
   final GearItem gear;
+  final VoidCallback? onGearUpdated;
 
-  const GearCard({super.key, required this.gear});
+  const GearCard({super.key, required this.gear, this.onGearUpdated});
 
   @override
   Widget build(BuildContext context) {
@@ -41,11 +42,14 @@ class GearCard extends StatelessWidget {
         bottom: 4.0.h,
       ),
       child: GestureDetector(
-        onTap: () {
-          Navigator.push(
+        onTap: () async {
+          final result = await Navigator.push<GearItem>(
             context,
             MaterialPageRoute(builder: (context) => GearPage(gear: gear)),
           );
+          if (result != null) {
+            onGearUpdated?.call();
+          }
         },
         child: Card.filled(
           color: colors.surface,

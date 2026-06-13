@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gearrack/database/gear_item_dao.dart';
 import 'package:gearrack/models/gear_item.dart';
 import 'package:gearrack/widgets/gear_card.dart';
 import 'package:gearrack/theme/app_colors.dart';
+import 'package:gearrack/theme/app_text_styles.dart';
 import 'package:gearrack/pages/add_gear.dart';
 
 class HomePage extends StatefulWidget {
@@ -59,34 +61,79 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       backgroundColor: colors.background,
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _gearItems.isEmpty
-          ? Center(
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 16.sp, top: 16.sp, bottom: 8.sp),
+            child: Align(
+              alignment: Alignment.centerLeft,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'No gear yet',
-                    style: TextStyle(color: colors.textSecondary, fontSize: 18),
-                  ),
+                  Text('My Inventory', style: AppTextStyles.titleLarge),
                   const SizedBox(height: 8),
                   Text(
-                    'Tap + to add your first item',
-                    style: TextStyle(color: colors.textSecondary, fontSize: 14),
+                    '${_gearItems.length} item${_gearItems.length != 1 ? 's' : ''} tracked',
+                    style: AppTextStyles.bodyMedium,
                   ),
                 ],
               ),
-            )
-          : RefreshIndicator(
-              onRefresh: _loadGear,
-              child: ListView.builder(
-                itemCount: _gearItems.length,
-                itemBuilder: (context, index) {
-                  return GearCard(gear: _gearItems[index]);
-                },
-              ),
             ),
+          ),
+          Expanded(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _gearItems.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('No gear yet', style: AppTextStyles.bodyMedium),
+
+                        const SizedBox(height: 8),
+                        Text(
+                          'Tap + to add your first item',
+                          style: AppTextStyles.bodySmall,
+                        ),
+                      ],
+                    ),
+                  )
+                : RefreshIndicator(
+                    onRefresh: _loadGear,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(8.sp),
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: 'Search...',
+                              // prefixIcon: FaIcon(FontAwesomeIcons.search),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.sp),
+                              ),
+                              filled: true,
+                              fillColor: colors.surface,
+                            ),
+                            style: AppTextStyles.bodyMedium,
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: _gearItems.length,
+                            itemBuilder: (context, index) {
+                              return GearCard(
+                                gear: _gearItems[index],
+                                onGearUpdated: _loadGear,
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddGear,
         child: const Icon(Icons.add),
