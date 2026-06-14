@@ -3,8 +3,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gearrack/pages/home_page.dart';
-import 'package:gearrack/pages/search_page.dart';
-import 'package:gearrack/pages/profile_page.dart';
+import 'package:gearrack/pages/packs.dart';
 import 'package:gearrack/theme/app_theme.dart';
 import 'package:gearrack/database/database_helper.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -47,21 +46,6 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'GearRack Demo',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.light,
-      home: const MainNavigationScreen(),
-    );
-  }
-}
-
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
 
@@ -72,11 +56,7 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    const HomePage(),
-    const SearchPage(),
-    const ProfilePage(),
-  ];
+  final List<Widget> _pages = const [HomePage(), PacksPage()];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -89,20 +69,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
-      body: _pages[_selectedIndex],
+      body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: FaIcon(FontAwesomeIcons.tent),
-            label: 'Home',
+            label: 'Gear',
           ),
           BottomNavigationBarItem(
-            icon: FaIcon(FontAwesomeIcons.magnifyingGlass),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: FaIcon(FontAwesomeIcons.user),
-            label: 'Profile',
+            icon: FaIcon(FontAwesomeIcons.suitcase),
+            label: 'Packs',
           ),
         ],
         currentIndex: _selectedIndex,

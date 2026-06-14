@@ -18,7 +18,12 @@ class DatabaseHelper {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 1, onCreate: _onCreate);
+    return await openDatabase(
+      path,
+      version: 2,
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
+    );
   }
 
   /// Creates all tables and seeds default data on first launch.
@@ -26,6 +31,19 @@ class DatabaseHelper {
     await Schema.createAll(db);
     await Schema.seedDefaultCategories(db);
     await Schema.seedDefaultSettings(db);
+  }
+
+  /// Destructive migration: drop all tables and recreate.
+  /// Safe during development — no production data exists.
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    await db.execute('DROP TABLE IF EXISTS custom_list_items');
+    await db.execute('DROP TABLE IF EXISTS custom_lists');
+    await db.execute('DROP TABLE IF EXISTS pack_items');
+    await db.execute('DROP TABLE IF EXISTS packs');
+    await db.execute('DROP TABLE IF EXISTS gear_items');
+    await db.execute('DROP TABLE IF EXISTS categories');
+    await db.execute('DROP TABLE IF EXISTS app_settings');
+    await _onCreate(db, newVersion);
   }
 
   Future<void> close() async {

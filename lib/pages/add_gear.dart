@@ -29,6 +29,7 @@ class _AddGearPageState extends State<AddGearPage> {
   Category? _selectedCategory;
   Condition? _selectedCondition;
   List<Category> _categories = [];
+  bool _isPack = false;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
@@ -37,6 +38,7 @@ class _AddGearPageState extends State<AddGearPage> {
   final TextEditingController _purchaseYearController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
+  final TextEditingController _capacityController = TextEditingController();
 
   @override
   void initState() {
@@ -73,8 +75,10 @@ class _AddGearPageState extends State<AddGearPage> {
     _purchaseYearController.text = gear.purchaseYear?.toString() ?? '';
     _quantityController.text = gear.quantity.toString();
     _notesController.text = gear.notes ?? '';
+    _capacityController.text = gear.capacityLiters?.toString() ?? '';
 
     setState(() {
+      _isPack = gear.isPack;
       _selectedCategory = _categories.firstWhere(
         (c) => c.id == gear.categoryId,
         orElse: () => _categories.first,
@@ -96,6 +100,7 @@ class _AddGearPageState extends State<AddGearPage> {
     _purchaseYearController.dispose();
     _quantityController.dispose();
     _notesController.dispose();
+    _capacityController.dispose();
     super.dispose();
   }
 
@@ -384,6 +389,63 @@ class _AddGearPageState extends State<AddGearPage> {
     );
   }
 
+  Widget _buildIsPackToggle(BuildContext context) {
+    final colors = AppColors.of(context);
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12.sp),
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 8.sp),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(10.0),
+          border: Border.all(color: colors.border, width: 2.0),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'This is a bag/backpack',
+                    style: AppTextStyles.labelMedium.copyWith(
+                      color: colors.onSurface,
+                    ),
+                  ),
+                  if (_isPack)
+                    Text(
+                      'Capacity field will appear below',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: colors.textSecondary,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Switch(
+              value: _isPack,
+              onChanged: (val) => setState(() => _isPack = val),
+              activeColor: colors.primary,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCapacityField(BuildContext context) {
+    return _buildLabeledField(
+      context,
+      label: 'Capacity',
+      hint: 'Capacity in liters (e.g. 45)',
+      requiredField: false,
+      keyboardType: TextInputType.numberWithOptions(decimal: true),
+      controller: _capacityController,
+    );
+  }
+
   Future<void> _saveGear() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -391,6 +453,11 @@ class _AddGearPageState extends State<AddGearPage> {
 
     final now = DateTime.now();
     final isEditing = widget.gear != null;
+
+    final double? capacity = _isPack
+        ? double.tryParse(_capacityController.text.trim())
+        : null;
+
     final gearItem = GearItem(
       id: isEditing ? widget.gear!.id : _uuid.v4(),
       name: _nameController.text.trim(),
@@ -398,8 +465,8 @@ class _AddGearPageState extends State<AddGearPage> {
           ? null
           : _brandController.text.trim(),
       categoryId: _selectedCategory!.id,
-      isPack: isEditing ? widget.gear!.isPack : false,
-      capacityLiters: isEditing ? widget.gear!.capacityLiters : null,
+      isPack: _isPack,
+      capacityLiters: capacity,
       weightGrams: double.tryParse(_weightController.text.trim()) ?? 0,
       price: double.tryParse(_priceController.text.trim()),
       purchaseYear: int.tryParse(_purchaseYearController.text.trim()),
@@ -473,6 +540,8 @@ class _AddGearPageState extends State<AddGearPage> {
                 requiredField: false,
                 controller: _brandController,
               ),
+              _buildIsPackToggle(context),
+              if (_isPack) _buildCapacityField(context),
               _buildCategoryField(context, true),
               _rowOfTwoFields(
                 context,

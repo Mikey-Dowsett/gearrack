@@ -6,12 +6,19 @@ import '../theme/app_colors.dart';
 import '../pages/gear_page.dart';
 import '../models/gear_item.dart';
 import '../models/condition.dart';
+import '../utils/icon_registry.dart';
 
 class GearCard extends StatelessWidget {
   final GearItem gear;
+  final String categoryIcon;
   final VoidCallback? onGearUpdated;
 
-  const GearCard({super.key, required this.gear, this.onGearUpdated});
+  const GearCard({
+    super.key,
+    required this.gear,
+    required this.categoryIcon,
+    this.onGearUpdated,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +37,7 @@ class GearCard extends StatelessWidget {
         ? 'Worn'
         : 'Retired';
 
-    // Use the category icon as a stand-in. In future iterations, gear items
-    // may have their own icon. For now we use a default suitcase icon.
-    final Object icon = FontAwesomeIcons.suitcase;
+    final icon = IconRegistry.resolve(categoryIcon);
 
     return Padding(
       padding: EdgeInsets.only(
@@ -88,11 +93,7 @@ class GearCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      FaIcon(
-                        icon as FaIconData,
-                        size: 25.sp,
-                        color: colors.primary,
-                      ),
+                      FaIcon(icon, size: 25.sp, color: colors.primary),
                     ],
                   ),
                 ),

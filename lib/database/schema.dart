@@ -45,12 +45,25 @@ class Schema {
   ''';
 
   // ---------------------------------------------------------------------------
+  // Packs (trip / outing configurations)
+  // ---------------------------------------------------------------------------
+  static const String createPacksTable = '''
+    CREATE TABLE IF NOT EXISTS packs (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      description TEXT,
+      bag_id TEXT REFERENCES gear_items(id),
+      created_at TEXT NOT NULL
+    )
+  ''';
+
+  // ---------------------------------------------------------------------------
   // Pack Items (gear items packed inside a Pack)
   // ---------------------------------------------------------------------------
   static const String createPackItemsTable = '''
     CREATE TABLE IF NOT EXISTS pack_items (
       id TEXT PRIMARY KEY,
-      pack_id TEXT NOT NULL REFERENCES gear_items(id),
+      pack_id TEXT NOT NULL REFERENCES packs(id),
       gear_item_id TEXT NOT NULL REFERENCES gear_items(id),
       quantity_in_pack INTEGER NOT NULL DEFAULT 1,
       is_checked INTEGER NOT NULL DEFAULT 0,
@@ -65,7 +78,7 @@ class Schema {
     CREATE TABLE IF NOT EXISTS custom_lists (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
-      linked_pack_id TEXT REFERENCES gear_items(id),
+      linked_pack_id TEXT REFERENCES packs(id),
       created_at TEXT NOT NULL
     )
   ''';
@@ -104,6 +117,10 @@ class Schema {
   // ---------------------------------------------------------------------------
   // Indices
   // ---------------------------------------------------------------------------
+  static const String createPacksIdx = '''
+    CREATE INDEX IF NOT EXISTS idx_packs_created ON packs(created_at DESC)
+  ''';
+
   static const String createGearItemsCategoryIdx = '''
     CREATE INDEX IF NOT EXISTS idx_gear_items_category ON gear_items(category_id)
   ''';
@@ -124,12 +141,14 @@ class Schema {
   static Future<void> createAll(Database db) async {
     await db.execute(createCategoriesTable);
     await db.execute(createGearItemsTable);
+    await db.execute(createPacksTable);
     await db.execute(createPackItemsTable);
     await db.execute(createCustomListsTable);
     await db.execute(createCustomListItemsTable);
     await db.execute(createAppSettingsTable);
 
     // Indices
+    await db.execute(createPacksIdx);
     await db.execute(createGearItemsCategoryIdx);
     await db.execute(createPackItemsPackIdx);
     await db.execute(createPackItemsGearIdx);
