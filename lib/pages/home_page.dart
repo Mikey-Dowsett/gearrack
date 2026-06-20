@@ -25,6 +25,7 @@ class _HomePageState extends State<HomePage> {
   String? _selectedCategoryId;
   String _searchQuery = '';
   bool _isLoading = true;
+  int _sortMode = 0; // 0 = name (A-Z), 1 = weight, 2 = price
 
   @override
   void initState() {
@@ -82,7 +83,26 @@ class _HomePageState extends State<HomePage> {
 
         return matchesSearch && matchesCategory;
       }).toList();
+      _applySort();
     });
+  }
+
+  void _applySort() {
+    switch (_sortMode) {
+      case 0:
+        _filteredGearItems.sort((a, b) => a.name.compareTo(b.name));
+        break;
+      case 1:
+        _filteredGearItems.sort(
+          (a, b) => a.weightGrams.compareTo(b.weightGrams),
+        );
+        break;
+      case 2:
+        _filteredGearItems.sort(
+          (a, b) => (a.price ?? 0).compareTo(b.price ?? 0),
+        );
+        break;
+    }
   }
 
   @override
@@ -97,11 +117,11 @@ class _HomePageState extends State<HomePage> {
             padding: EdgeInsets.only(left: 16.sp, top: 16.sp, bottom: 8.sp),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text('My Inventory', style: AppTextStyles.titleLarge),
-                  const SizedBox(height: 8),
+                  Text(' \u2022 ', style: AppTextStyles.bodyMedium),
                   Text(
                     '${_gearItems.length} item${_gearItems.length != 1 ? 's' : ''} tracked',
                     style: AppTextStyles.bodyMedium,
@@ -173,13 +193,17 @@ class _HomePageState extends State<HomePage> {
                                   setState(() => _selectedCategoryId = null);
                                   _applyFilters();
                                 },
+                                showCheckmark: false,
+                                selectedColor: colors.primary,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  side: BorderSide(
+                                    color: colors.border,
+                                    width: 2.0,
+                                  ),
+                                ),
                               ),
                               ..._categories.map((category) {
-                                final chipColor = Color(
-                                  int.parse(
-                                    category.color.replaceFirst('#', '0xFF'),
-                                  ),
-                                );
                                 final count = _gearItems
                                     .where((i) => i.categoryId == category.id)
                                     .length;
@@ -194,26 +218,56 @@ class _HomePageState extends State<HomePage> {
                                           size: 15.sp,
                                         ),
                                         SizedBox(width: 5.sp),
-                                        Text('${category.name}\u2219$count'),
+                                        Text('${category.name}∙$count'),
                                       ],
                                     ),
                                     selected:
                                         _selectedCategoryId == category.id,
-                                    selectedColor: chipColor.withValues(
-                                      alpha: 1,
-                                    ),
+                                    selectedColor: colors.primary,
                                     onSelected: (_) {
                                       setState(
                                         () => _selectedCategoryId = category.id,
                                       );
                                       _applyFilters();
                                     },
+                                    showCheckmark: false,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      side: BorderSide(
+                                        color: colors.border,
+                                        width: 2.0,
+                                      ),
+                                    ),
                                   ),
                                 );
                               }),
                             ],
                           ),
                         ),
+                        SizedBox(height: 5.sp),
+                        Padding(
+                          padding: EdgeInsets.only(left: 10.sp, right: 10.sp),
+                          child: Row(
+                            children: [
+                              Text(
+                                '${_filteredGearItems.length} items \u2219 '
+                                '${_filteredGearItems.fold(0.0, (sum, item) => sum + item.weightGrams)} g total',
+                                style: AppTextStyles.bodyMedium,
+                              ),
+                              Spacer(),
+                              _SortButton(
+                                sortMode: _sortMode,
+                                onPressed: () {
+                                  setState(() {
+                                    _sortMode = (_sortMode + 1) % 3;
+                                    _applySort();
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 5.sp),
                         Expanded(
                           child: ListView.builder(
                             itemCount: _filteredGearItems.length,
@@ -242,6 +296,47 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddGear,
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class _SortButton extends StatelessWidget {
+  final int sortMode;
+  final VoidCallback onPressed;
+
+  const _SortButton({required this.sortMode, required this.onPressed});
+
+  String get _label {
+    switch (sortMode) {
+      case 0:
+        return 'Name';
+      case 1:
+        return 'Weight';
+      case 2:
+        return 'Price';
+      default:
+        return '';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+    return OutlinedButton.icon(
+      onPressed: onPressed,
+      icon: FaIcon(FontAwesomeIcons.arrowDownWideShort, size: 14.sp),
+      label: Text(_label, style: TextStyle(fontSize: 12.sp)),
+      style: OutlinedButton.styleFrom(
+        side: BorderSide(color: colors.border, width: 2.0),
+        backgroundColor: colors.surface,
+        foregroundColor: colors.onSurface,
+        padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 4.sp),
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5.sp),
+        ),
       ),
     );
   }

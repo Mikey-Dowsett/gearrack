@@ -255,6 +255,7 @@ class _AddGearPageState extends State<AddGearPage> {
                         final selected = field.value == c;
                         final icon = IconRegistry.resolve(c.icon);
                         return ChoiceChip(
+                          showCheckmark: false,
                           label: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -339,6 +340,7 @@ class _AddGearPageState extends State<AddGearPage> {
                   final selected = field.value == c;
                   final icon = _conditionIcons[c] ?? FontAwesomeIcons.question;
                   return ChoiceChip(
+                    showCheckmark: false,
                     label: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -392,46 +394,40 @@ class _AddGearPageState extends State<AddGearPage> {
   Widget _buildIsPackToggle(BuildContext context) {
     final colors = AppColors.of(context);
 
-    return Padding(
-      padding: EdgeInsets.only(bottom: 12.sp),
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 8.sp),
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(10.0),
-          border: Border.all(color: colors.border, width: 2.0),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'This is a bag/backpack',
-                    style: AppTextStyles.labelMedium.copyWith(
-                      color: colors.onSurface,
-                    ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _fieldLabel(context, 'Backpack'),
+        SizedBox(height: 6.sp),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 14.sp),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(10.0),
+            border: Border.all(color: colors.border, width: 2.0),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'This is a backpack',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: colors.onBackground,
                   ),
-                  if (_isPack)
-                    Text(
-                      'Capacity field will appear below',
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: colors.textSecondary,
-                      ),
-                    ),
-                ],
+                ),
               ),
-            ),
-            Switch(
-              value: _isPack,
-              onChanged: (val) => setState(() => _isPack = val),
-              activeColor: colors.primary,
-            ),
-          ],
+              SizedBox(width: 8.sp),
+              Switch(
+                value: _isPack,
+                onChanged: (val) => setState(() => _isPack = val),
+                activeColor: colors.primary,
+              ),
+            ],
+          ),
         ),
-      ),
+        SizedBox(height: 12.sp),
+      ],
     );
   }
 
@@ -540,8 +536,6 @@ class _AddGearPageState extends State<AddGearPage> {
                 requiredField: false,
                 controller: _brandController,
               ),
-              _buildIsPackToggle(context),
-              if (_isPack) _buildCapacityField(context),
               _buildCategoryField(context, true),
               _rowOfTwoFields(
                 context,
@@ -561,6 +555,12 @@ class _AddGearPageState extends State<AddGearPage> {
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   controller: _priceController,
                 ),
+              ),
+              _rowOfTwoFields(
+                context,
+
+                _buildIsPackToggle(context),
+                _buildCapacityField(context),
               ),
               _rowOfTwoFields(
                 context,

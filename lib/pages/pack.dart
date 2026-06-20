@@ -119,12 +119,6 @@ class _PackPageState extends State<PackPage>
     return cat?.icon ?? 'box';
   }
 
-  Color _categoryColor(String categoryId) {
-    final cat = _categories.where((c) => c.id == categoryId).firstOrNull;
-    if (cat == null) return Colors.grey;
-    return Color(int.parse(cat.color.replaceFirst('#', '0xFF')));
-  }
-
   void _showAddGearSheet() {
     showModalBottomSheet(
       context: context,
@@ -230,7 +224,7 @@ class _PackPageState extends State<PackPage>
             final fraction = cw.totalWeightGrams / _totalWeight;
             return Expanded(
               flex: (fraction * 1000).round().clamp(1, 1000),
-              child: Container(color: _categoryColor(cw.categoryId)),
+              child: Container(color: colors.primary),
             );
           }).toList(),
         ),
