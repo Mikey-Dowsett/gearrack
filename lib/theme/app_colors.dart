@@ -46,6 +46,8 @@ class AppColors {
   static const Color darkOnPrimary = Color(0xFF0B140D);
   static const Color darkPrimaryContainer = Color(0xFF2B4431);
   static const Color darkPrimaryMuted = Color(0xFF6B9174);
+  static const Color darkAccent = Color(0xFF5CAD72);
+  static const Color darkOnAccent = Color(0xFF0D1A10);
   static const Color darkSecondary = Color(0xFF96A672);
   static const Color darkTertiary = Color(0xFFD99165);
   static const Color darkTertaryContainer = Color(0xFF5E402F);
@@ -58,7 +60,9 @@ class AppColors {
   /// Return a context-aware palette (semantic colors) for the current theme.
   static AppColorPalette of(BuildContext context) {
     final brightness = Theme.of(context).brightness;
-    return brightness == Brightness.dark ? AppColorPalette._dark() : AppColorPalette._light();
+    return brightness == Brightness.dark
+        ? AppColorPalette._dark()
+        : AppColorPalette._light();
   }
 }
 
@@ -68,6 +72,9 @@ class AppColorPalette {
   final Color primary;
   final Color onPrimary;
   final Color primaryContainer;
+  final Color primaryMuted;
+  final Color accent;
+  final Color onAccent;
   final Color background;
   final Color onBackground;
   final Color surface;
@@ -80,6 +87,7 @@ class AppColorPalette {
   final Color borderStrong;
   final Color secondary;
   final Color tertiary;
+  final Color tertiaryContainer;
   final Color error;
   final Color statusNew;
   final Color statusGood;
@@ -90,6 +98,9 @@ class AppColorPalette {
     required this.primary,
     required this.onPrimary,
     required this.primaryContainer,
+    required this.primaryMuted,
+    required this.accent,
+    required this.onAccent,
     required this.background,
     required this.onBackground,
     required this.surface,
@@ -102,6 +113,7 @@ class AppColorPalette {
     required this.borderStrong,
     required this.secondary,
     required this.tertiary,
+    required this.tertiaryContainer,
     required this.error,
     required this.statusNew,
     required this.statusGood,
@@ -114,6 +126,9 @@ class AppColorPalette {
       primary: AppColors.lightPrimary,
       onPrimary: AppColors.lightOnPrimary,
       primaryContainer: AppColors.lightPrimaryContainer,
+      primaryMuted: AppColors.lightPrimaryMuted,
+      accent: AppColors.lightAccent,
+      onAccent: AppColors.lightOnAccent,
       background: AppColors.lightBackground,
       onBackground: AppColors.lightTextPrimary,
       surface: AppColors.lightSurface,
@@ -126,6 +141,7 @@ class AppColorPalette {
       borderStrong: AppColors.lightBorderStrong,
       secondary: AppColors.lightSecondary,
       tertiary: AppColors.lightTertiary,
+      tertiaryContainer: AppColors.lightTertiaryContainer,
       error: Color(0xFFB00020),
       statusNew: AppColors.statusNew,
       statusGood: AppColors.statusGood,
@@ -139,6 +155,9 @@ class AppColorPalette {
       primary: AppColors.darkPrimary,
       onPrimary: AppColors.darkOnPrimary,
       primaryContainer: AppColors.darkPrimaryContainer,
+      primaryMuted: AppColors.darkPrimaryMuted,
+      accent: AppColors.darkAccent,
+      onAccent: AppColors.darkOnAccent,
       background: AppColors.darkBackground,
       onBackground: AppColors.darkTextPrimary,
       surface: AppColors.darkSurface,
@@ -151,6 +170,7 @@ class AppColorPalette {
       borderStrong: AppColors.darkBorderStrong,
       secondary: AppColors.darkSecondary,
       tertiary: AppColors.darkTertiary,
+      tertiaryContainer: AppColors.darkTertaryContainer,
       error: Color(0xFFB00020),
       statusNew: AppColors.statusNew,
       statusGood: AppColors.statusGood,

@@ -32,6 +32,7 @@ class _PackPageState extends State<PackPage>
   List<Category> _categories = [];
   bool _isLoading = true;
   double _totalWeight = 0;
+  GearItem? _bagGear;
 
   @override
   void initState() {
@@ -53,16 +54,62 @@ class _PackPageState extends State<PackPage>
       final packItemDao = await PackItemDao.create();
       final categoryDao = await CategoryDao.create();
 
+      final gearDao = await GearItemDao.create();
       final items = await packItemDao.getByPackWithGear(_pack.id);
       final categoryWeights = await packItemDao.getWeightByCategory(_pack.id);
       final totalWeight = await packItemDao.getTotalWeightByPack(_pack.id);
       final categories = await categoryDao.getAll();
 
+      GearItem? bagGear;
+      if (_pack.bagId != null) {
+        bagGear = await gearDao.getById(_pack.bagId!);
+      }
+
+      // Inject the bag's weight into the category breakdown so it appears
+      // in both the total and the progress bar.
+      final adjustedCategoryWeights = List<CategoryWeight>.from(
+        categoryWeights,
+      );
+      if (bagGear != null) {
+        final bag = bagGear;
+        final bagCategory = categories.firstWhere(
+          (c) => c.id == bag.categoryId,
+          orElse: () => categories.first,
+        );
+        final existingIdx = adjustedCategoryWeights.indexWhere(
+          (cw) => cw.categoryId == bag.categoryId,
+        );
+        if (existingIdx >= 0) {
+          final existing = adjustedCategoryWeights[existingIdx];
+          adjustedCategoryWeights[existingIdx] = CategoryWeight(
+            categoryId: existing.categoryId,
+            categoryName: existing.categoryName,
+            icon: existing.icon,
+            color: existing.color,
+            totalWeightGrams: existing.totalWeightGrams + bag.weightGrams,
+          );
+        } else {
+          adjustedCategoryWeights.add(
+            CategoryWeight(
+              categoryId: bagCategory.id,
+              categoryName: bagCategory.name,
+              icon: bagCategory.icon,
+              color: bagCategory.color,
+              totalWeightGrams: bag.weightGrams,
+            ),
+          );
+          adjustedCategoryWeights.sort(
+            (a, b) => b.totalWeightGrams.compareTo(a.totalWeightGrams),
+          );
+        }
+      }
+
       setState(() {
         _packItems = items;
-        _categoryWeights = categoryWeights;
-        _totalWeight = totalWeight;
+        _categoryWeights = adjustedCategoryWeights;
+        _totalWeight = totalWeight + (bagGear?.weightGrams ?? 0);
         _categories = categories;
+        _bagGear = bagGear;
         _isLoading = false;
       });
     } catch (e) {
@@ -224,12 +271,16 @@ class _PackPageState extends State<PackPage>
             final fraction = cw.totalWeightGrams / _totalWeight;
             return Expanded(
               flex: (fraction * 1000).round().clamp(1, 1000),
-              child: Container(color: colors.primary),
+              child: Container(color: _categoryColor(cw.color)),
             );
           }).toList(),
         ),
       ),
     );
+  }
+
+  Color _categoryColor(String hex) {
+    return parseCategoryColor(hex);
   }
 
   Widget _buildBuildTab(AppColorPalette colors) {
@@ -247,9 +298,16 @@ class _PackPageState extends State<PackPage>
                   ),
                 )
               : ListView.builder(
-                  itemCount: _packItems.length,
+                  itemCount: _packItems.length + (_bagGear != null ? 1 : 0),
                   itemBuilder: (context, index) {
-                    final pwg = _packItems[index];
+                    // Show bag first if present
+                    if (_bagGear != null && index == 0) {
+                      final iconKey = _categoryIcon(_bagGear!.categoryId);
+                      return _buildBagCard(colors, _bagGear!, iconKey);
+                    }
+
+                    final adjusted = _bagGear != null ? index - 1 : index;
+                    final pwg = _packItems[adjusted];
                     final gear = pwg.gearItem;
                     final iconKey = _categoryIcon(gear.categoryId);
 
@@ -292,6 +350,77 @@ class _PackPageState extends State<PackPage>
     );
   }
 
+  Color _categoryColorById(String categoryId, Color fallback) {
+    final cat = _categories.where((c) => c.id == categoryId).firstOrNull;
+    return cat != null ? parseCategoryColor(cat.color) : fallback;
+  }
+
+  Widget _buildBagCard(AppColorPalette colors, GearItem bag, String iconKey) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 3.sp),
+      child: Card.filled(
+        color: colors.primaryContainer,
+        elevation: 1,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.sp),
+          side: BorderSide(color: colors.primary, width: 1.5),
+        ),
+        child: SizedBox(
+          height: 56.sp,
+          child: Row(
+            children: [
+              // Icon area
+              SizedBox(
+                width: 44.sp,
+                child: Center(
+                  child: FaIcon(
+                    IconRegistry.resolve(iconKey),
+                    size: 20.sp,
+                    color: _categoryColorById(bag.categoryId, colors.primary),
+                  ),
+                ),
+              ),
+              // Name, brand
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      bag.name,
+                      style: AppTextStyles.titleLarge.copyWith(fontSize: 13.sp),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (bag.brand != null)
+                      Text(
+                        bag.brand!,
+                        style: AppTextStyles.bodySmall,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                  ],
+                ),
+              ),
+              // "Bag" badge + weight
+              Padding(
+                padding: EdgeInsets.only(right: 8.sp),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      bag.weightGrams.toStringAsFixed(0),
+                      style: AppTextStyles.titleLarge.copyWith(fontSize: 13.sp),
+                    ),
+                    Text('g', style: AppTextStyles.bodySmall),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildMinimalGearCard(
     AppColorPalette colors,
     GearItem gear,
@@ -318,7 +447,7 @@ class _PackPageState extends State<PackPage>
                   child: FaIcon(
                     IconRegistry.resolve(iconKey),
                     size: 20.sp,
-                    color: colors.primary,
+                    color: _categoryColorById(gear.categoryId, colors.primary),
                   ),
                 ),
               ),
@@ -435,6 +564,11 @@ class _AddGearBottomSheetState extends State<_AddGearBottomSheet> {
     return cat?.icon ?? 'box';
   }
 
+  Color _categoryColorById(String categoryId, Color fallback) {
+    final cat = _categories.where((c) => c.id == categoryId).firstOrNull;
+    return cat != null ? parseCategoryColor(cat.color) : fallback;
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
@@ -487,7 +621,10 @@ class _AddGearBottomSheetState extends State<_AddGearBottomSheet> {
                         leading: FaIcon(
                           IconRegistry.resolve(iconKey),
                           size: 20.sp,
-                          color: colors.primary,
+                          color: _categoryColorById(
+                            gear.categoryId,
+                            colors.primary,
+                          ),
                         ),
                         title: Text(gear.name, style: AppTextStyles.bodyLarge),
                         subtitle: gear.brand != null
@@ -507,4 +644,11 @@ class _AddGearBottomSheetState extends State<_AddGearBottomSheet> {
       ),
     );
   }
+}
+
+/// Parse a hex color string like `#385A41` or `385A41` into a Flutter [Color].
+Color parseCategoryColor(String hex) {
+  final stripped = hex.replaceFirst('#', '');
+  final fullHex = stripped.length == 6 ? 'FF$stripped' : stripped;
+  return Color(int.parse(fullHex, radix: 16));
 }

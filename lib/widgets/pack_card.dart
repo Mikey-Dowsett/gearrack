@@ -58,15 +58,8 @@ class PackCard extends StatelessWidget {
                   ),
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
-                    end: const Alignment(-0.8, -0.8),
-                    stops: const [0.0, 0.5, 0.5, 1.0],
-                    colors: [
-                      colors.primary,
-                      colors.primary,
-                      colors.secondary,
-                      colors.secondary,
-                    ],
-                    tileMode: TileMode.repeated,
+                    end: Alignment.bottomRight,
+                    colors: [colors.primary, colors.accent],
                   ),
                 ),
                 padding: EdgeInsets.all(14.sp),

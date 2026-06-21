@@ -109,13 +109,13 @@ class _PacksPageState extends State<PacksPage> {
             padding: EdgeInsets.only(left: 16.sp, top: 16.sp, bottom: 8.sp),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text('My Packs', style: AppTextStyles.titleLarge),
-                  const SizedBox(height: 8),
+                  const SizedBox(width: 8),
                   Text(
-                    '${_packs.length} pack${_packs.length != 1 ? 's' : ''}',
+                    '\u2022 ${_packs.length} pack${_packs.length != 1 ? 's' : ''}',
                     style: AppTextStyles.bodyMedium,
                   ),
                 ],

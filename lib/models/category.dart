@@ -5,15 +5,27 @@ class Category {
   final String id;
   final String name;
   final String icon;
+  final String color;
 
-  const Category({required this.id, required this.name, required this.icon});
+  const Category({
+    required this.id,
+    required this.name,
+    required this.icon,
+    required this.color,
+  });
 
-  Map<String, dynamic> toMap() => {'id': id, 'name': name, 'icon': icon};
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'name': name,
+    'icon': icon,
+    'color': color,
+  };
 
   factory Category.fromMap(Map<String, dynamic> map) => Category(
     id: map['id'] as String,
     name: map['name'] as String,
     icon: map['icon'] as String,
+    color: map['color'] as String,
   );
 
   @override
@@ -24,5 +36,6 @@ class Category {
   int get hashCode => id.hashCode;
 
   @override
-  String toString() => 'Category(id: $id, name: $name, icon: $icon)';
+  String toString() =>
+      'Category(id: $id, name: $name, icon: $icon, color: $color)';
 }

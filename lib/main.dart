@@ -2,7 +2,7 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gearrack/pages/home_page.dart';
+import 'package:gearrack/pages/gear.dart';
 import 'package:gearrack/pages/packs.dart';
 import 'package:gearrack/theme/app_theme.dart';
 import 'package:gearrack/database/database_helper.dart';
