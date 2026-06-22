@@ -57,6 +57,13 @@ class AppColors {
   static const Color white = Color(0xFFFFFFFF);
   static const Color black = Color(0xFF000000);
 
+  /// Parse a hex color string like `#385A41` or `385A41` into a Flutter [Color].
+  static Color parseHex(String hex) {
+    final stripped = hex.replaceFirst('#', '');
+    final fullHex = stripped.length == 6 ? 'FF$stripped' : stripped;
+    return Color(int.parse(fullHex, radix: 16));
+  }
+
   /// Return a context-aware palette (semantic colors) for the current theme.
   static AppColorPalette of(BuildContext context) {
     final brightness = Theme.of(context).brightness;

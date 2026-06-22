@@ -10,6 +10,9 @@ import 'package:gearrack/theme/app_colors.dart';
 import 'package:gearrack/theme/app_text_styles.dart';
 import 'package:gearrack/pages/add_gear.dart';
 import 'package:gearrack/utils/icon_registry.dart';
+import 'package:gearrack/theme/app_colors.dart' show AppColors;
+import 'package:gearrack/theme/ui_constants.dart';
+import 'package:gearrack/utils/weight_formatter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -108,13 +111,17 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
+    final _totalGrams = _filteredGearItems.fold(
+      0.0,
+      (sum, item) => sum + item.weightGrams,
+    );
 
     return Scaffold(
       backgroundColor: colors.background,
       body: Column(
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 16.sp, top: 16.sp, bottom: 8.sp),
+            padding: EdgeInsets.only(left: 12.sp, top: 12.sp, bottom: 8.sp),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Row(
@@ -153,12 +160,17 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       children: [
                         Padding(
-                          padding: EdgeInsets.all(8.sp),
+                          padding: EdgeInsets.only(
+                            left: 12.sp,
+                            right: 12.sp,
+                            top: 4.sp,
+                            bottom: 4.sp,
+                          ),
                           child: TextField(
                             decoration: InputDecoration(
                               hintText: 'Search...',
                               prefixIcon: SizedBox(
-                                width: 36.sp,
+                                width: 40.sp,
                                 child: Center(
                                   child: FaIcon(FontAwesomeIcons.search),
                                 ),
@@ -181,10 +193,10 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         SizedBox(
-                          height: 44.sp,
+                          height: 48.sp,
                           child: ListView(
                             scrollDirection: Axis.horizontal,
-                            padding: EdgeInsets.symmetric(horizontal: 10.sp),
+                            padding: EdgeInsets.symmetric(horizontal: 12.sp),
                             children: [
                               ChoiceChip(
                                 label: Text('All'),
@@ -199,7 +211,7 @@ class _HomePageState extends State<HomePage> {
                                   borderRadius: BorderRadius.circular(20),
                                   side: BorderSide(
                                     color: colors.border,
-                                    width: 2.0,
+                                    width: UiConstants.borderWidth,
                                   ),
                                 ),
                               ),
@@ -207,8 +219,11 @@ class _HomePageState extends State<HomePage> {
                                 final count = _gearItems
                                     .where((i) => i.categoryId == category.id)
                                     .length;
+                                final catColor = AppColors.parseHex(
+                                  category.color,
+                                );
                                 return Padding(
-                                  padding: EdgeInsets.only(left: 5.sp),
+                                  padding: EdgeInsets.only(left: 6.sp),
                                   child: ChoiceChip(
                                     label: Row(
                                       mainAxisSize: MainAxisSize.min,
@@ -216,6 +231,7 @@ class _HomePageState extends State<HomePage> {
                                         FaIcon(
                                           IconRegistry.resolve(category.icon),
                                           size: 15.sp,
+                                          color: catColor,
                                         ),
                                         SizedBox(width: 5.sp),
                                         Text('${category.name}∙$count'),
@@ -235,7 +251,7 @@ class _HomePageState extends State<HomePage> {
                                       borderRadius: BorderRadius.circular(20),
                                       side: BorderSide(
                                         color: colors.border,
-                                        width: 2.0,
+                                        width: UiConstants.borderWidth,
                                       ),
                                     ),
                                   ),
@@ -244,14 +260,13 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
                         ),
-                        SizedBox(height: 5.sp),
+                        SizedBox(height: 2.sp),
                         Padding(
-                          padding: EdgeInsets.only(left: 10.sp, right: 10.sp),
+                          padding: EdgeInsets.symmetric(horizontal: 12.sp),
                           child: Row(
                             children: [
                               Text(
-                                '${_filteredGearItems.length} items \u2219 '
-                                '${_filteredGearItems.fold(0.0, (sum, item) => sum + item.weightGrams)} g total',
+                                '${_filteredGearItems.length} items \u2219 ${formatWeight(_totalGrams)} total',
                                 style: AppTextStyles.bodyMedium,
                               ),
                               Spacer(),
@@ -267,7 +282,7 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
                         ),
-                        SizedBox(height: 5.sp),
+                        SizedBox(height: 2.sp),
                         Expanded(
                           child: ListView.builder(
                             itemCount: _filteredGearItems.length,
@@ -276,12 +291,17 @@ class _HomePageState extends State<HomePage> {
                               final categoryIdx = _categories.indexWhere(
                                 (c) => c.id == item.categoryId,
                               );
-                              final iconKey = categoryIdx != -1
-                                  ? _categories[categoryIdx].icon
-                                  : 'box';
+                              final cat = categoryIdx != -1
+                                  ? _categories[categoryIdx]
+                                  : null;
+                              final iconKey = cat?.icon ?? 'box';
+                              final catColor = cat != null
+                                  ? AppColors.parseHex(cat.color)
+                                  : null;
                               return GearCard(
                                 gear: item,
                                 categoryIcon: iconKey,
+                                categoryColor: catColor,
                                 onGearUpdated: _loadGear,
                               );
                             },
@@ -328,7 +348,7 @@ class _SortButton extends StatelessWidget {
       icon: FaIcon(FontAwesomeIcons.arrowDownWideShort, size: 14.sp),
       label: Text(_label, style: TextStyle(fontSize: 12.sp)),
       style: OutlinedButton.styleFrom(
-        side: BorderSide(color: colors.border, width: 2.0),
+        side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
         backgroundColor: colors.surface,
         foregroundColor: colors.onSurface,
         padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 4.sp),

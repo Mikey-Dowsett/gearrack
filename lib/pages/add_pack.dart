@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:uuid/uuid.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_colors.dart';
+import '../theme/ui_constants.dart';
 import '../models/pack.dart';
 import '../models/gear_item.dart';
 import '../database/pack_dao.dart';
@@ -113,16 +114,25 @@ class _AddPackPageState extends State<AddPackPage> {
             filled: true,
             fillColor: colors.surface,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(color: colors.border, width: 2.0),
+              borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+              borderSide: BorderSide(
+                color: colors.border,
+                width: UiConstants.borderWidth,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(color: colors.border, width: 2.0),
+              borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+              borderSide: BorderSide(
+                color: colors.border,
+                width: UiConstants.borderWidth,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(color: colors.primary, width: 2.0),
+              borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+              borderSide: BorderSide(
+                color: colors.primary,
+                width: UiConstants.borderWidth,
+              ),
             ),
             contentPadding: EdgeInsets.symmetric(
               horizontal: 16.sp,
@@ -157,8 +167,11 @@ class _AddPackPageState extends State<AddPackPage> {
               padding: EdgeInsets.all(8.sp),
               decoration: BoxDecoration(
                 color: colors.surface,
-                borderRadius: BorderRadius.circular(10.0),
-                border: Border.all(color: colors.border, width: 2.0),
+                borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+                border: Border.all(
+                  color: colors.border,
+                  width: UiConstants.borderWidth,
+                ),
               ),
               child: _availableBags.isEmpty
                   ? Padding(
@@ -333,7 +346,10 @@ class _AddPackPageState extends State<AddPackPage> {
               Expanded(
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: colors.border, width: 2.0),
+                    side: BorderSide(
+                      color: colors.border,
+                      width: UiConstants.borderWidth,
+                    ),
                     backgroundColor: colors.surface,
                     foregroundColor: colors.onSurface,
                     minimumSize: Size.fromHeight(buttonHeight),

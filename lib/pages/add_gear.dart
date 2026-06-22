@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:uuid/uuid.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_colors.dart';
+import '../theme/ui_constants.dart';
 import '../models/category.dart';
 import '../models/condition.dart';
 import '../models/gear_item.dart';
@@ -175,16 +176,25 @@ class _AddGearPageState extends State<AddGearPage> {
             filled: true,
             fillColor: colors.surface,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(color: colors.border, width: 2.0),
+              borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+              borderSide: BorderSide(
+                color: colors.border,
+                width: UiConstants.borderWidth,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(color: colors.border, width: 2.0),
+              borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+              borderSide: BorderSide(
+                color: colors.border,
+                width: UiConstants.borderWidth,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(color: colors.primary, width: 2.0),
+              borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+              borderSide: BorderSide(
+                color: colors.primary,
+                width: UiConstants.borderWidth,
+              ),
             ),
             contentPadding: EdgeInsets.symmetric(
               horizontal: 16.sp,
@@ -232,10 +242,10 @@ class _AddGearPageState extends State<AddGearPage> {
               padding: EdgeInsets.all(8.sp),
               decoration: BoxDecoration(
                 color: colors.surface,
-                borderRadius: BorderRadius.circular(10.0),
+                borderRadius: BorderRadius.circular(UiConstants.borderRadius),
                 border: Border.all(
                   color: hasError ? colors.error : colors.border,
-                  width: 2.0,
+                  width: UiConstants.borderWidth,
                 ),
               ),
               child: _categories.isEmpty
@@ -254,11 +264,18 @@ class _AddGearPageState extends State<AddGearPage> {
                       children: _categories.map((c) {
                         final selected = field.value == c;
                         final icon = IconRegistry.resolve(c.icon);
+                        final catColor = AppColors.parseHex(c.color);
                         return ChoiceChip(
                           showCheckmark: false,
                           label: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              FaIcon(
+                                icon,
+                                size: 14.sp,
+                                color: selected ? colors.onPrimary : catColor,
+                              ),
+                              SizedBox(width: 6.sp),
                               Text(
                                 c.name,
                                 style: AppTextStyles.labelMedium.copyWith(
@@ -266,14 +283,6 @@ class _AddGearPageState extends State<AddGearPage> {
                                       ? colors.onPrimary
                                       : colors.onSurface,
                                 ),
-                              ),
-                              SizedBox(width: 6.sp),
-                              FaIcon(
-                                icon,
-                                size: 14.sp,
-                                color: selected
-                                    ? colors.onPrimary
-                                    : colors.onSurface,
                               ),
                             ],
                           ),
@@ -290,7 +299,7 @@ class _AddGearPageState extends State<AddGearPage> {
                             borderRadius: BorderRadius.circular(20),
                             side: BorderSide(
                               color: selected ? colors.primary : colors.border,
-                              width: 2.0,
+                              width: UiConstants.borderWidth,
                             ),
                           ),
                           padding: EdgeInsets.symmetric(
@@ -327,10 +336,10 @@ class _AddGearPageState extends State<AddGearPage> {
               padding: EdgeInsets.all(8.sp),
               decoration: BoxDecoration(
                 color: colors.surface,
-                borderRadius: BorderRadius.circular(10.0),
+                borderRadius: BorderRadius.circular(UiConstants.borderRadius),
                 border: Border.all(
                   color: hasError ? colors.error : colors.border,
-                  width: 2.0,
+                  width: UiConstants.borderWidth,
                 ),
               ),
               child: Wrap(
@@ -373,7 +382,7 @@ class _AddGearPageState extends State<AddGearPage> {
                       borderRadius: BorderRadius.circular(20),
                       side: BorderSide(
                         color: selected ? colors.primary : colors.border,
-                        width: 2.0,
+                        width: UiConstants.borderWidth,
                       ),
                     ),
                     padding: EdgeInsets.symmetric(
@@ -404,14 +413,17 @@ class _AddGearPageState extends State<AddGearPage> {
           padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 14.sp),
           decoration: BoxDecoration(
             color: colors.surface,
-            borderRadius: BorderRadius.circular(10.0),
-            border: Border.all(color: colors.border, width: 2.0),
+            borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+            border: Border.all(
+              color: colors.border,
+              width: UiConstants.borderWidth,
+            ),
           ),
           child: Row(
             children: [
               Expanded(
                 child: Text(
-                  'This is a backpack',
+                  'Backpack',
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: colors.onBackground,
                   ),
@@ -612,7 +624,10 @@ class _AddGearPageState extends State<AddGearPage> {
               Expanded(
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: colors.border, width: 2.0),
+                    side: BorderSide(
+                      color: colors.border,
+                      width: UiConstants.borderWidth,
+                    ),
                     backgroundColor: colors.surface,
                     foregroundColor: colors.onSurface,
                     minimumSize: Size.fromHeight(buttonHeight),

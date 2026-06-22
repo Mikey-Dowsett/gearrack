@@ -10,6 +10,7 @@ import '../theme/app_text_styles.dart';
 import '../widgets/info_card.dart';
 import '../utils/icon_registry.dart';
 import 'add_gear.dart';
+import '../utils/weight_formatter.dart';
 
 class GearPage extends StatefulWidget {
   final GearItem gear;
@@ -81,116 +82,116 @@ class _GearPageState extends State<GearPage> {
         backgroundColor: colors.background,
         actions: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.pen, size: 10.sp),
+            icon: FaIcon(FontAwesomeIcons.pen, size: 16.sp),
             onPressed: _navigateToEdit,
           ),
         ],
       ),
       body: SingleChildScrollView(
-              child: Column(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 160.h,
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
-                  SizedBox(
-                    height: 200.h,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: const Alignment(-0.9, -0.9),
-                              stops: [0.0, 0.5, 0.5, 1.0],
-                              colors: [
-                                colors.surfaceRaised,
-                                colors.surfaceRaised,
-                                colors.surfaceSunken,
-                                colors.surfaceSunken,
-                              ],
-                              tileMode: TileMode.repeated,
-                            ),
-                          ),
-                        ),
-                        FaIcon(
-                          IconRegistry.resolve(categoryIconKey),
-                          size: 75.sp,
-                          color: colors.primary,
-                        ),
-                      ],
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: const Alignment(-0.9, -0.9),
+                        stops: [0.0, 0.5, 0.5, 1.0],
+                        colors: [
+                          colors.surfaceRaised,
+                          colors.surfaceRaised,
+                          colors.surfaceSunken,
+                          colors.surfaceSunken,
+                        ],
+                        tileMode: TileMode.repeated,
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.all(8.sp),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        InfoCard(
-                          icon: FontAwesomeIcons.shop,
-                          title: gear.brand ?? 'No brand',
-                          value: gear.name,
-                        ),
-                        if (gear.isPack && gear.capacityLiters != null)
-                          InfoCard(
-                            icon: FontAwesomeIcons.boxOpen,
-                            title: 'Capacity',
-                            value:
-                                '${gear.capacityLiters!.toStringAsFixed(0)} L',
-                          ),
-                        Row(
-                          children: [
-                            Flexible(
-                              child: InfoCard(
-                                icon: FontAwesomeIcons.scaleBalanced,
-                                title: 'Weight',
-                                value:
-                                    '${gear.weightGrams.toStringAsFixed(0)} g',
-                              ),
-                            ),
-                            Flexible(
-                              child: InfoCard(
-                                icon: FontAwesomeIcons.tag,
-                                title: 'Price',
-                                value: gear.price != null
-                                    ? '\$${gear.price!.toStringAsFixed(2)}'
-                                    : '—',
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Flexible(
-                              child: InfoCard(
-                                icon: FontAwesomeIcons.box,
-                                title: 'Quantity',
-                                value: 'x${gear.quantity}',
-                              ),
-                            ),
-                            Flexible(
-                              child: InfoCard(
-                                icon: FontAwesomeIcons.clock,
-                                title: 'Age',
-                                value: '${age} yrs',
-                              ),
-                            ),
-                          ],
-                        ),
-                        InfoCard(
-                          icon: FontAwesomeIcons.certificate,
-                          title: 'Condition',
-                          value: gear.condition,
-                        ),
-                        if (gear.notes != null && gear.notes!.isNotEmpty)
-                          InfoCard(
-                            icon: FontAwesomeIcons.solidNoteSticky,
-                            title: 'Notes',
-                            value: gear.notes!,
-                          ),
-                      ],
-                    ),
+                  FaIcon(
+                    IconRegistry.resolve(categoryIconKey),
+                    size: 56.sp,
+                    color: _category != null
+                        ? AppColors.parseHex(_category!.color)
+                        : colors.primary,
                   ),
                 ],
               ),
             ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.sp, vertical: 4.sp),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  InfoCard(
+                    icon: FontAwesomeIcons.shop,
+                    title: gear.brand ?? 'No brand',
+                    value: gear.name,
+                  ),
+                  if (gear.isPack && gear.capacityLiters != null)
+                    InfoCard(
+                      icon: FontAwesomeIcons.boxOpen,
+                      title: 'Capacity',
+                      value: '${gear.capacityLiters!.toStringAsFixed(0)} L',
+                    ),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: InfoCard(
+                          icon: FontAwesomeIcons.scaleBalanced,
+                          title: 'Weight',
+                          value: formatWeight(gear.weightGrams),
+                        ),
+                      ),
+                      Flexible(
+                        child: InfoCard(
+                          icon: FontAwesomeIcons.tag,
+                          title: 'Price',
+                          value: gear.price != null
+                              ? '\$${gear.price!.toStringAsFixed(2)}'
+                              : '—',
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: InfoCard(
+                          icon: FontAwesomeIcons.box,
+                          title: 'Quantity',
+                          value: 'x${gear.quantity}',
+                        ),
+                      ),
+                      Flexible(
+                        child: InfoCard(
+                          icon: FontAwesomeIcons.clock,
+                          title: 'Age',
+                          value: '${age} yrs',
+                        ),
+                      ),
+                    ],
+                  ),
+                  InfoCard(
+                    icon: FontAwesomeIcons.certificate,
+                    title: 'Condition',
+                    value: gear.condition,
+                  ),
+                  if (gear.notes != null && gear.notes!.isNotEmpty)
+                    InfoCard(
+                      icon: FontAwesomeIcons.solidNoteSticky,
+                      title: 'Notes',
+                      value: gear.notes!,
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

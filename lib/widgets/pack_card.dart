@@ -3,7 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_colors.dart';
+import '../theme/ui_constants.dart';
 import '../models/pack.dart';
+import '../utils/weight_formatter.dart';
 
 class PackCard extends StatelessWidget {
   final Pack pack;
@@ -28,13 +30,14 @@ class PackCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
+    final _wp = formatWeightParts(totalWeightGrams);
 
     return Padding(
       padding: EdgeInsets.only(
-        right: 8.0.w,
-        left: 8.0.w,
-        top: 4.0.h,
-        bottom: 4.0.h,
+        right: 12.0.w,
+        left: 12.0.w,
+        top: 6.0.h,
+        bottom: 6.0.h,
       ),
       child: GestureDetector(
         onTap: onTap,
@@ -43,7 +46,10 @@ class PackCard extends StatelessWidget {
           elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0.sp),
-            side: BorderSide(color: colors.border, width: 2.0),
+            side: BorderSide(
+              color: colors.border,
+              width: UiConstants.borderWidth,
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -62,7 +68,7 @@ class PackCard extends StatelessWidget {
                     colors: [colors.primary, colors.accent],
                   ),
                 ),
-                padding: EdgeInsets.all(14.sp),
+                padding: EdgeInsets.all(12.sp),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -75,6 +81,7 @@ class PackCard extends StatelessWidget {
                             style: AppTextStyles.titleLarge.copyWith(
                               color: colors.onPrimary,
                             ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                           if (pack.description != null &&
                               pack.description!.isNotEmpty)
@@ -96,7 +103,7 @@ class PackCard extends StatelessWidget {
                                 children: [
                                   FaIcon(
                                     FontAwesomeIcons.suitcase,
-                                    size: 12.sp,
+                                    size: 14.sp,
                                     color: colors.onPrimary.withValues(
                                       alpha: 0.8,
                                     ),
@@ -120,19 +127,26 @@ class PackCard extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text(
-                          totalWeightGrams >= 1000
-                              ? '${(totalWeightGrams / 1000).toStringAsFixed(1)} kg'
-                              : '${totalWeightGrams.toStringAsFixed(0)} g',
-                          style: AppTextStyles.titleLarge.copyWith(
-                            color: colors.onPrimary,
-                          ),
-                        ),
-                        Text(
-                          totalWeightGrams >= 1000 ? '' : 'g',
-                          style: AppTextStyles.labelMedium.copyWith(
-                            color: colors.onPrimary.withValues(alpha: 0.8),
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              _wp.value +
+                                  (_wp.unit == 'kg' ? ' ' + _wp.unit : ''),
+                              style: AppTextStyles.titleLarge.copyWith(
+                                color: colors.onPrimary,
+                              ),
+                            ),
+                            if (_wp.unit == 'g')
+                              Text(
+                                _wp.unit,
+                                style: AppTextStyles.labelMedium.copyWith(
+                                  color: colors.onPrimary.withValues(
+                                    alpha: 0.8,
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ],
                     ),
@@ -141,12 +155,15 @@ class PackCard extends StatelessWidget {
               ),
               // Non-gradient bottom section
               Padding(
-                padding: EdgeInsets.all(12.sp),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 12.sp,
+                  vertical: 10.sp,
+                ),
                 child: Row(
                   children: [
                     FaIcon(
                       FontAwesomeIcons.box,
-                      size: 14.sp,
+                      size: 15.sp,
                       color: colors.textSecondary,
                     ),
                     SizedBox(width: 6.sp),
@@ -159,7 +176,7 @@ class PackCard extends StatelessWidget {
                     SizedBox(width: 16.sp),
                     FaIcon(
                       FontAwesomeIcons.boxOpen,
-                      size: 14.sp,
+                      size: 15.sp,
                       color: colors.textSecondary,
                     ),
                     SizedBox(width: 6.sp),

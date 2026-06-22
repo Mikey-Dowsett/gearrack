@@ -12,6 +12,8 @@ import '../database/gear_item_dao.dart';
 import '../database/category_dao.dart';
 import '../models/category.dart';
 import '../utils/icon_registry.dart';
+import '../theme/ui_constants.dart';
+import '../utils/weight_formatter.dart';
 
 class PackPage extends StatefulWidget {
   final Pack pack;
@@ -33,6 +35,14 @@ class _PackPageState extends State<PackPage>
   bool _isLoading = true;
   double _totalWeight = 0;
   GearItem? _bagGear;
+
+  int get _gearCount {
+    final itemCount = _packItems.fold<int>(
+      0,
+      (sum, pwg) => sum + pwg.packItem.quantityInPack,
+    );
+    return itemCount + (_bagGear != null ? 1 : 0);
+  }
 
   @override
   void initState() {
@@ -184,49 +194,103 @@ class _PackPageState extends State<PackPage>
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
+    final _totalWp = formatWeightParts(_totalWeight);
 
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
         title: Text(_pack.name, style: AppTextStyles.bodyLarge),
         backgroundColor: colors.background,
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: colors.primary,
-          labelColor: colors.primary,
-          unselectedLabelColor: colors.textSecondary,
-          tabs: const [
-            Tab(text: 'Build'),
-            Tab(text: 'Checklist'),
-          ],
-        ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
                 // Total weight
-                Padding(
+                Container(
+                  color: colors.primary,
                   padding: EdgeInsets.symmetric(
                     vertical: 16.sp,
                     horizontal: 16.sp,
                   ),
                   child: Column(
                     children: [
-                      Text(
-                        _totalWeight >= 1000
-                            ? '${(_totalWeight / 1000).toStringAsFixed(2)} kg'
-                            : '${_totalWeight.toStringAsFixed(0)} g',
-                        style: AppTextStyles.titleLarge.copyWith(
-                          fontSize: 28.sp,
-                          color: colors.textPrimary,
-                        ),
+                      Row(
+                        children: [
+                          Container(
+                            width: 25.sp,
+                            height: 25.sp,
+                            decoration: BoxDecoration(
+                              color: colors.primaryMuted,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(5.sp),
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: FaIcon(
+                              FontAwesomeIcons.clipboardList,
+                              size: 15.sp,
+                              color: colors.onPrimary,
+                            ),
+                          ),
+                          SizedBox(width: 5.sp),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "TOTAL PACK WEIGHT",
+                                style: AppTextStyles.labelMedium.copyWith(
+                                  color: colors.onPrimary,
+                                ),
+                              ),
+                              Text(
+                                "${_bagGear?.name} \u2219 ${_bagGear?.capacityLiters}",
+                                style: AppTextStyles.labelSmall.copyWith(
+                                  color: colors.onPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(
+                            _totalWp.value,
+                            style: AppTextStyles.titleLarge.copyWith(
+                              fontSize: 25.sp,
+                              color: colors.onPrimary,
+                            ),
+                          ),
+                          SizedBox(width: 2.sp),
+                          Text(
+                            _totalWp.unit,
+                            style: AppTextStyles.titleMedium.copyWith(
+                              color: colors.onPrimary,
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 8.sp),
                       // Progress bar by category
                       _buildWeightProgressBar(colors),
                     ],
                   ),
+                ),
+                // Tabs below weight
+                TabBar(
+                  controller: _tabController,
+                  indicatorColor: colors.primary,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelColor: colors.primary,
+                  unselectedLabelColor: colors.textSecondary,
+                  tabs: [
+                    Tab(text: 'Build \u2219 $_gearCount'),
+                    const Tab(text: 'Checklist'),
+                  ],
+                  labelStyle: AppTextStyles.bodyMedium,
                 ),
                 // Tab content
                 Expanded(
@@ -280,7 +344,7 @@ class _PackPageState extends State<PackPage>
   }
 
   Color _categoryColor(String hex) {
-    return parseCategoryColor(hex);
+    return AppColors.parseHex(hex);
   }
 
   Widget _buildBuildTab(AppColorPalette colors) {
@@ -352,10 +416,11 @@ class _PackPageState extends State<PackPage>
 
   Color _categoryColorById(String categoryId, Color fallback) {
     final cat = _categories.where((c) => c.id == categoryId).firstOrNull;
-    return cat != null ? parseCategoryColor(cat.color) : fallback;
+    return cat != null ? AppColors.parseHex(cat.color) : fallback;
   }
 
   Widget _buildBagCard(AppColorPalette colors, GearItem bag, String iconKey) {
+    final _bagWp = formatWeightParts(bag.weightGrams);
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 3.sp),
       child: Card.filled(
@@ -406,11 +471,17 @@ class _PackPageState extends State<PackPage>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      bag.weightGrams.toStringAsFixed(0),
-                      style: AppTextStyles.titleLarge.copyWith(fontSize: 13.sp),
+                    Column(
+                      children: [
+                        Text(
+                          _bagWp.value,
+                          style: AppTextStyles.titleLarge.copyWith(
+                            fontSize: 13.sp,
+                          ),
+                        ),
+                        Text(_bagWp.unit, style: AppTextStyles.bodySmall),
+                      ],
                     ),
-                    Text('g', style: AppTextStyles.bodySmall),
                   ],
                 ),
               ),
@@ -427,6 +498,7 @@ class _PackPageState extends State<PackPage>
     String iconKey,
     String packItemId,
   ) {
+    final _gwp = formatWeightParts(gear.weightGrams);
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 3.sp),
       child: Card.filled(
@@ -434,7 +506,10 @@ class _PackPageState extends State<PackPage>
         elevation: 1,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.sp),
-          side: BorderSide(color: colors.border, width: 1.5),
+          side: BorderSide(
+            color: colors.border,
+            width: UiConstants.borderWidth,
+          ),
         ),
         child: SizedBox(
           height: 56.sp,
@@ -477,11 +552,17 @@ class _PackPageState extends State<PackPage>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      gear.weightGrams.toStringAsFixed(0),
-                      style: AppTextStyles.titleLarge.copyWith(fontSize: 13.sp),
+                    Column(
+                      children: [
+                        Text(
+                          _gwp.value,
+                          style: AppTextStyles.titleLarge.copyWith(
+                            fontSize: 13.sp,
+                          ),
+                        ),
+                        Text(_gwp.unit, style: AppTextStyles.bodySmall),
+                      ],
                     ),
-                    Text('g', style: AppTextStyles.bodySmall),
                   ],
                 ),
               ),
@@ -566,7 +647,7 @@ class _AddGearBottomSheetState extends State<_AddGearBottomSheet> {
 
   Color _categoryColorById(String categoryId, Color fallback) {
     final cat = _categories.where((c) => c.id == categoryId).firstOrNull;
-    return cat != null ? parseCategoryColor(cat.color) : fallback;
+    return cat != null ? AppColors.parseHex(cat.color) : fallback;
   }
 
   @override
@@ -631,7 +712,7 @@ class _AddGearBottomSheetState extends State<_AddGearBottomSheet> {
                             ? Text(gear.brand!, style: AppTextStyles.bodySmall)
                             : null,
                         trailing: Text(
-                          '${gear.weightGrams.toStringAsFixed(0)} g',
+                          formatWeight(gear.weightGrams),
                           style: AppTextStyles.bodyMedium,
                         ),
                         onTap: () => widget.onGearSelected(gear.id),
@@ -644,11 +725,4 @@ class _AddGearBottomSheetState extends State<_AddGearBottomSheet> {
       ),
     );
   }
-}
-
-/// Parse a hex color string like `#385A41` or `385A41` into a Flutter [Color].
-Color parseCategoryColor(String hex) {
-  final stripped = hex.replaceFirst('#', '');
-  final fullHex = stripped.length == 6 ? 'FF$stripped' : stripped;
-  return Color(int.parse(fullHex, radix: 16));
 }

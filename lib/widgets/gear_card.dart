@@ -7,16 +7,20 @@ import '../pages/gear_page.dart';
 import '../models/gear_item.dart';
 import '../models/condition.dart';
 import '../utils/icon_registry.dart';
+import '../utils/weight_formatter.dart';
+import '../theme/ui_constants.dart';
 
 class GearCard extends StatelessWidget {
   final GearItem gear;
   final String categoryIcon;
+  final Color? categoryColor;
   final VoidCallback? onGearUpdated;
 
   const GearCard({
     super.key,
     required this.gear,
     required this.categoryIcon,
+    this.categoryColor,
     this.onGearUpdated,
   });
 
@@ -38,13 +42,14 @@ class GearCard extends StatelessWidget {
         : 'Retired';
 
     final icon = IconRegistry.resolve(categoryIcon);
+    final _wp = formatWeightParts(gear.weightGrams);
 
     return Padding(
       padding: EdgeInsets.only(
-        right: 8.0.w,
-        left: 8.0.w,
-        top: 4.0.h,
-        bottom: 4.0.h,
+        right: 12.0.w,
+        left: 12.0.w,
+        top: 6.0.h,
+        bottom: 6.0.h,
       ),
       child: GestureDetector(
         onTap: () async {
@@ -61,15 +66,18 @@ class GearCard extends StatelessWidget {
           elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0.sp),
-            side: BorderSide(color: colors.border, width: 2.0),
+            side: BorderSide(
+              color: colors.border,
+              width: UiConstants.borderWidth,
+            ),
           ),
           child: SizedBox(
-            height: 70.sp,
+            height: 72.sp,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(
-                  width: 50.sp,
+                  width: 52.sp,
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
@@ -93,12 +101,16 @@ class GearCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      FaIcon(icon, size: 25.sp, color: colors.primary),
+                      FaIcon(
+                        icon,
+                        size: 22.sp,
+                        color: categoryColor ?? colors.primary,
+                      ),
                     ],
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(left: 8.w),
+                  padding: EdgeInsets.only(left: 8.w, right: 4.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -106,7 +118,7 @@ class GearCard extends StatelessWidget {
                       Text(gear.name, style: AppTextStyles.titleLarge),
                       if (gear.brand != null)
                         Text(gear.brand!, style: AppTextStyles.bodyMedium),
-                      SizedBox(height: 8.sp),
+                      SizedBox(height: 4.sp),
                       Row(
                         children: [
                           Padding(
@@ -124,22 +136,23 @@ class GearCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 VerticalDivider(
-                  width: 20,
-                  thickness: 2,
+                  width: 20.w,
+                  thickness: 2.w,
                   indent: 0,
                   endIndent: 0,
                   color: colors.borderStrong,
                 ),
                 Padding(
-                  padding: EdgeInsets.only(left: 8.w, right: 16.w),
+                  padding: EdgeInsets.only(left: 8.w, right: 12.w),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        gear.weightGrams.toStringAsFixed(0),
-                        style: AppTextStyles.titleLarge,
+                      Column(
+                        children: [
+                          Text(_wp.value, style: AppTextStyles.titleLarge),
+                          Text(_wp.unit, style: AppTextStyles.bodyMedium),
+                        ],
                       ),
-                      Text('g', style: AppTextStyles.bodyMedium),
                     ],
                   ),
                 ),

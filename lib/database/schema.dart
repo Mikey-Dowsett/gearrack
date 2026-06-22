@@ -164,99 +164,99 @@ class Schema {
     final uuid = Uuid();
 
     final defaultCategories = [
-      Category(id: uuid.v4(), name: 'Shelter', icon: 'tent', color: '#385A41'),
+      Category(id: uuid.v4(), name: 'Shelter', icon: 'tent', color: '#7DAF85'),
       Category(
         id: uuid.v4(),
         name: 'Sleep System',
         icon: 'bed',
-        color: '#2E5077',
+        color: '#7AA8C8',
       ),
       Category(
         id: uuid.v4(),
         name: 'Clothing',
         icon: 'shirt',
-        color: '#AE6739',
+        color: '#D4A07A',
       ),
       Category(
         id: uuid.v4(),
         name: 'Footwear',
         icon: 'shoe-prints',
-        color: '#5C4A3E',
+        color: '#B89878',
       ),
       Category(
         id: uuid.v4(),
         name: 'Navigation',
         icon: 'compass',
-        color: '#4A7C59',
+        color: '#A8BA8A',
       ),
       Category(
         id: uuid.v4(),
         name: 'Lighting',
         icon: 'lightbulb',
-        color: '#CA933E',
+        color: '#E0C080',
       ),
-      Category(id: uuid.v4(), name: 'Cooking', icon: 'fire', color: '#B84A3F'),
+      Category(id: uuid.v4(), name: 'Cooking', icon: 'fire', color: '#D48A7A'),
       Category(
         id: uuid.v4(),
         name: 'Food & Water',
         icon: 'utensils',
-        color: '#3A714B',
+        color: '#7AAD85',
       ),
       Category(
         id: uuid.v4(),
         name: 'First Aid',
         icon: 'first-aid',
-        color: '#B83A3A',
+        color: '#D48A8A',
       ),
       Category(
         id: uuid.v4(),
         name: 'Tools & Repair',
         icon: 'wrench',
-        color: '#6B6B6B',
+        color: '#A8A898',
       ),
       Category(
         id: uuid.v4(),
         name: 'Electronics',
         icon: 'plug',
-        color: '#3A5A8C',
+        color: '#8AAAC8',
       ),
       Category(
         id: uuid.v4(),
         name: 'Packs & Bags',
         icon: 'person-hiking',
-        color: '#4A6B4A',
+        color: '#8ABA8A',
       ),
       Category(
         id: uuid.v4(),
         name: 'Climbing',
         icon: 'mountain',
-        color: '#8B6040',
+        color: '#B8A078',
       ),
       Category(
         id: uuid.v4(),
         name: 'Snow Sports',
         icon: 'snowflake',
-        color: '#4A7B9C',
+        color: '#98BCC8',
       ),
       Category(
         id: uuid.v4(),
         name: 'Water Sports',
         icon: 'water',
-        color: '#2A6B8C',
+        color: '#78A8B8',
       ),
-      Category(id: uuid.v4(), name: 'Hygiene', icon: 'soap', color: '#7A9C7A'),
-      Category(id: uuid.v4(), name: 'Safety', icon: 'shield', color: '#C84A3F'),
+      Category(id: uuid.v4(), name: 'Hygiene', icon: 'soap', color: '#A0C8A0'),
+      Category(id: uuid.v4(), name: 'Safety', icon: 'shield', color: '#D4A878'),
       Category(
         id: uuid.v4(),
         name: 'Miscellaneous',
         icon: 'ellipsis',
-        color: '#6B7A8C',
+        color: '#A0A0B0',
       ),
     ];
 
     final batch = db.batch();
     for (final cat in defaultCategories) {
-      batch.insert('categories', cat.toMap());
+      batch.insert('categories', {...cat.toMap(), 'is_default': 1});
     }
     await batch.commit(noResult: true);
   }

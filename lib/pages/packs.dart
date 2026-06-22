@@ -106,7 +106,7 @@ class _PacksPageState extends State<PacksPage> {
       body: Column(
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 16.sp, top: 16.sp, bottom: 8.sp),
+            padding: EdgeInsets.only(left: 12.sp, top: 12.sp, bottom: 8.sp),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Row(

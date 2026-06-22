@@ -23,10 +23,9 @@ void main() async {
   // Initialize the database before running the app.
   await DatabaseHelper.instance.database;
 
-  SystemChrome.setEnabledSystemUIMode(
-    SystemUiMode.immersiveSticky,
-    overlays: [SystemUiOverlay.top],
-  );
+  // Use edge-to-edge so system UI (status/navigation bars) remain visible
+  // and the app can respect device safe areas (camera cutouts / notches).
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   runApp(
     ScreenUtilInit(
@@ -69,21 +68,32 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
-      body: IndexedStack(index: _selectedIndex, children: _pages),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: FaIcon(FontAwesomeIcons.tent),
-            label: 'Gear',
-          ),
-          BottomNavigationBarItem(
-            icon: FaIcon(FontAwesomeIcons.suitcase),
-            label: 'Packs',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: colors.primary,
-        onTap: _onItemTapped,
+      body: SafeArea(
+        top: true,
+        bottom: false,
+        child: IndexedStack(index: _selectedIndex, children: _pages),
+      ),
+      // Wrap the BottomNavigationBar in a SafeArea so it won't overlap
+      // device navigation bars / gesture areas on phones with cutouts.
+      bottomNavigationBar: SafeArea(
+        left: false,
+        right: false,
+        bottom: true,
+        child: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: FaIcon(FontAwesomeIcons.tent),
+              label: 'Gear',
+            ),
+            BottomNavigationBarItem(
+              icon: FaIcon(FontAwesomeIcons.suitcase),
+              label: 'Packs',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: colors.primary,
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }
