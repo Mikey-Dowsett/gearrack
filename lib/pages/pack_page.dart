@@ -290,7 +290,9 @@ class _PackPageState extends State<PackPage>
                             decoration: BoxDecoration(
                               color: colors.primaryMuted,
                               borderRadius: BorderRadius.all(
-                                Radius.circular(5.sp),
+                                Radius.circular(
+                                  UiConstants.compactCardRadius.sp,
+                                ),
                               ),
                             ),
                             alignment: Alignment.center,
@@ -389,17 +391,11 @@ class _PackPageState extends State<PackPage>
 
   Widget _buildWeightProgressBar(AppColorPalette colors) {
     if (_categoryWeights.isEmpty || _totalWeight == 0) {
-      return Container(
-        height: 12.sp,
-        decoration: BoxDecoration(
-          color: colors.surfaceSunken,
-          borderRadius: BorderRadius.circular(6.sp),
-        ),
-      );
+      return Container(height: 12.sp, decoration: BoxDecoration());
     }
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(6.sp),
+      borderRadius: BorderRadius.circular(UiConstants.compactCardRadius.sp),
       child: SizedBox(
         height: 12.sp,
         child: Row(
@@ -475,7 +471,9 @@ class _PackPageState extends State<PackPage>
                   foregroundColor: colors.onPrimary,
                   padding: EdgeInsets.symmetric(vertical: 14.sp),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.sp),
+                    borderRadius: BorderRadius.circular(
+                      UiConstants.buttonRadius.sp,
+                    ),
                   ),
                 ),
               ),

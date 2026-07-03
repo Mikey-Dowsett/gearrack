@@ -231,10 +231,12 @@ class _AddPackPageState extends State<AddPackPage> {
                           backgroundColor: colors.surface,
                           selectedColor: colors.primary,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(
+                              UiConstants.chipRadius.sp,
+                            ),
                             side: BorderSide(
                               color: selected ? colors.primary : colors.border,
-                              width: 2.0,
+                              width: UiConstants.borderWidth,
                             ),
                           ),
                           padding: EdgeInsets.symmetric(
@@ -300,7 +302,7 @@ class _AddPackPageState extends State<AddPackPage> {
       appBar: AppBar(
         title: Text(
           widget.pack != null ? 'Edit Pack' : 'New Pack',
-          style: AppTextStyles.bodyMedium,
+          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
         ),
         backgroundColor: colors.background,
         elevation: 0,
@@ -378,7 +380,9 @@ class _AddPackPageState extends State<AddPackPage> {
                     minimumSize: Size.fromHeight(buttonHeight),
                     padding: EdgeInsets.symmetric(vertical: 0.sp),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.sp),
+                      borderRadius: BorderRadius.circular(
+                        UiConstants.buttonRadius.sp,
+                      ),
                     ),
                   ),
                   onPressed: _savePack,

@@ -34,18 +34,18 @@ class PackCard extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.only(
-        right: 12.0.w,
-        left: 12.0.w,
-        top: 6.0.h,
-        bottom: 6.0.h,
+        right: UiConstants.spacingM.sp,
+        left: UiConstants.spacingM.sp,
+        top: UiConstants.spacingXS.sp,
+        bottom: UiConstants.spacingXS.sp,
       ),
       child: GestureDetector(
         onTap: onTap,
         child: Card.filled(
           color: colors.surface,
-          elevation: 2,
+          elevation: UiConstants.cardElevation,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0.sp),
+            borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
             side: BorderSide(
               color: colors.border,
               width: UiConstants.borderWidth,
@@ -59,8 +59,8 @@ class PackCard extends StatelessWidget {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10.sp),
-                    topRight: Radius.circular(10.sp),
+                    topLeft: Radius.circular(UiConstants.cardRadius.sp),
+                    topRight: Radius.circular(UiConstants.cardRadius.sp),
                   ),
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
@@ -86,7 +86,9 @@ class PackCard extends StatelessWidget {
                           if (pack.description != null &&
                               pack.description!.isNotEmpty)
                             Padding(
-                              padding: EdgeInsets.only(top: 4.sp),
+                              padding: EdgeInsets.only(
+                                top: UiConstants.spacingXS.sp,
+                              ),
                               child: Text(
                                 pack.description!,
                                 style: AppTextStyles.bodyMedium.copyWith(
@@ -98,7 +100,9 @@ class PackCard extends StatelessWidget {
                             ),
                           if (bagName != null && bagName!.isNotEmpty)
                             Padding(
-                              padding: EdgeInsets.only(top: 4.sp),
+                              padding: EdgeInsets.only(
+                                top: UiConstants.spacingXS.sp,
+                              ),
                               child: Row(
                                 children: [
                                   FaIcon(
@@ -123,7 +127,7 @@ class PackCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(width: 8.sp),
+                    SizedBox(width: UiConstants.spacingS.sp),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [

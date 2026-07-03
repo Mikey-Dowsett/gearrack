@@ -296,7 +296,9 @@ class _AddGearPageState extends State<AddGearPage> {
                           backgroundColor: colors.surface,
                           selectedColor: colors.primary,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(
+                              UiConstants.chipRadius.sp,
+                            ),
                             side: BorderSide(
                               color: selected ? colors.primary : colors.border,
                               width: UiConstants.borderWidth,
@@ -379,7 +381,9 @@ class _AddGearPageState extends State<AddGearPage> {
                     backgroundColor: colors.surface,
                     selectedColor: colors.primary,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(
+                        UiConstants.chipRadius.sp,
+                      ),
                       side: BorderSide(
                         color: selected ? colors.primary : colors.border,
                         width: UiConstants.borderWidth,
@@ -522,7 +526,7 @@ class _AddGearPageState extends State<AddGearPage> {
       appBar: AppBar(
         title: Text(
           widget.gear != null ? 'Edit Gear' : 'Add Gear',
-          style: AppTextStyles.bodyMedium,
+          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
         ),
         backgroundColor: colors.background,
         elevation: 0,
@@ -658,7 +662,9 @@ class _AddGearPageState extends State<AddGearPage> {
                     minimumSize: Size.fromHeight(buttonHeight),
                     padding: EdgeInsets.symmetric(vertical: 0.sp),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.sp),
+                      borderRadius: BorderRadius.circular(
+                        UiConstants.buttonRadius.sp,
+                      ),
                     ),
                   ),
                   onPressed: _saveGear,

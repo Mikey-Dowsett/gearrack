@@ -126,11 +126,23 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text('My Inventory', style: AppTextStyles.titleLarge),
-                  Text(' \u2022 ', style: AppTextStyles.bodyMedium),
+                  Text(
+                    'My Inventory',
+                    style: AppTextStyles.titleLarge.copyWith(
+                      color: colors.onBackground,
+                    ),
+                  ),
+                  Text(
+                    ' • ',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: colors.onBackground,
+                    ),
+                  ),
                   Text(
                     '${_gearItems.length} item${_gearItems.length != 1 ? 's' : ''} tracked',
-                    style: AppTextStyles.bodyMedium,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: colors.onBackground,
+                    ),
                   ),
                 ],
               ),
@@ -144,12 +156,19 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('No gear yet', style: AppTextStyles.bodyMedium),
+                        Text(
+                          'No gear yet',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: colors.onBackground,
+                          ),
+                        ),
 
                         const SizedBox(height: 8),
                         Text(
                           'Tap + to add your first item',
-                          style: AppTextStyles.bodySmall,
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: colors.textSecondary,
+                          ),
                         ),
                       ],
                     ),
@@ -190,7 +209,9 @@ class _HomePageState extends State<HomePage> {
                               _searchQuery = value;
                               _applyFilters();
                             },
-                            style: AppTextStyles.bodyMedium,
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: colors.onSurface,
+                            ),
                           ),
                         ),
                         SizedBox(
@@ -236,7 +257,9 @@ class _HomePageState extends State<HomePage> {
                                           size: 15.sp,
                                           color: catColor,
                                         ),
-                                        SizedBox(width: 5.sp),
+                                        SizedBox(
+                                          width: UiConstants.spacingXS.sp,
+                                        ),
                                         Text('${category.name}∙$count'),
                                       ],
                                     ),
@@ -271,8 +294,10 @@ class _HomePageState extends State<HomePage> {
                           child: Row(
                             children: [
                               Text(
-                                '${_filteredGearItems.length} items \u2219 ${formatWeight(_totalGrams)} total',
-                                style: AppTextStyles.bodyMedium,
+                                '${_filteredGearItems.length} items ∙ ${formatWeight(_totalGrams)} total',
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: colors.onBackground,
+                                ),
                               ),
                               Spacer(),
                               _SortButton(

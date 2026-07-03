@@ -94,7 +94,7 @@ class _GearPageState extends State<GearPage> {
       appBar: AppBar(
         title: Text(
           _isLoadingCategory ? 'Loading...' : categoryName,
-          style: AppTextStyles.bodyLarge,
+          style: AppTextStyles.bodyLarge.copyWith(color: colors.onBackground),
         ),
         backgroundColor: colors.background,
         actions: [

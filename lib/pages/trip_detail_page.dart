@@ -146,7 +146,7 @@ class _TripDetailPageState extends State<TripDetailPage> {
       appBar: AppBar(
         title: Text(
           _trip?.name ?? 'Trip Detail',
-          style: AppTextStyles.bodyLarge,
+          style: AppTextStyles.bodyLarge.copyWith(color: colors.onBackground),
         ),
         backgroundColor: colors.background,
         actions: [
@@ -164,7 +164,12 @@ class _TripDetailPageState extends State<TripDetailPage> {
           ? const Center(child: CircularProgressIndicator())
           : _trip == null
           ? Center(
-              child: Text('Trip not found', style: AppTextStyles.bodyMedium),
+              child: Text(
+                'Trip not found',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: colors.onBackground,
+                ),
+              ),
             )
           : SingleChildScrollView(
               child: Column(
@@ -226,7 +231,9 @@ class _TripDetailPageState extends State<TripDetailPage> {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'Items Taken (${_items.length})',
-                        style: AppTextStyles.titleMedium,
+                        style: AppTextStyles.titleMedium.copyWith(
+                          color: colors.onBackground,
+                        ),
                       ),
                     ),
                   ),
@@ -264,7 +271,9 @@ class _TripDetailPageState extends State<TripDetailPage> {
                 height: 25.sp,
                 decoration: BoxDecoration(
                   color: colors.primaryMuted,
-                  borderRadius: BorderRadius.all(Radius.circular(5.sp)),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(UiConstants.compactCardRadius.sp),
+                  ),
                 ),
                 alignment: Alignment.center,
                 child: FaIcon(
@@ -316,13 +325,13 @@ class _TripDetailPageState extends State<TripDetailPage> {
         height: 12.sp,
         decoration: BoxDecoration(
           color: colors.surfaceSunken,
-          borderRadius: BorderRadius.circular(6.sp),
+          borderRadius: BorderRadius.circular(UiConstants.compactCardRadius.sp),
         ),
       );
     }
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(6.sp),
+      borderRadius: BorderRadius.circular(UiConstants.compactCardRadius.sp),
       child: SizedBox(
         height: 12.sp,
         child: Row(

@@ -446,7 +446,7 @@ class _LogTripPageState extends State<LogTripPage> {
           _isEditing
               ? 'Edit Trip'
               : (_isFromPack ? 'Log Trip from Pack' : 'Log Trip'),
-          style: AppTextStyles.bodyMedium,
+          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
         ),
         backgroundColor: colors.background,
         elevation: 0,
@@ -565,7 +565,9 @@ class _LogTripPageState extends State<LogTripPage> {
                           minimumSize: Size.fromHeight(buttonHeight),
                           padding: EdgeInsets.symmetric(vertical: 0.sp),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.sp),
+                            borderRadius: BorderRadius.circular(
+                              UiConstants.buttonRadius.sp,
+                            ),
                           ),
                         ),
                         onPressed: _isSaving ? null : _saveTrip,
@@ -652,7 +654,7 @@ class _LogTripPageState extends State<LogTripPage> {
                       backgroundColor: colors.surface,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
-                          UiConstants.chipRadius,
+                          UiConstants.chipRadius.sp,
                         ),
                         side: BorderSide(
                           color: _selectedPack == null
@@ -697,7 +699,7 @@ class _LogTripPageState extends State<LogTripPage> {
                         backgroundColor: colors.surface,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
-                            UiConstants.chipRadius,
+                            UiConstants.chipRadius.sp,
                           ),
                           side: BorderSide(
                             color: selected ? colors.primary : colors.border,
@@ -755,7 +757,7 @@ class _LogTripPageState extends State<LogTripPage> {
               selectedColor: colors.primary,
               backgroundColor: colors.surface,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(UiConstants.chipRadius),
+                borderRadius: BorderRadius.circular(UiConstants.chipRadius.sp),
                 side: BorderSide(
                   color: selected ? colors.primary : colors.border,
                   width: UiConstants.borderWidth,
@@ -876,7 +878,7 @@ class _LogTripPageState extends State<LogTripPage> {
               selectedColor: colors.primary,
               backgroundColor: colors.surface,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(UiConstants.chipRadius),
+                borderRadius: BorderRadius.circular(UiConstants.chipRadius.sp),
                 side: BorderSide(
                   color: _isMultiDay ? colors.primary : colors.border,
                   width: UiConstants.borderWidth,
@@ -947,7 +949,9 @@ class _LogTripPageState extends State<LogTripPage> {
                 color: c.isSelected ? colors.surface : colors.surfaceSunken,
                 elevation: 1,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.sp),
+                  borderRadius: BorderRadius.circular(
+                    UiConstants.compactCardRadius.sp,
+                  ),
                   side: BorderSide(
                     color: c.isSelected ? colors.border : colors.borderStrong,
                     width: UiConstants.borderWidth,

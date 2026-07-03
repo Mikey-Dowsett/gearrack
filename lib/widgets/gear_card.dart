@@ -46,10 +46,10 @@ class GearCard extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.only(
-        right: 12.0.w,
-        left: 12.0.w,
-        top: 6.0.h,
-        bottom: 6.0.h,
+        right: UiConstants.spacingM.sp,
+        left: UiConstants.spacingM.sp,
+        top: UiConstants.spacingXS.sp,
+        bottom: UiConstants.spacingXS.sp,
       ),
       child: GestureDetector(
         onTap: () async {
@@ -63,9 +63,9 @@ class GearCard extends StatelessWidget {
         },
         child: Card.filled(
           color: colors.surface,
-          elevation: 2,
+          elevation: UiConstants.cardElevation,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0.sp),
+            borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
             side: BorderSide(
               color: colors.border,
               width: UiConstants.borderWidth,
@@ -110,14 +110,27 @@ class GearCard extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(left: 8.w, right: 4.w),
+                  padding: EdgeInsets.only(
+                    left: UiConstants.spacingS.sp,
+                    right: UiConstants.spacingXS.sp,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(gear.name, style: AppTextStyles.titleLarge),
+                      Text(
+                        gear.name,
+                        style: AppTextStyles.titleLarge.copyWith(
+                          color: colors.onSurface,
+                        ),
+                      ),
                       if (gear.brand != null)
-                        Text(gear.brand!, style: AppTextStyles.bodyMedium),
+                        Text(
+                          gear.brand!,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: colors.onSurface,
+                          ),
+                        ),
                       SizedBox(height: 4.sp),
                       Row(
                         children: [
@@ -128,7 +141,12 @@ class GearCard extends StatelessWidget {
                               radius: 5.0.sp,
                             ),
                           ),
-                          Text(conditionText, style: AppTextStyles.labelMedium),
+                          Text(
+                            conditionText,
+                            style: AppTextStyles.labelMedium.copyWith(
+                              color: colors.onSurface,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -136,8 +154,8 @@ class GearCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 VerticalDivider(
-                  width: 20.w,
-                  thickness: 2.w,
+                  width: 20.sp,
+                  thickness: UiConstants.borderWidth,
                   indent: 0,
                   endIndent: 0,
                   color: colors.borderStrong,
@@ -149,8 +167,18 @@ class GearCard extends StatelessWidget {
                     children: [
                       Column(
                         children: [
-                          Text(_wp.value, style: AppTextStyles.titleLarge),
-                          Text(_wp.unit, style: AppTextStyles.bodyMedium),
+                          Text(
+                            _wp.value,
+                            style: AppTextStyles.titleLarge.copyWith(
+                              color: colors.onSurface,
+                            ),
+                          ),
+                          Text(
+                            _wp.unit,
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: colors.onSurface,
+                            ),
+                          ),
                         ],
                       ),
                     ],

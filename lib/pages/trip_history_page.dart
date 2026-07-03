@@ -122,11 +122,18 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text('Trip History', style: AppTextStyles.titleLarge),
+                  Text(
+                    'Trip History',
+                    style: AppTextStyles.titleLarge.copyWith(
+                      color: colors.onBackground,
+                    ),
+                  ),
                   const SizedBox(width: 8),
                   Text(
-                    '\u2022 ${_trips.length} trip${_trips.length != 1 ? 's' : ''}',
-                    style: AppTextStyles.bodyMedium,
+                    '• ${_trips.length} trip${_trips.length != 1 ? 's' : ''}',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: colors.onBackground,
+                    ),
                   ),
                 ],
               ),
@@ -142,12 +149,16 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                       children: [
                         Text(
                           'No trips logged yet',
-                          style: AppTextStyles.bodyMedium,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: colors.onBackground,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'Tap + to log your first trip',
-                          style: AppTextStyles.bodySmall,
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: colors.textSecondary,
+                          ),
                         ),
                       ],
                     ),
@@ -180,7 +191,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                               elevation: 2,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(
-                                  UiConstants.cardRadius,
+                                  UiConstants.cardRadius.sp,
                                 ),
                                 side: BorderSide(
                                   color: colors.border,
@@ -196,10 +207,10 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.only(
                                         topLeft: Radius.circular(
-                                          UiConstants.cardRadius,
+                                          UiConstants.cardRadius.sp,
                                         ),
                                         topRight: Radius.circular(
-                                          UiConstants.cardRadius,
+                                          UiConstants.cardRadius.sp,
                                         ),
                                       ),
                                       gradient: LinearGradient(

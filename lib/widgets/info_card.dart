@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
 import '../theme/ui_constants.dart';
 
 class InfoCard extends StatelessWidget {
@@ -20,18 +21,15 @@ class InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
 
-    return Card(
+    return Card.filled(
       color: colors.surface,
-      elevation: 2,
+      elevation: UiConstants.cardElevation,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.sp),
-        side: BorderSide(
-          color: colors.border, // Border color
-          width: UiConstants.borderWidth, // Border width
-        ),
+        borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
+        side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
       ),
       child: Padding(
-        padding: EdgeInsets.all(10.sp),
+        padding: EdgeInsets.all(UiConstants.spacingM.sp),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,29 +38,22 @@ class InfoCard extends StatelessWidget {
               children: [
                 FaIcon(
                   icon as FaIconData,
-                  size: 16.sp,
+                  size: UiConstants.iconMedium.sp,
                   color: colors.onSurface,
                 ),
-                const SizedBox(width: 4),
+                SizedBox(width: UiConstants.spacingXS.sp),
                 Text(
                   title,
-                  style: TextStyle(
+                  style: AppTextStyles.bodySmall.copyWith(
                     color: colors.onSurface,
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 0.5,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 6.sp),
+            SizedBox(height: UiConstants.spacingS.sp),
             Text(
               value,
-              style: TextStyle(
-                color: colors.onSurface,
-                fontSize: 18.sp,
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppTextStyles.titleLarge.copyWith(color: colors.onSurface),
             ),
           ],
         ),

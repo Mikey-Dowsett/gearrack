@@ -112,11 +112,18 @@ class _PacksPageState extends State<PacksPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text('My Packs', style: AppTextStyles.titleLarge),
+                  Text(
+                    'My Packs',
+                    style: AppTextStyles.titleLarge.copyWith(
+                      color: colors.onBackground,
+                    ),
+                  ),
                   const SizedBox(width: 8),
                   Text(
-                    '\u2022 ${_packs.length} pack${_packs.length != 1 ? 's' : ''}',
-                    style: AppTextStyles.bodyMedium,
+                    '• ${_packs.length} pack${_packs.length != 1 ? 's' : ''}',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: colors.onBackground,
+                    ),
                   ),
                 ],
               ),
@@ -130,11 +137,18 @@ class _PacksPageState extends State<PacksPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('No packs yet', style: AppTextStyles.bodyMedium),
+                        Text(
+                          'No packs yet',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: colors.onBackground,
+                          ),
+                        ),
                         const SizedBox(height: 8),
                         Text(
                           'Tap + to build your first pack',
-                          style: AppTextStyles.bodySmall,
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: colors.textSecondary,
+                          ),
                         ),
                       ],
                     ),

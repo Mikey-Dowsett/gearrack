@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:gearrack/pages/home_page.dart';
 import 'package:gearrack/pages/packs_page.dart';
 import 'package:gearrack/pages/trip_history_page.dart';
+import 'package:gearrack/theme/app_colors.dart';
 import 'package:gearrack/theme/app_theme.dart';
 import 'package:gearrack/database/database_helper.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -70,7 +71,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final colors = AppColors.of(context);
 
     return Scaffold(
       body: SafeArea(
@@ -85,6 +86,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         right: false,
         bottom: true,
         child: BottomNavigationBar(
+          backgroundColor: colors.surfaceRaised,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: FaIcon(FontAwesomeIcons.tent),
@@ -101,6 +103,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ],
           currentIndex: _selectedIndex,
           selectedItemColor: colors.primary,
+          unselectedItemColor: colors.textSecondary,
+          showUnselectedLabels: true,
           onTap: _onItemTapped,
         ),
       ),
