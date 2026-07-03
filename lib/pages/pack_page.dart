@@ -543,14 +543,9 @@ class _PackPageState extends State<PackPage>
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.compactCardRadius.sp),
+          side: BorderSide(color: colors.primary, width: UiConstants.borderWidth),
         ),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: colors.primary.withValues(alpha: 0.3), width: 1),
-            ),
-          ),
-          child: Column(
+        child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
@@ -613,7 +608,6 @@ class _PackPageState extends State<PackPage>
               ),
             ],
           ),
-        ),
       ),
     );
   }
@@ -633,14 +627,9 @@ class _PackPageState extends State<PackPage>
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.compactCardRadius.sp),
+          side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
         ),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: colors.border, width: 1),
-            ),
-          ),
-          child: Column(
+        child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
@@ -720,7 +709,6 @@ class _PackPageState extends State<PackPage>
               ),
             ],
           ),
-        ),
       ),
     );
   }

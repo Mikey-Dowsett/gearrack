@@ -164,11 +164,27 @@ All values defined in `UiConstants`. Apply with `.sp`.
 | `compactCardRadius` | **4.0** | Compact row cards (pack build items, trip detail items) |
 | `chipRadius` | 20.0 | ChoiceChips, FilterChips |
 | `buttonRadius` | **6.0** | Elevated, Outlined, Text buttons |
-| `borderWidth` | 2.0 | All component borders |
+| `borderWidth` | **1.5** | All component borders |
 
 Radii are varied by purpose to create visual rhythm — they are not all the same value.
 
 > ⚠️ **Do not use off-token radii.** `BorderRadius.circular(5)` and raw values without `.sp` are violations.
+
+### 5.1 Notebook-outline standard
+
+All bordered components share a **full outline** style — a 1.5px `colors.border` stroke around the entire element, using the component's designated radius. This creates a unified field-notebook / sketchbook feel where every element is framed by a deliberate pencil-stroke-weight outline.
+
+| Component | Border style | Exception |
+|-----------|-------------|-----------|
+| Cards | Full outline on `Card.filled.shape` side | Bag cards use `colors.primary` border instead of `colors.border` |
+| Inputs | `OutlineInputBorder` (not `UnderlineInputBorder`) | Focused state uses `colors.primary` border |
+| Chips | Border side on chip `shape` | Selected state uses `colors.primary` fill (border stays `colors.border`) |
+| Elevated buttons | Full outline on `shape` side | Same `colors.border` as all other components |
+| Outlined buttons | Full outline on `shape` side | Same width/color as Elevated |
+| Text buttons | No border | Text-only, no container |
+| Profile containers | Full `Border.all` on `BoxDecoration` | Same as cards |
+
+**No component uses `UnderlineInputBorder` or an inner bottom-only border.** Every bordered element has a full outline.
 
 ---
 
@@ -261,19 +277,21 @@ Card.filled(
   elevation: UiConstants.cardElevation,  // 0.0
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),  // 8.sp
-    side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
+    side: BorderSide(color: colors.border, width: UiConstants.borderWidth),  // 1.5px
   ),
   // ...
 )
 ```
 
 **Variants:**
-- **Default card** — surface bg, 2px border, 8px radius, elevation 0.
-- **Bag card (in pack detail)** — `primaryContainer` bg, `primary` 1.5px border, elevation 0.
+- **Default card** — surface bg, 1.5px `colors.border` outline, 8px radius, elevation 0.
+- **Bag card (in pack detail)** — `primaryContainer` bg, `primary` 1.5px outline, elevation 0.
 - **Gradient-header cards** — PackCard & trip cards use a `primary→accent` gradient header for visual hierarchy.
-- **Compact row card** — surface bg, 2px border, 4px radius, elevation 0.
+- **Compact row card** — surface bg, 1.5px `colors.border` outline, 4px radius, elevation 0.
 
 ### 9.2 Input fields
+
+Inputs use `OutlineInputBorder` (full outline) instead of `UnderlineInputBorder` — consistent with the notebook-outline standard (§5.1).
 
 ```dart
 TextFormField(
@@ -289,18 +307,17 @@ TextFormField(
 )
 ```
 
-The `InputDecorationTheme` in `AppTheme` provides default border, radius (6), and width (2). Override only when a field genuinely differs.
+The `InputDecorationTheme` in `AppTheme` provides default `OutlineInputBorder`, radius (6), and width (1.5). Override only when a field genuinely differs. Focused state switches border color to `colors.primary`.
 
 ### 9.3 Buttons
 
 | Variant | Background | Foreground | Radius | Border | Padding |
 |---------|-----------|------------|--------|--------|---------|
-| **Elevated** | `colors.primary` | `colors.onPrimary` | `buttonRadius` (6) | none | H:16, V:12 |
-| **Outlined** | `colors.surface` | `colors.onSurface` | `buttonRadius` (6) | 2px `colors.border` | H:14, V:10 |
+| **Elevated** | `colors.primary` | `colors.onPrimary` | `buttonRadius` (6) | 1.5px `colors.border` | H:16, V:12 |
+| **Outlined** | `colors.surface` | `colors.onSurface` | `buttonRadius` (6) | 1.5px `colors.border` | H:14, V:10 |
 | **Text** | transparent | `colors.primary` | none | none | Material default |
 
 **Bottom-sheet save buttons** follow the Elevated pattern.
-**Bottom-sheet cancel buttons** follow the Outlined pattern.
 Both use `buttonRadius` (6).
 
 ### 9.4 Chips
@@ -311,11 +328,13 @@ ChoiceChip(
   backgroundColor: colors.surface,
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(UiConstants.chipRadius.sp),  // 20.sp
-    side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
+    side: BorderSide(color: colors.border, width: UiConstants.borderWidth),  // 1.5px
   ),
   showCheckmark: false,
 )
 ```
+
+Chips include an outline border (previously they had none) to match the notebook-outline standard. The border remains `colors.border` in both selected and unselected states.
 
 ### 9.5 AppBar
 
@@ -394,7 +413,7 @@ Use `AppTextStyles.labelMedium.copyWith(color: colors.onBackground)` with an opt
 ### 9.11 PRO mode cards (profile page)
 
 **Upgrade card** (PRO inactive):
-- Container with `colors.surfaceRaised` background, `colors.border` 2px border, `cardRadius` (8) radius.
+- Container with `colors.surfaceRaised` background, `colors.border` 1.5px border, `cardRadius` (8) radius.
 - Crown icon in `colors.tertiary`, benefit list with `colors.primary` check icons.
 - Primary elevated button ("Enable PRO Mode") at bottom.
 

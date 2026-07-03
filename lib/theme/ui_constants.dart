@@ -17,7 +17,7 @@ class UiConstants {
   static const double compactCardRadius = 4.0; // Compact row cards
 
   // Stroke widths
-  static const double borderWidth = 2.0;
+  static const double borderWidth = 1.5;
 
   // Elevation — flat design
   static const double cardElevation = 0.0;

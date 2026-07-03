@@ -154,6 +154,7 @@ class ProfilePageState extends State<ProfilePage> {
       decoration: BoxDecoration(
         color: colors.surfaceRaised,
         borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
+        border: Border.all(color: colors.border, width: UiConstants.borderWidth),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -337,6 +338,7 @@ class ProfilePageState extends State<ProfilePage> {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
+        border: Border.all(color: colors.border, width: UiConstants.borderWidth),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

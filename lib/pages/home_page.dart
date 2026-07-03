@@ -192,7 +192,9 @@ class _HomePageState extends State<HomePage> {
                                   child: FaIcon(FontAwesomeIcons.search),
                                 ),
                               ),
-                              border: UnderlineInputBorder(),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+                              ),
                               contentPadding: EdgeInsets.symmetric(
                                 horizontal: 16.sp,
                                 vertical: 12.sp,

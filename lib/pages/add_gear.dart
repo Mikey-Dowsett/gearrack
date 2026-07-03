@@ -175,19 +175,22 @@ class _AddGearPageState extends State<AddGearPage> {
             ),
             filled: true,
             fillColor: colors.surface,
-            border: UnderlineInputBorder(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(UiConstants.borderRadius),
               borderSide: BorderSide(
                 color: colors.border,
                 width: UiConstants.borderWidth,
               ),
             ),
-            enabledBorder: UnderlineInputBorder(
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(UiConstants.borderRadius),
               borderSide: BorderSide(
                 color: colors.border,
                 width: UiConstants.borderWidth,
               ),
             ),
-            focusedBorder: UnderlineInputBorder(
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(UiConstants.borderRadius),
               borderSide: BorderSide(
                 color: colors.primary,
                 width: UiConstants.borderWidth,
@@ -240,7 +243,7 @@ class _AddGearPageState extends State<AddGearPage> {
               decoration: BoxDecoration(
                 color: colors.surface,
                 borderRadius: BorderRadius.circular(UiConstants.borderRadius),
-                border: Border(bottom: BorderSide(color: hasError ? colors.error : colors.border, width: 1)),
+                border: Border(bottom: BorderSide(color: hasError ? colors.error : colors.border, width: UiConstants.borderWidth)),
               ),
               child: _categories.isEmpty
                   ? Padding(
@@ -606,31 +609,6 @@ class _AddGearPageState extends State<AddGearPage> {
           child: Row(
             children: [
               Expanded(
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    backgroundColor: colors.surface,
-                    foregroundColor: colors.onSurface,
-                    minimumSize: Size.fromHeight(buttonHeight),
-                    padding: EdgeInsets.symmetric(vertical: 0.sp),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        UiConstants.buttonRadius.sp,
-                      ),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: FaIcon(
-                    size: 25.sp,
-                    FontAwesomeIcons.xmark,
-                    color: colors.onSurface,
-                  ),
-                ),
-              ),
-              SizedBox(width: 8.sp),
-              Expanded(
-                flex: 5,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colors.primary,

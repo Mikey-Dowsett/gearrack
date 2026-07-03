@@ -26,6 +26,7 @@ class InfoCard extends StatelessWidget {
       elevation: UiConstants.cardElevation,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
+        side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
       ),
       child: Padding(
         padding: EdgeInsets.all(UiConstants.spacingM.sp),

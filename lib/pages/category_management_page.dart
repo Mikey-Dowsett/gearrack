@@ -172,14 +172,9 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
         elevation: UiConstants.cardElevation,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
+          side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
         ),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: colors.border, width: 1),
-            ),
-          ),
-          child: Column(
+        child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
@@ -256,8 +251,7 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }
 

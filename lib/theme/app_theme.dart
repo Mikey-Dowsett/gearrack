@@ -48,19 +48,22 @@ class AppTheme {
           horizontal: 12.0,
           vertical: 12.0,
         ),
-        border: UnderlineInputBorder(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(UiConstants.borderRadius),
           borderSide: BorderSide(
             color: AppColors.lightBorder,
             width: UiConstants.borderWidth,
           ),
         ),
-        enabledBorder: UnderlineInputBorder(
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(UiConstants.borderRadius),
           borderSide: BorderSide(
             color: AppColors.lightBorder,
             width: UiConstants.borderWidth,
           ),
         ),
-        focusedBorder: UnderlineInputBorder(
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(UiConstants.borderRadius),
           borderSide: BorderSide(
             color: AppColors.lightPrimary,
             width: UiConstants.borderWidth,
@@ -74,6 +77,10 @@ class AppTheme {
           foregroundColor: colors.onPrimary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(UiConstants.buttonRadius),
+            side: BorderSide(
+              color: AppColors.lightBorder,
+              width: UiConstants.borderWidth,
+            ),
           ),
           textStyle: AppTextStyles.bodyMedium,
           elevation: 0,
@@ -86,6 +93,10 @@ class AppTheme {
           foregroundColor: colors.onSurface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(UiConstants.buttonRadius),
+            side: BorderSide(
+              color: AppColors.lightBorder,
+              width: UiConstants.borderWidth,
+            ),
           ),
           textStyle: AppTextStyles.bodyMedium,
           padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
@@ -112,6 +123,10 @@ class AppTheme {
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.chipRadius),
+          side: BorderSide(
+            color: AppColors.lightBorder,
+            width: UiConstants.borderWidth,
+          ),
         ),
       ),
 
@@ -190,19 +205,22 @@ class AppTheme {
           horizontal: 12.0,
           vertical: 12.0,
         ),
-        border: UnderlineInputBorder(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(UiConstants.borderRadius),
           borderSide: BorderSide(
             color: AppColors.darkBorder,
             width: UiConstants.borderWidth,
           ),
         ),
-        enabledBorder: UnderlineInputBorder(
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(UiConstants.borderRadius),
           borderSide: BorderSide(
             color: AppColors.darkBorder,
             width: UiConstants.borderWidth,
           ),
         ),
-        focusedBorder: UnderlineInputBorder(
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(UiConstants.borderRadius),
           borderSide: BorderSide(
             color: AppColors.darkPrimary,
             width: UiConstants.borderWidth,
@@ -216,6 +234,10 @@ class AppTheme {
           foregroundColor: colors.onPrimary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(UiConstants.buttonRadius),
+            side: BorderSide(
+              color: AppColors.darkBorder,
+              width: UiConstants.borderWidth,
+            ),
           ),
           textStyle: AppTextStyles.bodyMedium.copyWith(color: colors.onPrimary),
           elevation: 0,
@@ -228,6 +250,10 @@ class AppTheme {
           foregroundColor: colors.onSurface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(UiConstants.buttonRadius),
+            side: BorderSide(
+              color: AppColors.darkBorder,
+              width: UiConstants.borderWidth,
+            ),
           ),
           textStyle: AppTextStyles.bodyMedium.copyWith(color: colors.onSurface),
           padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
@@ -254,6 +280,10 @@ class AppTheme {
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.chipRadius),
+          side: BorderSide(
+            color: AppColors.darkBorder,
+            width: UiConstants.borderWidth,
+          ),
         ),
       ),
 

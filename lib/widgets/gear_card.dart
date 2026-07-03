@@ -67,14 +67,9 @@ class GearCard extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
+            side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
           ),
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: colors.border, width: 1),
-              ),
-            ),
-            child: Column(
+          child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(
@@ -196,7 +191,6 @@ class GearCard extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 }
