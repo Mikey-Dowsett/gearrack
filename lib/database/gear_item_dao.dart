@@ -73,4 +73,12 @@ class GearItemDao {
     );
     return Sqflite.firstIntValue(result) ?? 0;
   }
+
+  Future<int> countByCategory(String categoryId) async {
+    final result = await db.rawQuery(
+      'SELECT COUNT(*) AS count FROM gear_items WHERE category_id = ?',
+      [categoryId],
+    );
+    return Sqflite.firstIntValue(result) ?? 0;
+  }
 }

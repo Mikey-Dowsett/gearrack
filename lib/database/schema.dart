@@ -219,99 +219,29 @@ class Schema {
     final uuid = Uuid();
 
     final defaultCategories = [
-      Category(id: uuid.v4(), name: 'Shelter', icon: 'tent', color: '#7DAF85'),
-      Category(
-        id: uuid.v4(),
-        name: 'Sleep System',
-        icon: 'bed',
-        color: '#7AA8C8',
-      ),
-      Category(
-        id: uuid.v4(),
-        name: 'Clothing',
-        icon: 'shirt',
-        color: '#D4A07A',
-      ),
-      Category(
-        id: uuid.v4(),
-        name: 'Footwear',
-        icon: 'shoe-prints',
-        color: '#B89878',
-      ),
-      Category(
-        id: uuid.v4(),
-        name: 'Navigation',
-        icon: 'compass',
-        color: '#A8BA8A',
-      ),
-      Category(
-        id: uuid.v4(),
-        name: 'Lighting',
-        icon: 'lightbulb',
-        color: '#E0C080',
-      ),
+      Category(id: uuid.v4(), name: 'Shelter', icon: 'tent', color: '#7DAF85', isDefault: true),
+      Category(id: uuid.v4(), name: 'Sleep System', icon: 'bed', color: '#7AA8C8', isDefault: true),
+      Category(id: uuid.v4(), name: 'Clothing', icon: 'shirt', color: '#D4A07A', isDefault: true),
+      Category(id: uuid.v4(), name: 'Footwear', icon: 'shoe-prints', color: '#B89878'),
+      Category(id: uuid.v4(), name: 'Navigation', icon: 'compass', color: '#A8BA8A'),
+      Category(id: uuid.v4(), name: 'Lighting', icon: 'lightbulb', color: '#E0C080'),
       Category(id: uuid.v4(), name: 'Cooking', icon: 'fire', color: '#D48A7A'),
-      Category(
-        id: uuid.v4(),
-        name: 'Food & Water',
-        icon: 'utensils',
-        color: '#7AAD85',
-      ),
-      Category(
-        id: uuid.v4(),
-        name: 'First Aid',
-        icon: 'first-aid',
-        color: '#D48A8A',
-      ),
-      Category(
-        id: uuid.v4(),
-        name: 'Tools & Repair',
-        icon: 'wrench',
-        color: '#A8A898',
-      ),
-      Category(
-        id: uuid.v4(),
-        name: 'Electronics',
-        icon: 'plug',
-        color: '#8AAAC8',
-      ),
-      Category(
-        id: uuid.v4(),
-        name: 'Packs & Bags',
-        icon: 'person-hiking',
-        color: '#8ABA8A',
-      ),
-      Category(
-        id: uuid.v4(),
-        name: 'Climbing',
-        icon: 'mountain',
-        color: '#B8A078',
-      ),
-      Category(
-        id: uuid.v4(),
-        name: 'Snow Sports',
-        icon: 'snowflake',
-        color: '#98BCC8',
-      ),
-      Category(
-        id: uuid.v4(),
-        name: 'Water Sports',
-        icon: 'water',
-        color: '#78A8B8',
-      ),
+      Category(id: uuid.v4(), name: 'Food & Water', icon: 'utensils', color: '#7AAD85', isDefault: true),
+      Category(id: uuid.v4(), name: 'First Aid', icon: 'first-aid', color: '#D48A8A', isDefault: true),
+      Category(id: uuid.v4(), name: 'Tools & Repair', icon: 'wrench', color: '#A8A898'),
+      Category(id: uuid.v4(), name: 'Electronics', icon: 'plug', color: '#8AAAC8'),
+      Category(id: uuid.v4(), name: 'Packs & Bags', icon: 'person-hiking', color: '#8ABA8A'),
+      Category(id: uuid.v4(), name: 'Climbing', icon: 'mountain', color: '#B8A078'),
+      Category(id: uuid.v4(), name: 'Snow Sports', icon: 'snowflake', color: '#98BCC8'),
+      Category(id: uuid.v4(), name: 'Water Sports', icon: 'water', color: '#78A8B8'),
       Category(id: uuid.v4(), name: 'Hygiene', icon: 'soap', color: '#A0C8A0'),
       Category(id: uuid.v4(), name: 'Safety', icon: 'shield', color: '#D4A878'),
-      Category(
-        id: uuid.v4(),
-        name: 'Miscellaneous',
-        icon: 'ellipsis',
-        color: '#A0A0B0',
-      ),
+      Category(id: uuid.v4(), name: 'Miscellaneous', icon: 'ellipsis', color: '#A0A0B0'),
     ];
 
     final batch = db.batch();
     for (final cat in defaultCategories) {
-      batch.insert('categories', {...cat.toMap(), 'is_default': 1});
+      batch.insert('categories', cat.toMap());
     }
     await batch.commit(noResult: true);
   }

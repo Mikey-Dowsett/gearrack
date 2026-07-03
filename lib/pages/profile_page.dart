@@ -8,11 +8,13 @@ import 'package:gearrack/theme/app_colors.dart';
 import 'package:gearrack/theme/app_text_styles.dart';
 import 'package:gearrack/theme/ui_constants.dart';
 import 'package:gearrack/utils/weight_formatter.dart';
+import 'package:gearrack/pages/settings_page.dart';
 
 class ProfilePage extends StatefulWidget {
   final VoidCallback? onSwitchToTrips;
+  final VoidCallback? onThemeChanged;
 
-  const ProfilePage({super.key, this.onSwitchToTrips});
+  const ProfilePage({super.key, this.onSwitchToTrips, this.onThemeChanged});
 
   @override
   State<ProfilePage> createState() => ProfilePageState();
@@ -59,19 +61,15 @@ class ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Future<void> _toggleProMode(bool value) async {
-    try {
-      final dao = await AppSettingsDao.create();
-      final settings = await dao.get();
-      await dao.update(settings.copyWith(proMode: value));
-      setState(() => _proMode = value);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update PRO mode: $e')),
-        );
-      }
-    }
+  void _openSettings() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SettingsPage(onThemeChanged: widget.onThemeChanged),
+      ),
+    );
+    // Reload after returning (PRO mode may have changed)
+    _load();
   }
 
   @override
@@ -80,6 +78,21 @@ class ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       backgroundColor: colors.background,
+      appBar: AppBar(
+        backgroundColor: colors.surfaceRaised,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          'Profile',
+          style: AppTextStyles.titleMedium.copyWith(color: colors.onSurface),
+        ),
+        actions: [
+          IconButton(
+            icon: FaIcon(FontAwesomeIcons.gear, size: 18.sp, color: colors.onSurface),
+            onPressed: _openSettings,
+          ),
+        ],
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -152,9 +165,7 @@ class ProfilePageState extends State<ProfilePage> {
               SizedBox(width: 8.sp),
               Text(
                 'Upgrade to PRO',
-                style: AppTextStyles.titleLarge.copyWith(
-                  color: colors.onSurface,
-                ),
+                style: AppTextStyles.titleLarge.copyWith(color: colors.onSurface),
               ),
             ],
           ),
@@ -173,9 +184,7 @@ class ProfilePageState extends State<ProfilePage> {
                   SizedBox(width: 8.sp),
                   Text(
                     b.$1,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: colors.onSurface,
-                    ),
+                    style: AppTextStyles.bodyMedium.copyWith(color: colors.onSurface),
                   ),
                 ],
               ),
@@ -184,28 +193,24 @@ class ProfilePageState extends State<ProfilePage> {
           SizedBox(height: 12.sp),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () => _toggleProMode(true),
+            child: OutlinedButton.icon(
+              onPressed: _openSettings,
               icon: FaIcon(
-                FontAwesomeIcons.crown,
+                FontAwesomeIcons.gear,
                 size: 16.sp,
-                color: colors.onPrimary,
+                color: colors.onSurface,
               ),
               label: Text(
-                'Enable PRO Mode',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: colors.onPrimary,
-                ),
+                'Enable in Settings',
+                style: AppTextStyles.bodyMedium.copyWith(color: colors.onSurface),
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colors.primary,
-                foregroundColor: colors.onPrimary,
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: colors.border),
+                foregroundColor: colors.onSurface,
                 padding: EdgeInsets.symmetric(horizontal: 20.sp, vertical: 12.sp),
                 minimumSize: Size(0, 44.sp),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                    UiConstants.buttonRadius.sp,
-                  ),
+                  borderRadius: BorderRadius.circular(UiConstants.buttonRadius.sp),
                 ),
               ),
             ),
@@ -235,17 +240,11 @@ class ProfilePageState extends State<ProfilePage> {
             children: [
               Row(
                 children: [
-                  FaIcon(
-                    FontAwesomeIcons.crown,
-                    size: 20.sp,
-                    color: colors.onPrimary,
-                  ),
+                  FaIcon(FontAwesomeIcons.crown, size: 20.sp, color: colors.onPrimary),
                   SizedBox(width: 8.sp),
                   Text(
                     'PRO Mode Active',
-                    style: AppTextStyles.titleLarge.copyWith(
-                      color: colors.onPrimary,
-                    ),
+                    style: AppTextStyles.titleLarge.copyWith(color: colors.onPrimary),
                   ),
                 ],
               ),
@@ -258,17 +257,11 @@ class ProfilePageState extends State<ProfilePage> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    FaIcon(
-                      FontAwesomeIcons.check,
-                      size: 10.sp,
-                      color: colors.onPrimary,
-                    ),
+                    FaIcon(FontAwesomeIcons.check, size: 10.sp, color: colors.onPrimary),
                     SizedBox(width: 4.sp),
                     Text(
                       'ACTIVE',
-                      style: AppTextStyles.labelSmall.copyWith(
-                        color: colors.onPrimary,
-                      ),
+                      style: AppTextStyles.labelSmall.copyWith(color: colors.onPrimary),
                     ),
                   ],
                 ),
@@ -295,31 +288,18 @@ class ProfilePageState extends State<ProfilePage> {
             children: [
               Expanded(
                 child: TextButton.icon(
-                  onPressed: () {
-                    widget.onSwitchToTrips?.call();
-                  },
-                  icon: FaIcon(
-                    FontAwesomeIcons.personHiking,
-                    size: 14.sp,
-                    color: colors.onPrimary,
-                  ),
+                  onPressed: () => widget.onSwitchToTrips?.call(),
+                  icon: FaIcon(FontAwesomeIcons.personHiking, size: 14.sp, color: colors.onPrimary),
                   label: Text(
                     'Open Trips',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: colors.onPrimary,
-                    ),
+                    style: AppTextStyles.bodyMedium.copyWith(color: colors.onPrimary),
                   ),
                   style: TextButton.styleFrom(
                     backgroundColor: colors.onPrimary.withValues(alpha: 0.15),
                     foregroundColor: colors.onPrimary,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.sp,
-                      vertical: 10.sp,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 10.sp),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        UiConstants.buttonRadius.sp,
-                      ),
+                      borderRadius: BorderRadius.circular(UiConstants.buttonRadius.sp),
                     ),
                   ),
                 ),
@@ -327,29 +307,18 @@ class ProfilePageState extends State<ProfilePage> {
               SizedBox(width: 12.sp),
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () => _toggleProMode(false),
-                  icon: FaIcon(
-                    FontAwesomeIcons.xmark,
-                    size: 14.sp,
-                    color: colors.onPrimary,
-                  ),
+                  onPressed: _openSettings,
+                  icon: FaIcon(FontAwesomeIcons.gear, size: 14.sp, color: colors.onPrimary),
                   label: Text(
-                    'Deactivate',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: colors.onPrimary,
-                    ),
+                    'Settings',
+                    style: AppTextStyles.bodyMedium.copyWith(color: colors.onPrimary),
                   ),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: colors.onPrimary.withValues(alpha: 0.4)),
                     foregroundColor: colors.onPrimary,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.sp,
-                      vertical: 10.sp,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 10.sp),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        UiConstants.buttonRadius.sp,
-                      ),
+                      borderRadius: BorderRadius.circular(UiConstants.buttonRadius.sp),
                     ),
                   ),
                 ),
@@ -385,27 +354,19 @@ class ProfilePageState extends State<ProfilePage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _buildStatItem(
-                colors,
-                'Trips',
-                _trips.length.toString(),
-                FontAwesomeIcons.locationDot,
-                colors.primary,
+                colors, 'Trips', _trips.length.toString(),
+                FontAwesomeIcons.locationDot, colors.primary,
               ),
               _buildStatItem(
-                colors,
-                'Weight',
-                wp.value + (wp.unit == 'kg' ? ' kg' : ' g'),
-                FontAwesomeIcons.scaleBalanced,
-                colors.tertiary,
+                colors, 'Weight', '${wp.value} ${wp.unit}',
+                FontAwesomeIcons.scaleBalanced, colors.tertiary,
               ),
               _buildStatItem(
-                colors,
-                'Last Trip',
+                colors, 'Last Trip',
                 _trips.isNotEmpty
                     ? '${_trips.first.startDate.month}/${_trips.first.startDate.day}'
                     : '—',
-                FontAwesomeIcons.clock,
-                colors.textSecondary,
+                FontAwesomeIcons.clock, colors.textSecondary,
               ),
             ],
           ),
@@ -425,15 +386,9 @@ class ProfilePageState extends State<ProfilePage> {
       children: [
         FaIcon(icon, size: 20.sp, color: iconColor),
         SizedBox(height: 8.sp),
-        Text(
-          value,
-          style: AppTextStyles.titleMedium.copyWith(color: colors.onSurface),
-        ),
+        Text(value, style: AppTextStyles.titleMedium.copyWith(color: colors.onSurface)),
         SizedBox(height: 4.sp),
-        Text(
-          label,
-          style: AppTextStyles.bodySmall.copyWith(color: colors.textSecondary),
-        ),
+        Text(label, style: AppTextStyles.bodySmall.copyWith(color: colors.textSecondary)),
       ],
     );
   }

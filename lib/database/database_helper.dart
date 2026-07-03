@@ -20,7 +20,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 6,
+      version: 7,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -34,6 +34,11 @@ class DatabaseHelper {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    // --- Migration: v6 -> v7 (mark 5 permanent categories as default) ---
+    if (oldVersion < 7) {
+      await _migrateV6toV7(db);
+    }
+
     // --- Migration: v5 -> v6 (add pro_mode to app_settings) ---
     if (oldVersion < 6) {
       await _migrateV5toV6(db);
@@ -134,6 +139,31 @@ class DatabaseHelper {
     await db.execute('''
       ALTER TABLE app_settings ADD COLUMN pro_mode INTEGER NOT NULL DEFAULT 0
     ''');
+  }
+
+  /// Mark only the 5 permanent categories as default; clear others.
+  Future<void> _migrateV6toV7(Database db) async {
+    // First set all categories to non-default
+    await db.update('categories', {'is_default': 0});
+
+    // Then mark the 5 permanent ones
+    const protectedNames = [
+      'Shelter',
+      'Sleep System',
+      'Clothing',
+      'Food & Water',
+      'First Aid',
+    ];
+    final batch = db.batch();
+    for (final name in protectedNames) {
+      batch.update(
+        'categories',
+        {'is_default': 1},
+        where: 'name = ?',
+        whereArgs: [name],
+      );
+    }
+    await batch.commit(noResult: true);
   }
 
   Future<void> close() async {
