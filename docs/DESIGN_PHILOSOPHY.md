@@ -372,6 +372,28 @@ Column(
 
 Use `AppTextStyles.labelMedium.copyWith(color: colors.onBackground)` with an optional red `*` for required fields.
 
+### 9.11 PRO mode cards (profile page)
+
+**Upgrade card** (PRO inactive):
+- Container with `colors.surfaceRaised` background, `colors.border` 2px border, `cardRadius` (10) radius.
+- Crown icon in `colors.tertiary`, benefit list with `colors.primary` check icons.
+- Primary elevated button ("Enable PRO Mode") at bottom.
+
+**Active PRO card** (PRO active):
+- Gradient container using `primary→accent` (same as gradient-header cards §9.1).
+- Crown + "PRO Mode Active" title in `colors.onPrimary`.
+- "ACTIVE" pill badge with `colors.onPrimary` at 20% alpha background.
+- Trip count text in `colors.onPrimary` at 90% alpha.
+- Two side-by-side buttons:
+  - "Open Trips" — `TextButton` with `onPrimary` 15% alpha background.
+  - "Deactivate" — `OutlinedButton` with `onPrimary` at 40% alpha border.
+  Both use `buttonRadius` (10), `onPrimary` text.
+
+**PRO gate overlay** (TripHistoryPage when PRO is off):
+- Centered column with `tertiary` crown icon (48.sp), "PRO Feature" title, description body, primary elevated button linking to ProfilePage for activation.
+
+All PRO cards follow the same color, radius, border, and typography tokens as other components. No new tokens introduced.
+
 ---
 
 ## 10. Do/Don't Summary
@@ -414,7 +436,7 @@ A future refactor could change the default to `null` or a theme-aware value.
 
 ### 11.4 `profile_page.dart`
 
-**Status:** Under development — currently a stub. Will be formalized when implemented.
+**Status:** ✅ Implemented — full PRO mode management with upgrade/active states, trip stats display, and navigation integration.
 
 ---
 
@@ -429,6 +451,7 @@ A future refactor could change the default to `null` or a theme-aware value.
 | `lib/widgets/gear_card.dart` | Gear list item card |
 | `lib/widgets/pack_card.dart` | Pack list item card (gradient header) |
 | `lib/widgets/info_card.dart` | Key-value info card for detail pages |
+| `lib/database/app_settings_dao.dart` | App settings persistence (PRO mode toggle, weight unit, theme) |
 | `docs/DESIGN_PHILOSOPHY.md` | **This file — canonical design reference** |
 
 ---

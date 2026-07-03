@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:gearrack/pages/home_page.dart';
 import 'package:gearrack/pages/packs_page.dart';
 import 'package:gearrack/pages/trip_history_page.dart';
+import 'package:gearrack/pages/profile_page.dart';
 import 'package:gearrack/theme/app_colors.dart';
 import 'package:gearrack/theme/app_theme.dart';
 import 'package:gearrack/database/database_helper.dart';
@@ -57,11 +58,18 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = const [
-    HomePage(),
-    PacksPage(),
-    TripHistoryPage(),
-  ];
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      const HomePage(),
+      const PacksPage(),
+      const TripHistoryPage(),
+      ProfilePage(onSwitchToTrips: () => _onItemTapped(2)),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -99,6 +107,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             BottomNavigationBarItem(
               icon: FaIcon(FontAwesomeIcons.personHiking),
               label: 'Trips',
+            ),
+            BottomNavigationBarItem(
+              icon: FaIcon(FontAwesomeIcons.user),
+              label: 'Profile',
             ),
           ],
           currentIndex: _selectedIndex,

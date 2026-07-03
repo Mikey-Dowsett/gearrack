@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gearrack/database/trip_dao.dart';
 import 'package:gearrack/database/pack_dao.dart';
+import 'package:gearrack/database/app_settings_dao.dart';
 import 'package:gearrack/models/trip.dart';
 import 'package:gearrack/theme/app_colors.dart';
 import 'package:gearrack/theme/app_text_styles.dart';
@@ -10,6 +11,7 @@ import 'package:gearrack/theme/ui_constants.dart';
 import 'package:gearrack/utils/weight_formatter.dart';
 import 'package:gearrack/pages/log_trip_page.dart';
 import 'package:gearrack/pages/trip_detail_page.dart';
+import 'package:gearrack/pages/profile_page.dart';
 
 class TripHistoryPage extends StatefulWidget {
   const TripHistoryPage({super.key});
@@ -24,16 +26,26 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
   Map<String, int> _itemCounts = {};
   Map<String, String> _packNames = {};
   bool _isLoading = true;
+  bool _proMode = false;
 
   @override
   void initState() {
     super.initState();
-    _loadTrips();
+    _load();
   }
 
-  Future<void> _loadTrips() async {
+  Future<void> _load() async {
     setState(() => _isLoading = true);
     try {
+      final settingsDao = await AppSettingsDao.create();
+      final settings = await settingsDao.get();
+      _proMode = settings.proMode;
+
+      if (!_proMode) {
+        setState(() => _isLoading = false);
+        return;
+      }
+
       final dao = await TripDao.create();
       final packDao = await PackDao.create();
       final trips = await dao.getAll();
@@ -79,7 +91,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
       MaterialPageRoute(builder: (context) => const LogTripPage()),
     );
     if (result == true && mounted) {
-      _loadTrips();
+      _load();
     }
   }
 
@@ -89,7 +101,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
       MaterialPageRoute(builder: (context) => TripDetailPage(tripId: trip.id)),
     );
     if (mounted) {
-      _loadTrips();
+      _load();
     }
   }
 
@@ -110,6 +122,10 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
+
+    if (!_isLoading && !_proMode) {
+      return _buildProGate(colors);
+    }
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -164,7 +180,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                     ),
                   )
                 : RefreshIndicator(
-                    onRefresh: _loadTrips,
+                    onRefresh: _load,
                     child: ListView.builder(
                       itemCount: _trips.length,
                       itemBuilder: (context, index) {
@@ -415,6 +431,81 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToLogTrip,
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  Widget _buildProGate(AppColorPalette colors) {
+    return Scaffold(
+      backgroundColor: colors.background,
+      body: Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: UiConstants.spacingXL.sp),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FaIcon(
+                FontAwesomeIcons.crown,
+                size: 48.sp,
+                color: colors.tertiary,
+              ),
+              SizedBox(height: 20.sp),
+              Text(
+                'PRO Feature',
+                style: AppTextStyles.titleLarge.copyWith(
+                  color: colors.onSurface,
+                ),
+              ),
+              SizedBox(height: 12.sp),
+              Text(
+                'Upgrade to PRO to log trips, track gear usage, and review your adventure history.',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: colors.textSecondary,
+                ),
+              ),
+              SizedBox(height: 24.sp),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ProfilePage(),
+                      ),
+                    );
+                  },
+                  icon: FaIcon(
+                    FontAwesomeIcons.crown,
+                    size: 16.sp,
+                    color: colors.onPrimary,
+                  ),
+                  label: Text(
+                    'Go to PRO Settings',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: colors.onPrimary,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.sp,
+                      vertical: 12.sp,
+                    ),
+                    minimumSize: Size(0, 44.sp),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        UiConstants.buttonRadius.sp,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

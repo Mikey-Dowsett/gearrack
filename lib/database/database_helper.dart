@@ -20,7 +20,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 5,
+      version: 6,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -34,6 +34,11 @@ class DatabaseHelper {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    // --- Migration: v5 -> v6 (add pro_mode to app_settings) ---
+    if (oldVersion < 6) {
+      await _migrateV5toV6(db);
+    }
+
     // --- Migration: v4 -> v5 (add trip logging) ---
     if (oldVersion < 5) {
       await _migrateV4toV5(db);
@@ -122,6 +127,13 @@ class DatabaseHelper {
     await db.execute(Schema.createTripItemsTripIdx);
     await db.execute(Schema.createTripItemsGearIdx);
     await db.execute(Schema.createTripsStartDateIdx);
+  }
+
+  /// Add pro_mode column for v6.
+  Future<void> _migrateV5toV6(Database db) async {
+    await db.execute('''
+      ALTER TABLE app_settings ADD COLUMN pro_mode INTEGER NOT NULL DEFAULT 0
+    ''');
   }
 
   Future<void> close() async {

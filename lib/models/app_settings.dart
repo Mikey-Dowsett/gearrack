@@ -9,6 +9,7 @@ class AppSettings {
   final String accentColor;
   final String currency;
   final DateTime? lastExportAt;
+  final bool proMode;
 
   const AppSettings({
     this.id = 1,
@@ -17,6 +18,7 @@ class AppSettings {
     this.accentColor = '#385A41',
     this.currency = 'USD',
     this.lastExportAt,
+    this.proMode = false,
   });
 
   AppSettings copyWith({
@@ -26,6 +28,7 @@ class AppSettings {
     String? accentColor,
     String? currency,
     DateTime? lastExportAt,
+    bool? proMode,
   }) => AppSettings(
     id: id ?? this.id,
     weightUnit: weightUnit ?? this.weightUnit,
@@ -33,6 +36,7 @@ class AppSettings {
     accentColor: accentColor ?? this.accentColor,
     currency: currency ?? this.currency,
     lastExportAt: lastExportAt ?? this.lastExportAt,
+    proMode: proMode ?? this.proMode,
   );
 
   Map<String, dynamic> toMap() => {
@@ -42,6 +46,7 @@ class AppSettings {
     'accent_color': accentColor,
     'currency': currency,
     'last_export_at': lastExportAt?.toIso8601String(),
+    'pro_mode': proMode ? 1 : 0,
   };
 
   factory AppSettings.fromMap(Map<String, dynamic> map) => AppSettings(
@@ -53,6 +58,7 @@ class AppSettings {
     lastExportAt: map['last_export_at'] != null
         ? DateTime.parse(map['last_export_at'] as String)
         : null,
+    proMode: map['pro_mode'] == 1,
   );
 
   @override

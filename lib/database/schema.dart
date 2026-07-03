@@ -110,7 +110,8 @@ class Schema {
       theme TEXT NOT NULL DEFAULT 'light',
       accent_color TEXT NOT NULL DEFAULT '#385A41',
       currency TEXT NOT NULL DEFAULT 'USD',
-      last_export_at TEXT
+      last_export_at TEXT,
+      pro_mode INTEGER NOT NULL DEFAULT 0
     )
   ''';
 
