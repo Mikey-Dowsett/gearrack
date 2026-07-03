@@ -7,6 +7,7 @@ import '../theme/app_colors.dart';
 import '../models/pack.dart';
 import '../models/pack_item.dart';
 import '../models/gear_item.dart';
+import '../database/pack_dao.dart';
 import '../database/pack_item_dao.dart';
 import '../database/gear_item_dao.dart';
 import '../database/category_dao.dart';
@@ -14,6 +15,7 @@ import '../models/category.dart';
 import '../utils/icon_registry.dart';
 import '../theme/ui_constants.dart';
 import '../utils/weight_formatter.dart';
+import 'log_trip_page.dart';
 
 class PackPage extends StatefulWidget {
   final Pack pack;
@@ -191,6 +193,59 @@ class _PackPageState extends State<PackPage>
     );
   }
 
+  Future<void> _logTripFromPack() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LogTripPage(pack: _pack)),
+    );
+  }
+
+  Future<void> _deletePack() async {
+    final colors = AppColors.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Delete Pack', style: AppTextStyles.titleMedium),
+        content: Text(
+          'Delete "${_pack.name}"? This will also remove all items from the pack. This cannot be undone.',
+          style: AppTextStyles.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text('Cancel', style: AppTextStyles.bodyMedium),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(
+              'Delete',
+              style: AppTextStyles.bodyMedium.copyWith(color: colors.error),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      try {
+        final dao = await PackDao.create();
+        await dao.delete(_pack.id);
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Pack deleted')));
+          Navigator.of(context).pop(true);
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to delete: $e')));
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
@@ -201,6 +256,18 @@ class _PackPageState extends State<PackPage>
       appBar: AppBar(
         title: Text(_pack.name, style: AppTextStyles.bodyLarge),
         backgroundColor: colors.background,
+        actions: [
+          IconButton(
+            icon: FaIcon(FontAwesomeIcons.personHiking, size: 16.sp),
+            onPressed: _logTripFromPack,
+            tooltip: 'Log Trip from Pack',
+          ),
+          IconButton(
+            icon: FaIcon(FontAwesomeIcons.trash, size: 16.sp),
+            onPressed: _deletePack,
+            tooltip: 'Delete Pack',
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -286,11 +353,16 @@ class _PackPageState extends State<PackPage>
                   indicatorSize: TabBarIndicatorSize.tab,
                   labelColor: colors.primary,
                   unselectedLabelColor: colors.textSecondary,
+                  labelStyle: AppTextStyles.bodyMedium,
+                  unselectedLabelStyle: AppTextStyles.bodyMedium,
+                  labelPadding: EdgeInsets.symmetric(
+                    vertical: 4.sp,
+                    horizontal: 16.sp,
+                  ),
                   tabs: [
-                    Tab(text: 'Build \u2219 $_gearCount'),
+                    Tab(text: 'Build ∙ $_gearCount'),
                     const Tab(text: 'Checklist'),
                   ],
-                  labelStyle: AppTextStyles.bodyMedium,
                 ),
                 // Tab content
                 Expanded(
@@ -427,7 +499,7 @@ class _PackPageState extends State<PackPage>
         color: colors.primaryContainer,
         elevation: 1,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.sp),
+          borderRadius: BorderRadius.circular(UiConstants.compactCardRadius.sp),
           side: BorderSide(color: colors.primary, width: 1.5),
         ),
         child: SizedBox(
@@ -505,7 +577,7 @@ class _PackPageState extends State<PackPage>
         color: colors.surface,
         elevation: 1,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.sp),
+          borderRadius: BorderRadius.circular(UiConstants.compactCardRadius.sp),
           side: BorderSide(
             color: colors.border,
             width: UiConstants.borderWidth,

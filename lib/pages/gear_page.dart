@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../models/gear_item.dart';
 import '../models/category.dart';
 import '../database/category_dao.dart';
+import '../database/trip_dao.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/info_card.dart';
@@ -25,12 +26,28 @@ class _GearPageState extends State<GearPage> {
   late GearItem _gear;
   Category? _category;
   bool _isLoadingCategory = true;
+  GearUsageStats? _usageStats;
+  bool _isLoadingUsage = true;
 
   @override
   void initState() {
     super.initState();
     _gear = widget.gear;
     _loadCategory();
+    _loadUsageStats();
+  }
+
+  Future<void> _loadUsageStats() async {
+    try {
+      final dao = await TripDao.create();
+      final stats = await dao.getUsageStats(_gear.id);
+      setState(() {
+        _usageStats = stats;
+        _isLoadingUsage = false;
+      });
+    } catch (e) {
+      setState(() => _isLoadingUsage = false);
+    }
   }
 
   Future<void> _loadCategory() async {
@@ -186,6 +203,29 @@ class _GearPageState extends State<GearPage> {
                       title: 'Notes',
                       value: gear.notes!,
                     ),
+                  if (!_isLoadingUsage && _usageStats != null) ...[
+                    Row(
+                      children: [
+                        Flexible(
+                          child: InfoCard(
+                            icon: FontAwesomeIcons.personHiking,
+                            title: 'Times Used',
+                            value:
+                                '${_usageStats!.timesUsed} trip${_usageStats!.timesUsed != 1 ? 's' : ''}',
+                          ),
+                        ),
+                        Flexible(
+                          child: InfoCard(
+                            icon: FontAwesomeIcons.clock,
+                            title: 'Last Used',
+                            value: _usageStats!.lastUsedDate != null
+                                ? '${_usageStats!.lastUsedDate!.month}/${_usageStats!.lastUsedDate!.day}/${_usageStats!.lastUsedDate!.year}'
+                                : 'Never',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),

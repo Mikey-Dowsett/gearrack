@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 /// Central UI constants (spacing, radii, stroke widths) used across the app.
 /// Keep values simple and semantic so widgets can reference these tokens instead
 /// of hard-coded numbers.
@@ -16,6 +14,7 @@ class UiConstants {
   static const double cardRadius = 10.0;
   static const double chipRadius = 20.0;
   static const double buttonRadius = 10.0;
+  static const double compactCardRadius = 8.0;
 
   // Stroke widths
   static const double borderWidth = 2.0;

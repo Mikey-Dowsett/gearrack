@@ -20,7 +20,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 4,
+      version: 5,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -34,6 +34,11 @@ class DatabaseHelper {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    // --- Migration: v4 -> v5 (add trip logging) ---
+    if (oldVersion < 5) {
+      await _migrateV4toV5(db);
+    }
+
     // --- Migration: v3 -> v4 (propagate seed-data icons & colors) ---
     if (oldVersion < 4) {
       await _migrateV3toV4(db);
@@ -108,6 +113,15 @@ class DatabaseHelper {
       );
     }
     await batch.commit(noResult: true);
+  }
+
+  /// Create the trips and trip_items tables for v5.
+  Future<void> _migrateV4toV5(Database db) async {
+    await db.execute(Schema.createTripsTable);
+    await db.execute(Schema.createTripItemsTable);
+    await db.execute(Schema.createTripItemsTripIdx);
+    await db.execute(Schema.createTripItemsGearIdx);
+    await db.execute(Schema.createTripsStartDateIdx);
   }
 
   Future<void> close() async {

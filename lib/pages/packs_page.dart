@@ -9,7 +9,7 @@ import 'package:gearrack/widgets/pack_card.dart';
 import 'package:gearrack/theme/app_colors.dart';
 import 'package:gearrack/theme/app_text_styles.dart';
 import 'package:gearrack/pages/add_pack.dart';
-import 'package:gearrack/pages/pack.dart' as pack_detail;
+import 'package:gearrack/pages/pack_page.dart' as pack_detail;
 
 class PacksPage extends StatefulWidget {
   const PacksPage({super.key});

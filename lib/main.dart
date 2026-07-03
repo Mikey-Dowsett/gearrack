@@ -2,8 +2,9 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gearrack/pages/gear.dart';
-import 'package:gearrack/pages/packs.dart';
+import 'package:gearrack/pages/home_page.dart';
+import 'package:gearrack/pages/packs_page.dart';
+import 'package:gearrack/pages/trip_history_page.dart';
 import 'package:gearrack/theme/app_theme.dart';
 import 'package:gearrack/database/database_helper.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -55,7 +56,11 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = const [HomePage(), PacksPage()];
+  final List<Widget> _pages = const [
+    HomePage(),
+    PacksPage(),
+    TripHistoryPage(),
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -88,6 +93,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             BottomNavigationBarItem(
               icon: FaIcon(FontAwesomeIcons.suitcase),
               label: 'Packs',
+            ),
+            BottomNavigationBarItem(
+              icon: FaIcon(FontAwesomeIcons.personHiking),
+              label: 'Trips',
             ),
           ],
           currentIndex: _selectedIndex,

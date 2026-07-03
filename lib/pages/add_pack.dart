@@ -355,7 +355,9 @@ class _AddPackPageState extends State<AddPackPage> {
                     minimumSize: Size.fromHeight(buttonHeight),
                     padding: EdgeInsets.symmetric(vertical: 0.sp),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.sp),
+                      borderRadius: BorderRadius.circular(
+                        UiConstants.buttonRadius.sp,
+                      ),
                     ),
                   ),
                   onPressed: () => Navigator.of(context).pop(),

@@ -137,6 +137,53 @@ class Schema {
     CREATE INDEX IF NOT EXISTS idx_custom_list_items_list ON custom_list_items(list_id)
   ''';
 
+  // ---------------------------------------------------------------------------
+  // Trips (logged outings)
+  // ---------------------------------------------------------------------------
+  static const String createTripsTable = '''
+    CREATE TABLE IF NOT EXISTS trips (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      pack_id TEXT REFERENCES packs(id) ON DELETE SET NULL,
+      activity_type TEXT,
+      start_date TEXT NOT NULL,
+      end_date TEXT,
+      location TEXT,
+      conditions TEXT,
+      notes TEXT,
+      created_at TEXT NOT NULL
+    )
+  ''';
+
+  // ---------------------------------------------------------------------------
+  // Trip Items (snapshot of gear taken)
+  // ---------------------------------------------------------------------------
+  static const String createTripItemsTable = '''
+    CREATE TABLE IF NOT EXISTS trip_items (
+      id TEXT PRIMARY KEY,
+      trip_id TEXT NOT NULL REFERENCES trips(id) ON DELETE CASCADE,
+      gear_item_id TEXT REFERENCES gear_items(id) ON DELETE SET NULL,
+      item_name TEXT NOT NULL,
+      weight_grams REAL NOT NULL,
+      quantity INTEGER NOT NULL DEFAULT 1
+    )
+  ''';
+
+  // ---------------------------------------------------------------------------
+  // Trip indices
+  // ---------------------------------------------------------------------------
+  static const String createTripItemsTripIdx = '''
+    CREATE INDEX IF NOT EXISTS idx_trip_items_trip ON trip_items(trip_id)
+  ''';
+
+  static const String createTripItemsGearIdx = '''
+    CREATE INDEX IF NOT EXISTS idx_trip_items_gear ON trip_items(gear_item_id)
+  ''';
+
+  static const String createTripsStartDateIdx = '''
+    CREATE INDEX IF NOT EXISTS idx_trips_start_date ON trips(start_date DESC)
+  ''';
+
   /// Run all DDL statements to create the schema.
   static Future<void> createAll(Database db) async {
     await db.execute(createCategoriesTable);
@@ -153,6 +200,13 @@ class Schema {
     await db.execute(createPackItemsPackIdx);
     await db.execute(createPackItemsGearIdx);
     await db.execute(createCustomListItemsListIdx);
+    await db.execute(createTripsTable);
+    await db.execute(createTripItemsTable);
+
+    // Trip indices
+    await db.execute(createTripItemsTripIdx);
+    await db.execute(createTripItemsGearIdx);
+    await db.execute(createTripsStartDateIdx);
   }
 
   // ---------------------------------------------------------------------------

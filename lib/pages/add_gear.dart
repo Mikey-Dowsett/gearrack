@@ -633,11 +633,12 @@ class _AddGearPageState extends State<AddGearPage> {
                     minimumSize: Size.fromHeight(buttonHeight),
                     padding: EdgeInsets.symmetric(vertical: 0.sp),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.sp),
+                      borderRadius: BorderRadius.circular(
+                        UiConstants.buttonRadius.sp,
+                      ),
                     ),
                   ),
                   onPressed: () {
-                    // Cancel / close page
                     Navigator.of(context).pop();
                   },
                   child: FaIcon(

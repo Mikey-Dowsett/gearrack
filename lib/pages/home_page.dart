@@ -10,7 +10,6 @@ import 'package:gearrack/theme/app_colors.dart';
 import 'package:gearrack/theme/app_text_styles.dart';
 import 'package:gearrack/pages/add_gear.dart';
 import 'package:gearrack/utils/icon_registry.dart';
-import 'package:gearrack/theme/app_colors.dart' show AppColors;
 import 'package:gearrack/theme/ui_constants.dart';
 import 'package:gearrack/utils/weight_formatter.dart';
 
@@ -176,7 +175,9 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.sp),
+                                borderRadius: BorderRadius.circular(
+                                  UiConstants.borderRadius.sp,
+                                ),
                               ),
                               contentPadding: EdgeInsets.symmetric(
                                 horizontal: 16.sp,
@@ -208,7 +209,9 @@ class _HomePageState extends State<HomePage> {
                                 showCheckmark: false,
                                 selectedColor: colors.primary,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
+                                  borderRadius: BorderRadius.circular(
+                                    UiConstants.chipRadius.sp,
+                                  ),
                                   side: BorderSide(
                                     color: colors.border,
                                     width: UiConstants.borderWidth,
@@ -248,7 +251,9 @@ class _HomePageState extends State<HomePage> {
                                     },
                                     showCheckmark: false,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
+                                      borderRadius: BorderRadius.circular(
+                                        UiConstants.chipRadius.sp,
+                                      ),
                                       side: BorderSide(
                                         color: colors.border,
                                         width: UiConstants.borderWidth,
@@ -355,7 +360,7 @@ class _SortButton extends StatelessWidget {
         minimumSize: Size.zero,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5.sp),
+          borderRadius: BorderRadius.circular(UiConstants.buttonRadius.sp),
         ),
       ),
     );
