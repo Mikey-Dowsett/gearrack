@@ -539,62 +539,74 @@ class _PackPageState extends State<PackPage>
       padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 3.sp),
       child: Card.filled(
         color: colors.primaryContainer,
-        elevation: 1,
+        elevation: UiConstants.cardElevation,
+        clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.compactCardRadius.sp),
-          side: BorderSide(color: colors.primary, width: 1.5),
         ),
-        child: SizedBox(
-          height: 56.sp,
-          child: Row(
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: colors.primary.withValues(alpha: 0.3), width: 1),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              // Icon area
               SizedBox(
-                width: 44.sp,
-                child: Center(
-                  child: FaIcon(
-                    IconRegistry.resolve(iconKey),
-                    size: 20.sp,
-                    color: _categoryColorById(bag.categoryId, colors.primary),
-                  ),
-                ),
-              ),
-              // Name, brand
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                height: 56.sp,
+                child: Row(
                   children: [
-                    Text(
-                      bag.name,
-                      style: AppTextStyles.titleLarge.copyWith(fontSize: 13.sp),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (bag.brand != null)
-                      Text(
-                        bag.brand!,
-                        style: AppTextStyles.bodySmall,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                  ],
-                ),
-              ),
-              // "Bag" badge + weight
-              Padding(
-                padding: EdgeInsets.only(right: 8.sp),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                      children: [
-                        Text(
-                          _bagWp.value,
-                          style: AppTextStyles.titleLarge.copyWith(
-                            fontSize: 13.sp,
-                          ),
+                    // Icon area
+                    SizedBox(
+                      width: 44.sp,
+                      child: Center(
+                        child: FaIcon(
+                          IconRegistry.resolve(iconKey),
+                          size: 20.sp,
+                          color: _categoryColorById(bag.categoryId, colors.primary),
                         ),
-                        Text(_bagWp.unit, style: AppTextStyles.bodySmall),
-                      ],
+                      ),
+                    ),
+                    // Name, brand
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            bag.name,
+                            style: AppTextStyles.titleLarge.copyWith(fontSize: 13.sp),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (bag.brand != null)
+                            Text(
+                              bag.brand!,
+                              style: AppTextStyles.bodySmall,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                        ],
+                      ),
+                    ),
+                    // "Bag" badge + weight
+                    Padding(
+                      padding: EdgeInsets.only(right: 8.sp),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            children: [
+                              Text(
+                                _bagWp.value,
+                                style: AppTextStyles.titleLarge.copyWith(
+                                  fontSize: 13.sp,
+                                ),
+                              ),
+                              Text(_bagWp.unit, style: AppTextStyles.bodySmall),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -617,84 +629,93 @@ class _PackPageState extends State<PackPage>
       padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 3.sp),
       child: Card.filled(
         color: colors.surface,
-        elevation: 1,
+        elevation: UiConstants.cardElevation,
+        clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.compactCardRadius.sp),
-          side: BorderSide(
-            color: colors.border,
-            width: UiConstants.borderWidth,
-          ),
         ),
-        child: SizedBox(
-          height: 56.sp,
-          child: Row(
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: colors.border, width: 1),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              // Icon area
               SizedBox(
-                width: 44.sp,
-                child: Center(
-                  child: FaIcon(
-                    IconRegistry.resolve(iconKey),
-                    size: 20.sp,
-                    color: _categoryColorById(gear.categoryId, colors.primary),
-                  ),
-                ),
-              ),
-              // Name, brand
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                height: 56.sp,
+                child: Row(
                   children: [
-                    Text(
-                      gear.name,
-                      style: AppTextStyles.titleLarge.copyWith(fontSize: 13.sp),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (gear.brand != null)
-                      Text(
-                        gear.brand!,
-                        style: AppTextStyles.bodySmall,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                  ],
-                ),
-              ),
-              // Weight
-              Padding(
-                padding: EdgeInsets.only(right: 8.sp),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                      children: [
-                        Text(
-                          _gwp.value,
-                          style: AppTextStyles.titleLarge.copyWith(
-                            fontSize: 13.sp,
-                          ),
+                    // Icon area
+                    SizedBox(
+                      width: 44.sp,
+                      child: Center(
+                        child: FaIcon(
+                          IconRegistry.resolve(iconKey),
+                          size: 20.sp,
+                          color: _categoryColorById(gear.categoryId, colors.primary),
                         ),
-                        Text(_gwp.unit, style: AppTextStyles.bodySmall),
-                      ],
+                      ),
+                    ),
+                    // Name, brand
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            gear.name,
+                            style: AppTextStyles.titleLarge.copyWith(fontSize: 13.sp),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (gear.brand != null)
+                            Text(
+                              gear.brand!,
+                              style: AppTextStyles.bodySmall,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                        ],
+                      ),
+                    ),
+                    // Weight
+                    Padding(
+                      padding: EdgeInsets.only(right: 8.sp),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            children: [
+                              Text(
+                                _gwp.value,
+                                style: AppTextStyles.titleLarge.copyWith(
+                                  fontSize: 13.sp,
+                                ),
+                              ),
+                              Text(_gwp.unit, style: AppTextStyles.bodySmall),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Remove button
+                    SizedBox(
+                      width: 36.sp,
+                      child: IconButton(
+                        icon: FaIcon(
+                          FontAwesomeIcons.xmark,
+                          size: 14.sp,
+                          color: colors.textSecondary,
+                        ),
+                        onPressed: () => _removeGearItem(packItemId),
+                        padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(
+                          minWidth: 36.sp,
+                          minHeight: 36.sp,
+                        ),
+                      ),
                     ),
                   ],
-                ),
-              ),
-              // Remove button
-              SizedBox(
-                width: 36.sp,
-                child: IconButton(
-                  icon: FaIcon(
-                    FontAwesomeIcons.xmark,
-                    size: 14.sp,
-                    color: colors.textSecondary,
-                  ),
-                  onPressed: () => _removeGearItem(packItemId),
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(
-                    minWidth: 36.sp,
-                    minHeight: 36.sp,
-                  ),
                 ),
               ),
             ],

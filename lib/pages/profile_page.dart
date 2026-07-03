@@ -154,7 +154,6 @@ class ProfilePageState extends State<ProfilePage> {
       decoration: BoxDecoration(
         color: colors.surfaceRaised,
         borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
-        border: Border.all(color: colors.border, width: UiConstants.borderWidth),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,7 +204,6 @@ class ProfilePageState extends State<ProfilePage> {
                 style: AppTextStyles.bodyMedium.copyWith(color: colors.onSurface),
               ),
               style: OutlinedButton.styleFrom(
-                side: BorderSide(color: colors.border),
                 foregroundColor: colors.onSurface,
                 padding: EdgeInsets.symmetric(horizontal: 20.sp, vertical: 12.sp),
                 minimumSize: Size(0, 44.sp),
@@ -314,7 +312,6 @@ class ProfilePageState extends State<ProfilePage> {
                     style: AppTextStyles.bodyMedium.copyWith(color: colors.onPrimary),
                   ),
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: colors.onPrimary.withValues(alpha: 0.4)),
                     foregroundColor: colors.onPrimary,
                     padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 10.sp),
                     shape: RoundedRectangleBorder(
@@ -340,7 +337,6 @@ class ProfilePageState extends State<ProfilePage> {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
-        border: Border.all(color: colors.border, width: UiConstants.borderWidth),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

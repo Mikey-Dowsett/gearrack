@@ -6,8 +6,10 @@ import 'package:gearrack/pages/home_page.dart';
 import 'package:gearrack/pages/packs_page.dart';
 import 'package:gearrack/pages/trip_history_page.dart';
 import 'package:gearrack/pages/profile_page.dart';
+import 'package:gearrack/widgets/paper_texture.dart';
 import 'package:gearrack/theme/app_colors.dart';
 import 'package:gearrack/theme/app_theme.dart';
+import 'package:gearrack/theme/ui_constants.dart';
 import 'package:gearrack/database/database_helper.dart';
 import 'package:gearrack/database/app_settings_dao.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,23 +19,18 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // On desktop platforms, sqflite needs the FFI backend.
-  // Mobile (Android/iOS) uses the native plugin automatically.
   if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
 
-  // Initialize the database before running the app.
   await DatabaseHelper.instance.database;
 
-  // Hide the system navigation bar (back/home/recents) for a full-screen
-  // experience. Swiping from the edge reveals it temporarily.
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
   runApp(
     ScreenUtilInit(
-      designSize: const Size(412, 915), // Reference design size
+      designSize: const Size(412, 915),
       minTextAdapt: true,
       builder: (context, child) {
         return const GearRackApp();
@@ -43,7 +40,6 @@ void main() async {
   );
 }
 
-/// Top-level app that loads saved theme preference.
 class GearRackApp extends StatefulWidget {
   const GearRackApp({super.key});
 
@@ -92,6 +88,14 @@ class _GearRackAppState extends State<GearRackApp> {
       darkTheme: AppTheme.darkTheme,
       themeMode: _themeMode,
       home: MainNavigationScreen(onThemeChanged: _onThemeChanged),
+      builder: (context, child) {
+        return Stack(
+          children: [
+            child!,
+            const Positioned.fill(child: PaperTexture()),
+          ],
+        );
+      },
     );
   }
 }
@@ -140,38 +144,47 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         bottom: false,
         child: IndexedStack(index: _selectedIndex, children: _pages),
       ),
-      // Wrap the BottomNavigationBar in a SafeArea so it won't overlap
-      // device navigation bars / gesture areas on phones with cutouts.
       bottomNavigationBar: SafeArea(
         left: false,
         right: false,
         bottom: true,
-        child: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: colors.surfaceRaised,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: FaIcon(FontAwesomeIcons.tent),
-              label: 'Gear',
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                color: colors.borderStrong,
+                width: UiConstants.borderWidth,
+              ),
             ),
-            BottomNavigationBarItem(
-              icon: FaIcon(FontAwesomeIcons.suitcase),
-              label: 'Packs',
-            ),
-            BottomNavigationBarItem(
-              icon: FaIcon(FontAwesomeIcons.personHiking),
-              label: 'Trips',
-            ),
-            BottomNavigationBarItem(
-              icon: FaIcon(FontAwesomeIcons.solidUser),
-              label: 'Profile',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: colors.primary,
-          unselectedItemColor: colors.textSecondary,
-          showUnselectedLabels: true,
-          onTap: _onItemTapped,
+          ),
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: colors.surfaceRaised,
+            elevation: 0,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: FaIcon(FontAwesomeIcons.tent),
+                label: 'Gear',
+              ),
+              BottomNavigationBarItem(
+                icon: FaIcon(FontAwesomeIcons.suitcase),
+                label: 'Packs',
+              ),
+              BottomNavigationBarItem(
+                icon: FaIcon(FontAwesomeIcons.personHiking),
+                label: 'Trips',
+              ),
+              BottomNavigationBarItem(
+                icon: FaIcon(FontAwesomeIcons.solidUser),
+                label: 'Profile',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: colors.primary,
+            unselectedItemColor: colors.textSecondary,
+            showUnselectedLabels: true,
+            onTap: _onItemTapped,
+          ),
         ),
       ),
     );

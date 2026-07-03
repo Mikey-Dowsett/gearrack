@@ -6,14 +6,17 @@ import 'package:flutter/material.dart';
 /// exposes a runtime accessor `AppColors.of(context)` which returns a
 /// small object with semantic colors appropriate for the current theme.
 class AppColors {
-  // Status Colors (Shared)
-  static const Color statusNew = Color(0xFF459B61);
-  static const Color statusGood = Color(0xFF809E5A);
-  static const Color statusWorn = Color(0xFFCA933E);
-  static const Color statusRetired = Color(0xFF90847A);
+  // Status Colors (Shared) — earthy, desaturated for analog feel
+  static const Color statusNew = Color(0xFF5C8F68);
+  static const Color statusGood = Color(0xFF85986A);
+  static const Color statusWorn = Color(0xFFB8915A);
+  static const Color statusRetired = Color(0xFF8A817A);
 
-  // Light Mode (Field)
-  static const Color lightBackground = Color(0xFFEEE9DF);
+  // Accent — weathered-tool patina
+  static const Color terracotta = Color(0xFFB86B46);
+
+  // Light Mode (Vintage Paper)
+  static const Color lightBackground = Color(0xFFF0E8D8);
   static const Color lightSurface = Color(0xFFFAF6EF);
   static const Color lightSurfaceRaised = Color(0xFFE5DFD3);
   static const Color lightSurfaceSunken = Color(0xFFDCD5C7);
@@ -95,6 +98,7 @@ class AppColorPalette {
   final Color secondary;
   final Color tertiary;
   final Color tertiaryContainer;
+  final Color terracotta;
   final Color error;
   final Color statusNew;
   final Color statusGood;
@@ -121,6 +125,7 @@ class AppColorPalette {
     required this.secondary,
     required this.tertiary,
     required this.tertiaryContainer,
+    required this.terracotta,
     required this.error,
     required this.statusNew,
     required this.statusGood,
@@ -149,6 +154,7 @@ class AppColorPalette {
       secondary: AppColors.lightSecondary,
       tertiary: AppColors.lightTertiary,
       tertiaryContainer: AppColors.lightTertiaryContainer,
+      terracotta: AppColors.terracotta,
       error: Color(0xFFB00020),
       statusNew: AppColors.statusNew,
       statusGood: AppColors.statusGood,
@@ -178,6 +184,7 @@ class AppColorPalette {
       secondary: AppColors.darkSecondary,
       tertiary: AppColors.darkTertiary,
       tertiaryContainer: AppColors.darkTertaryContainer,
+      terracotta: AppColors.terracotta,
       error: Color(0xFFB00020),
       statusNew: AppColors.statusNew,
       statusGood: AppColors.statusGood,

@@ -35,7 +35,6 @@ class AppTheme {
       ),
     );
 
-    // Compose a set of common component themes that rely on the color palette
     final colors = base.colorScheme;
 
     return base.copyWith(
@@ -49,22 +48,19 @@ class AppTheme {
           horizontal: 12.0,
           vertical: 12.0,
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+        border: UnderlineInputBorder(
           borderSide: BorderSide(
             color: AppColors.lightBorder,
             width: UiConstants.borderWidth,
           ),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+        enabledBorder: UnderlineInputBorder(
           borderSide: BorderSide(
             color: AppColors.lightBorder,
             width: UiConstants.borderWidth,
           ),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+        focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(
             color: AppColors.lightPrimary,
             width: UiConstants.borderWidth,
@@ -88,10 +84,6 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: colors.onSurface,
-          side: BorderSide(
-            color: AppColors.lightBorder,
-            width: UiConstants.borderWidth,
-          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(UiConstants.buttonRadius),
           ),
@@ -123,8 +115,6 @@ class AppTheme {
         ),
       ),
 
-      // Card color is set here; shape/margins should be used on Card widgets
-      // or added to `Card` when a custom shape is required.
       cardColor: AppColors.lightSurface,
 
       appBarTheme: AppBarTheme(
@@ -143,6 +133,13 @@ class AppTheme {
         selectedItemColor: colors.primary,
         unselectedItemColor: AppColors.lightTextSecondary,
         showUnselectedLabels: true,
+        elevation: 0,
+        selectedLabelStyle: AppTextStyles.bodyMedium.copyWith(
+          color: colors.primary,
+        ),
+        unselectedLabelStyle: AppTextStyles.bodyMedium.copyWith(
+          color: AppColors.lightTextSecondary,
+        ),
       ),
 
       iconTheme: const IconThemeData(color: AppColors.lightTextPrimary),
@@ -193,22 +190,19 @@ class AppTheme {
           horizontal: 12.0,
           vertical: 12.0,
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+        border: UnderlineInputBorder(
           borderSide: BorderSide(
             color: AppColors.darkBorder,
             width: UiConstants.borderWidth,
           ),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+        enabledBorder: UnderlineInputBorder(
           borderSide: BorderSide(
             color: AppColors.darkBorder,
             width: UiConstants.borderWidth,
           ),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+        focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(
             color: AppColors.darkPrimary,
             width: UiConstants.borderWidth,
@@ -232,10 +226,6 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: colors.onSurface,
-          side: BorderSide(
-            color: AppColors.darkBorder,
-            width: UiConstants.borderWidth,
-          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(UiConstants.buttonRadius),
           ),
@@ -267,8 +257,6 @@ class AppTheme {
         ),
       ),
 
-      // Card color is set here; shape/margins should be used on Card widgets
-      // or added to `Card` when a custom shape is required.
       cardColor: AppColors.darkSurface,
 
       appBarTheme: AppBarTheme(
@@ -287,6 +275,13 @@ class AppTheme {
         selectedItemColor: colors.primary,
         unselectedItemColor: AppColors.darkTextSecondary,
         showUnselectedLabels: true,
+        elevation: 0,
+        selectedLabelStyle: AppTextStyles.bodyMedium.copyWith(
+          color: colors.primary,
+        ),
+        unselectedLabelStyle: AppTextStyles.bodyMedium.copyWith(
+          color: AppColors.darkTextSecondary,
+        ),
       ),
 
       iconTheme: const IconThemeData(color: AppColors.darkTextPrimary),

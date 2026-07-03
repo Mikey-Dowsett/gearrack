@@ -44,158 +44,163 @@ class PackCard extends StatelessWidget {
         child: Card.filled(
           color: colors.surface,
           elevation: UiConstants.cardElevation,
+          clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
-            side: BorderSide(
-              color: colors.border,
-              width: UiConstants.borderWidth,
-            ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Gradient section
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(UiConstants.cardRadius.sp),
-                    topRight: Radius.circular(UiConstants.cardRadius.sp),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: colors.border, width: 1),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Gradient section
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(UiConstants.cardRadius.sp),
+                      topRight: Radius.circular(UiConstants.cardRadius.sp),
+                    ),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [colors.primary, colors.accent],
+                      stops: const [0.0, 1.0],
+                    ),
                   ),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [colors.primary, colors.accent],
-                  ),
-                ),
-                padding: EdgeInsets.all(12.sp),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            pack.name,
-                            style: AppTextStyles.titleLarge.copyWith(
-                              color: colors.onPrimary,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          if (pack.description != null &&
-                              pack.description!.isNotEmpty)
-                            Padding(
-                              padding: EdgeInsets.only(
-                                top: UiConstants.spacingXS.sp,
+                  padding: EdgeInsets.all(12.sp),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              pack.name,
+                              style: AppTextStyles.titleLarge.copyWith(
+                                color: colors.onPrimary,
                               ),
-                              child: Text(
-                                pack.description!,
-                                style: AppTextStyles.bodyMedium.copyWith(
-                                  color: colors.onPrimary.withValues(
-                                    alpha: 0.85,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            if (pack.description != null &&
+                                pack.description!.isNotEmpty)
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: UiConstants.spacingXS.sp,
+                                ),
+                                child: Text(
+                                  pack.description!,
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    color: colors.onPrimary.withValues(
+                                      alpha: 0.85,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          if (bagName != null && bagName!.isNotEmpty)
-                            Padding(
-                              padding: EdgeInsets.only(
-                                top: UiConstants.spacingXS.sp,
-                              ),
-                              child: Row(
-                                children: [
-                                  FaIcon(
-                                    FontAwesomeIcons.suitcase,
-                                    size: 14.sp,
-                                    color: colors.onPrimary.withValues(
-                                      alpha: 0.8,
-                                    ),
-                                  ),
-                                  SizedBox(width: 4.sp),
-                                  Text(
-                                    bagName!,
-                                    style: AppTextStyles.labelMedium.copyWith(
+                            if (bagName != null && bagName!.isNotEmpty)
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: UiConstants.spacingXS.sp,
+                                ),
+                                child: Row(
+                                  children: [
+                                    FaIcon(
+                                      FontAwesomeIcons.suitcase,
+                                      size: 14.sp,
                                       color: colors.onPrimary.withValues(
                                         alpha: 0.8,
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: UiConstants.spacingS.sp),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              _wp.value +
-                                  (_wp.unit == 'kg' ? ' ' + _wp.unit : ''),
-                              style: AppTextStyles.titleLarge.copyWith(
-                                color: colors.onPrimary,
-                              ),
-                            ),
-                            if (_wp.unit == 'g')
-                              Text(
-                                _wp.unit,
-                                style: AppTextStyles.labelMedium.copyWith(
-                                  color: colors.onPrimary.withValues(
-                                    alpha: 0.8,
-                                  ),
+                                    SizedBox(width: 4.sp),
+                                    Text(
+                                      bagName!,
+                                      style: AppTextStyles.labelMedium.copyWith(
+                                        color: colors.onPrimary.withValues(
+                                          alpha: 0.8,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                           ],
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      SizedBox(width: UiConstants.spacingS.sp),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                _wp.value +
+                                    (_wp.unit == 'kg' ? ' ' + _wp.unit : ''),
+                                style: AppTextStyles.titleLarge.copyWith(
+                                  color: colors.onPrimary,
+                                ),
+                              ),
+                              if (_wp.unit == 'g')
+                                Text(
+                                  _wp.unit,
+                                  style: AppTextStyles.labelMedium.copyWith(
+                                    color: colors.onPrimary.withValues(
+                                      alpha: 0.8,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              // Non-gradient bottom section
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 12.sp,
-                  vertical: 10.sp,
-                ),
-                child: Row(
-                  children: [
-                    FaIcon(
-                      FontAwesomeIcons.box,
-                      size: 15.sp,
-                      color: colors.textSecondary,
-                    ),
-                    SizedBox(width: 6.sp),
-                    Text(
-                      '$totalItems item${totalItems != 1 ? 's' : ''}',
-                      style: AppTextStyles.bodyMedium.copyWith(
+                // Non-gradient bottom section
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.sp,
+                    vertical: 10.sp,
+                  ),
+                  child: Row(
+                    children: [
+                      FaIcon(
+                        FontAwesomeIcons.box,
+                        size: 15.sp,
                         color: colors.textSecondary,
                       ),
-                    ),
-                    SizedBox(width: 16.sp),
-                    FaIcon(
-                      FontAwesomeIcons.boxOpen,
-                      size: 15.sp,
-                      color: colors.textSecondary,
-                    ),
-                    SizedBox(width: 6.sp),
-                    Text(
-                      capacityLiters != null
-                          ? '${capacityLiters!.toStringAsFixed(0)} L'
-                          : '— L',
-                      style: AppTextStyles.bodyMedium.copyWith(
+                      SizedBox(width: 6.sp),
+                      Text(
+                        '$totalItems item${totalItems != 1 ? 's' : ''}',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: colors.textSecondary,
+                        ),
+                      ),
+                      SizedBox(width: 16.sp),
+                      FaIcon(
+                        FontAwesomeIcons.boxOpen,
+                        size: 15.sp,
                         color: colors.textSecondary,
                       ),
-                    ),
-                  ],
+                      SizedBox(width: 6.sp),
+                      Text(
+                        capacityLiters != null
+                            ? '${capacityLiters!.toStringAsFixed(0)} L'
+                            :                   '— L',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: colors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

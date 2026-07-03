@@ -113,22 +113,19 @@ class _AddPackPageState extends State<AddPackPage> {
             ),
             filled: true,
             fillColor: colors.surface,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+            border: UnderlineInputBorder(
               borderSide: BorderSide(
                 color: colors.border,
                 width: UiConstants.borderWidth,
               ),
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+            enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
                 color: colors.border,
                 width: UiConstants.borderWidth,
               ),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+            focusedBorder: UnderlineInputBorder(
               borderSide: BorderSide(
                 color: colors.primary,
                 width: UiConstants.borderWidth,
@@ -168,10 +165,7 @@ class _AddPackPageState extends State<AddPackPage> {
               decoration: BoxDecoration(
                 color: colors.surface,
                 borderRadius: BorderRadius.circular(UiConstants.borderRadius),
-                border: Border.all(
-                  color: colors.border,
-                  width: UiConstants.borderWidth,
-                ),
+                border: Border(bottom: BorderSide(color: colors.border, width: 1)),
               ),
               child: _availableBags.isEmpty
                   ? Padding(
@@ -233,10 +227,6 @@ class _AddPackPageState extends State<AddPackPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
                               UiConstants.chipRadius.sp,
-                            ),
-                            side: BorderSide(
-                              color: selected ? colors.primary : colors.border,
-                              width: UiConstants.borderWidth,
                             ),
                           ),
                           padding: EdgeInsets.symmetric(
@@ -348,10 +338,6 @@ class _AddPackPageState extends State<AddPackPage> {
               Expanded(
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: colors.border,
-                      width: UiConstants.borderWidth,
-                    ),
                     backgroundColor: colors.surface,
                     foregroundColor: colors.onSurface,
                     minimumSize: Size.fromHeight(buttonHeight),

@@ -168,83 +168,93 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
       padding: EdgeInsets.only(bottom: 8.sp),
       child: Card.filled(
         color: colors.surface,
+        clipBehavior: Clip.antiAlias,
+        elevation: UiConstants.cardElevation,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
-          side: BorderSide(
-            color: colors.border,
-            width: UiConstants.borderWidth,
-          ),
         ),
-        child: ListTile(
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: UiConstants.spacingM.sp,
-            vertical: 2.sp,
-          ),
-          leading: Container(
-            width: 40.sp,
-            height: 40.sp,
-            decoration: BoxDecoration(
-              color: catColor.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(10.sp),
-            ),
-            child: Center(
-              child: FaIcon(
-                IconRegistry.resolve(cat.icon),
-                size: 18.sp,
-                color: catColor,
-              ),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: colors.border, width: 1),
             ),
           ),
-          title: Row(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                cat.name,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: colors.onSurface,
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: UiConstants.spacingM.sp,
+                  vertical: 2.sp,
                 ),
-              ),
-              if (cat.isDefault) ...[
-                SizedBox(width: 6.sp),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 6.sp,
-                    vertical: 2.sp,
-                  ),
+                leading: Container(
+                  width: 40.sp,
+                  height: 40.sp,
                   decoration: BoxDecoration(
-                    color: colors.primary.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(4.sp),
+                    color: catColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10.sp),
                   ),
-                  child: Text(
-                    'DEFAULT',
-                    style: AppTextStyles.labelSmall.copyWith(
-                      color: colors.primary,
-                      fontSize: 8.sp,
+                  child: Center(
+                    child: FaIcon(
+                      IconRegistry.resolve(cat.icon),
+                      size: 18.sp,
+                      color: catColor,
                     ),
                   ),
                 ),
-              ],
-            ],
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (!cat.isDefault)
-                IconButton(
-                  icon: FaIcon(
-                    FontAwesomeIcons.trash,
-                    size: 14.sp,
-                    color: colors.textSecondary,
-                  ),
-                  onPressed: () => _deleteCategory(cat),
+                title: Row(
+                  children: [
+                    Text(
+                      cat.name,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: colors.onSurface,
+                      ),
+                    ),
+                    if (cat.isDefault) ...[
+                      SizedBox(width: 6.sp),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6.sp,
+                          vertical: 2.sp,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colors.primary.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(4.sp),
+                        ),
+                        child: Text(
+                          'DEFAULT',
+                          style: AppTextStyles.labelSmall.copyWith(
+                            color: colors.primary,
+                            fontSize: 8.sp,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-              FaIcon(
-                FontAwesomeIcons.penToSquare,
-                size: 14.sp,
-                color: colors.textSecondary,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (!cat.isDefault)
+                      IconButton(
+                        icon: FaIcon(
+                          FontAwesomeIcons.trash,
+                          size: 14.sp,
+                          color: colors.textSecondary,
+                        ),
+                        onPressed: () => _deleteCategory(cat),
+                      ),
+                    FaIcon(
+                      FontAwesomeIcons.penToSquare,
+                      size: 14.sp,
+                      color: colors.textSecondary,
+                    ),
+                  ],
+                ),
+                onTap: () => _showCategoryDialog(existing: cat),
               ),
             ],
           ),
-          onTap: () => _showCategoryDialog(existing: cat),
         ),
       ),
     );

@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   String? _selectedCategoryId;
   String _searchQuery = '';
   bool _isLoading = true;
-  int _sortMode = 0; // 0 = name (A-Z), 1 = weight, 2 = price
+  int _sortMode = 0;
 
   @override
   void initState() {
@@ -64,7 +64,6 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(builder: (context) => const AddGearPage()),
     );
 
-    // If a new gear item was added, refresh the list
     if (result != null) {
       _loadGear();
     }
@@ -193,11 +192,7 @@ class _HomePageState extends State<HomePage> {
                                   child: FaIcon(FontAwesomeIcons.search),
                                 ),
                               ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  UiConstants.borderRadius.sp,
-                                ),
-                              ),
+                              border: UnderlineInputBorder(),
                               contentPadding: EdgeInsets.symmetric(
                                 horizontal: 16.sp,
                                 vertical: 12.sp,
@@ -232,10 +227,6 @@ class _HomePageState extends State<HomePage> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(
                                     UiConstants.chipRadius.sp,
-                                  ),
-                                  side: BorderSide(
-                                    color: colors.border,
-                                    width: UiConstants.borderWidth,
                                   ),
                                 ),
                               ),
@@ -277,10 +268,6 @@ class _HomePageState extends State<HomePage> {
                                       borderRadius: BorderRadius.circular(
                                         UiConstants.chipRadius.sp,
                                       ),
-                                      side: BorderSide(
-                                        color: colors.border,
-                                        width: UiConstants.borderWidth,
-                                      ),
                                     ),
                                   ),
                                 );
@@ -293,6 +280,15 @@ class _HomePageState extends State<HomePage> {
                           padding: EdgeInsets.symmetric(horizontal: 12.sp),
                           child: Row(
                             children: [
+                              Container(
+                                width: 4.sp,
+                                height: 16.sp,
+                                decoration: BoxDecoration(
+                                  color: colors.tertiary,
+                                  borderRadius: BorderRadius.circular(1.sp),
+                                ),
+                              ),
+                              SizedBox(width: 6.sp),
                               Text(
                                 '${_filteredGearItems.length} items ∙ ${formatWeight(_totalGrams)} total',
                                 style: AppTextStyles.bodyMedium.copyWith(
@@ -378,7 +374,6 @@ class _SortButton extends StatelessWidget {
       icon: FaIcon(FontAwesomeIcons.arrowDownWideShort, size: 14.sp),
       label: Text(_label, style: TextStyle(fontSize: 12.sp)),
       style: OutlinedButton.styleFrom(
-        side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
         backgroundColor: colors.surface,
         foregroundColor: colors.onSurface,
         padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 4.sp),

@@ -15,11 +15,11 @@ GearRack is a **tool for outdoor enthusiasts** who track, organize, and pack the
 |-----------|-------|
 | Tone | **Utilitarian, warm, grounded** — not playful, not corporate |
 | Inspiration | Field notebooks, trail signage, well-worn equipment |
-| Feeling | Dependable, honest, slightly rugged |
-| Light mode | Warm tan/cream backdrop recalling sun-bleached canvas |
+| Feeling | Dependable, honest, slightly rugged, analog |
+| Light mode | Warm vintage-paper backdrop (`#F0E8D8`) recalling aged canvas |
 | Dark mode | Deep forest-night tones for low-light camp use |
 
-Every color, radius, and type weight serves readability and hierarchy. Decoration is minimal and functional.
+Design is flat, gridded, and texture-forward. Every color, radius, and type weight serves readability and hierarchy. Decoration is minimal and functional.
 
 ---
 
@@ -45,7 +45,7 @@ Use the semantic accessor everywhere. Never hardcode raw hex values in widget fi
 | `primaryMuted` | `#708F77` | `#6B9174` | Subtle primary-toned surfaces |
 | `accent` | `#3A714B` | `#5CAD72` | Secondary call-to-action (gradient partner) |
 | `onAccent` | `#FAF9F0` | `#0D1A10` | Text/icons on accent |
-| `background` | `#EEE9DF` | `#131914` | Page/Scaffold backgrounds |
+| `background` | `#F0E8D8` | `#131914` | Page/Scaffold backgrounds (warm vintage paper) |
 | `onBackground` | `#2C271E` | `#ECE9E1` | Text directly on background |
 | `surface` | `#FAF6EF` | `#1D251F` | Card, input, chip backgrounds |
 | `surfaceRaised` | `#E5DFD3` | `#273129` | AppBar, bottom nav, elevated containers |
@@ -55,20 +55,21 @@ Use the semantic accessor everywhere. Never hardcode raw hex values in widget fi
 | `textSecondary` | `#5C564A` | `#B0ACA0` | Secondary labels, hints, metadata |
 | `textDisabled` | `#867F73` | `#828175` | Disabled text |
 | `border` | `#D2CBBE` | `#333C35` | Default borders, card outlines |
-| `borderStrong` | `#BEB6A8` | `#465048` | Stronger dividers, vertical separators |
+| `borderStrong` | `#BEB6A8` | `#465048` | Stronger dividers, vertical separators, bottom-nav top border |
 | `secondary` | `#72804F` | `#96A672` | Secondary semantic (category tags) |
-| `tertiary` | `#AE6739` | `#D99165` | Tertiary accent (warm highlight) |
+| `tertiary` | `#AE6739` | `#D99165` | Tertiary accent (warm highlight, section bars) |
 | `tertiaryContainer` | `#F5D8C1` | `#5E402F` | Background for tertiary elements |
+| `terracotta` | `#B86B46` | `#B86B46` | Weathered-tool patina accent (rare highlight) |
 | `error` | `#B00020` | `#B00020` | Errors, destructive actions |
 
-### 2.3 Status colors (shared, same in both themes)
+### 2.3 Status colors (shared, same in both themes) — earthy / desaturated
 
 | Token | Hex | Meaning |
 |-------|-----|---------|
-| `statusNew` | `#459B61` | Green — item is new |
-| `statusGood` | `#809E5A` | Olive — item is in good condition |
-| `statusWorn` | `#CA933E` | Amber — item shows wear |
-| `statusRetired` | `#90847A` | Grey — item is retired |
+| `statusNew` | `#5C8F68` | Muted sage — item is new |
+| `statusGood` | `#85986A` | Muted olive — item is in good condition |
+| `statusWorn` | `#B8915A` | Muted ochre — item shows wear |
+| `statusRetired` | `#8A817A` | Warm grey — item is retired |
 
 ### 2.4 Dark-mode rule
 
@@ -80,25 +81,30 @@ Use `colors.textPrimary` / `colors.onSurface` / `colors.onBackground` instead.
 
 ## 3. Typography
 
-### 3.1 Font family
+### 3.1 Font family — dual-face system
 
-**Nunito** (via `google_fonts`). No fallback — the package is pinned in `pubspec.yaml`.
+| Role | Font | Rationale |
+|------|------|-----------|
+| **Headings** | **Fraunces** (via `google_fonts`) | Old-style serif with ink traps and variable optical sizing. Characterful without being decorative — field-guide personality. |
+| **Body / UI labels** | **Inter** (via `google_fonts`) | Clean utilitarian sans. W500 (Medium) for body readability; W400 (Regular) for labels. |
+
+No fallback — both packages pinned in `pubspec.yaml`.
 
 ### 3.2 Type scale
 
 All sizes use `flutter_screenutil` `.sp` for responsive scaling.
 
-| Token | Size | Weight | Letter-spacing | Usage |
-|-------|------|--------|----------------|-------|
-| `titleLarge` | 18.sp | W800 (ExtraBold) | normal | Page titles, hero numbers |
-| `titleMedium` | 16.sp | W800 (ExtraBold) | normal | Section headers |
-| `titleSmall` | 14.sp | W800 (ExtraBold) | normal | Card titles, modal headers |
-| `bodyLarge` | 16.sp | W600 (SemiBold) | normal | Input text, list item names |
-| `bodyMedium` | 14.sp | W600 (SemiBold) | normal | Default body, button labels |
-| `bodySmall` | 12.sp | W600 (SemiBold) | normal | Metadata, secondary info |
-| `labelLarge` | 15.sp | W400 (Regular) | normal | Form labels |
-| `labelMedium` | 13.sp | W400 (Regular) | normal | Small field labels |
-| `labelSmall` | 11.sp | W400 (Regular) | normal | Tiny badges, timestamps |
+| Token | Size | Weight | Font | Usage |
+|-------|------|--------|------|-------|
+| `titleLarge` | 18.sp | W700 (Bold) | Fraunces | Page titles, hero numbers |
+| `titleMedium` | 16.sp | W700 (Bold) | Fraunces | Section headers |
+| `titleSmall` | 14.sp | W700 (Bold) | Fraunces | Card titles, modal headers |
+| `bodyLarge` | 16.sp | W500 (Medium) | Inter | Input text, list item names |
+| `bodyMedium` | 14.sp | W500 (Medium) | Inter | Default body, button labels |
+| `bodySmall` | 12.sp | W500 (Medium) | Inter | Metadata, secondary info |
+| `labelLarge` | 15.sp | W400 (Regular) | Inter | Form labels |
+| `labelMedium` | 13.sp | W400 (Regular) | Inter | Small field labels |
+| `labelSmall` | 11.sp | W400 (Regular) | Inter | Tiny badges, timestamps |
 
 ### 3.3 Usage rules
 
@@ -141,6 +147,10 @@ Aim for ~56–72sp touch targets, 8–16sp gutters.
 - Between form fields: `spacingM` (12.sp) vertical
 - Between sections: `spacingL` (16.sp)
 
+### 4.4 Paper texture
+
+A `PaperTexture` widget (custom `NoisePainter`) adds fine, semi-transparent grain over background surfaces. Applied globally via `MaterialApp.builder`. Never applied over interactive content or text — it sits as a barely perceptible overlay to kill sterile digital flatness.
+
 ---
 
 ## 5. Radii & Borders
@@ -149,12 +159,14 @@ All values defined in `UiConstants`. Apply with `.sp`.
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| `borderRadius` | 10.0 | Input fields, general containers |
-| `cardRadius` | 10.0 | Cards |
-| `compactCardRadius` | 8.0 | Compact row cards (pack build items, trip detail items) |
+| `borderRadius` | **6.0** | Input fields, general containers |
+| `cardRadius` | **8.0** | Cards |
+| `compactCardRadius` | **4.0** | Compact row cards (pack build items, trip detail items) |
 | `chipRadius` | 20.0 | ChoiceChips, FilterChips |
-| `buttonRadius` | 10.0 | Elevated, Outlined, Text buttons |
+| `buttonRadius` | **6.0** | Elevated, Outlined, Text buttons |
 | `borderWidth` | 2.0 | All component borders |
+
+Radii are varied by purpose to create visual rhythm — they are not all the same value.
 
 > ⚠️ **Do not use off-token radii.** `BorderRadius.circular(5)` and raw values without `.sp` are violations.
 
@@ -164,11 +176,12 @@ All values defined in `UiConstants`. Apply with `.sp`.
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| `cardElevation` | 2.0 | All cards (GearCard, PackCard, InfoCard, trip cards) |
+| `cardElevation` | **0.0** | All cards (GearCard, PackCard, InfoCard, trip cards, compact cards) |
 | Buttons | elevation 0 | Elevated buttons have flat appearance |
 | AppBar | elevation 0 | App bars sit flush on content |
+| BottomNavigationBar | elevation 0 | Flush with a 2px `borderStrong` top border as divider |
 
-Shadows are Flutter Material defaults at the given elevation. No custom shadow tokens.
+All surfaces are flat. No shadows. Distinction comes from border color, background tint, and gradient — never elevation.
 
 ---
 
@@ -238,14 +251,16 @@ Shadows are Flutter Material defaults at the given elevation. No custom shadow t
 
 ## 9. Component Patterns
 
-### 9.1 Cards
+### 9.1 Cards — flat design
+
+All cards use `UiConstants.cardElevation` (0). No shadows.
 
 ```dart
 Card.filled(
   color: colors.surface,
-  elevation: UiConstants.cardElevation,  // 2.0
+  elevation: UiConstants.cardElevation,  // 0.0
   shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),  // 10.sp
+    borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),  // 8.sp
     side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
   ),
   // ...
@@ -253,9 +268,10 @@ Card.filled(
 ```
 
 **Variants:**
-- **Default card** — surface bg, 2px border, 10px radius, elevation 2.
-- **Bag card (in pack detail)** — `primaryContainer` bg, `primary` 1.5px border, elevation 1.
+- **Default card** — surface bg, 2px border, 8px radius, elevation 0.
+- **Bag card (in pack detail)** — `primaryContainer` bg, `primary` 1.5px border, elevation 0.
 - **Gradient-header cards** — PackCard & trip cards use a `primary→accent` gradient header for visual hierarchy.
+- **Compact row card** — surface bg, 2px border, 4px radius, elevation 0.
 
 ### 9.2 Input fields
 
@@ -273,19 +289,19 @@ TextFormField(
 )
 ```
 
-The `InputDecorationTheme` in `AppTheme` provides default border, radius (10), and width (2). Override only when a field genuinely differs.
+The `InputDecorationTheme` in `AppTheme` provides default border, radius (6), and width (2). Override only when a field genuinely differs.
 
 ### 9.3 Buttons
 
 | Variant | Background | Foreground | Radius | Border | Padding |
 |---------|-----------|------------|--------|--------|---------|
-| **Elevated** | `colors.primary` | `colors.onPrimary` | `buttonRadius` (10) | none | H:16, V:12 |
-| **Outlined** | `colors.surface` | `colors.onSurface` | `buttonRadius` (10) | 2px `colors.border` | H:14, V:10 |
+| **Elevated** | `colors.primary` | `colors.onPrimary` | `buttonRadius` (6) | none | H:16, V:12 |
+| **Outlined** | `colors.surface` | `colors.onSurface` | `buttonRadius` (6) | 2px `colors.border` | H:14, V:10 |
 | **Text** | transparent | `colors.primary` | none | none | Material default |
 
 **Bottom-sheet save buttons** follow the Elevated pattern.
 **Bottom-sheet cancel buttons** follow the Outlined pattern.
-Both use `buttonRadius` (10).
+Both use `buttonRadius` (6).
 
 ### 9.4 Chips
 
@@ -319,12 +335,15 @@ AppBar(
 
 ```dart
 BottomNavigationBar(
+  elevation: 0,
   backgroundColor: colors.surfaceRaised,
   selectedItemColor: colors.primary,
   unselectedItemColor: colors.textSecondary,
   showUnselectedLabels: true,
 )
 ```
+
+The bottom nav sits flush with the scaffold, demarcated by a 2px `borderStrong` top border instead of a shadow.
 
 ### 9.7 Weight headers (pack detail / trip detail)
 
@@ -343,7 +362,7 @@ Used inside scrollable lists where space is tight (pack Build tab, trip item lis
 ```dart
 Card.filled(
   color: colors.surface,
-  elevation: 1,
+  elevation: UiConstants.cardElevation,
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(UiConstants.compactCardRadius.sp),
     side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
@@ -353,7 +372,7 @@ Card.filled(
 ```
 
 **Bag card variant** (in pack detail): uses `primaryContainer` background,
-`primary` 1.5px border, elevation 1.
+`primary` 1.5px border, elevation 0.
 
 ### 9.9 Empty states
 
@@ -375,7 +394,7 @@ Use `AppTextStyles.labelMedium.copyWith(color: colors.onBackground)` with an opt
 ### 9.11 PRO mode cards (profile page)
 
 **Upgrade card** (PRO inactive):
-- Container with `colors.surfaceRaised` background, `colors.border` 2px border, `cardRadius` (10) radius.
+- Container with `colors.surfaceRaised` background, `colors.border` 2px border, `cardRadius` (8) radius.
 - Crown icon in `colors.tertiary`, benefit list with `colors.primary` check icons.
 - Primary elevated button ("Enable PRO Mode") at bottom.
 
@@ -387,12 +406,20 @@ Use `AppTextStyles.labelMedium.copyWith(color: colors.onBackground)` with an opt
 - Two side-by-side buttons:
   - "Open Trips" — `TextButton` with `onPrimary` 15% alpha background.
   - "Deactivate" — `OutlinedButton` with `onPrimary` at 40% alpha border.
-  Both use `buttonRadius` (10), `onPrimary` text.
+  Both use `buttonRadius` (6), `onPrimary` text.
 
 **PRO gate overlay** (TripHistoryPage when PRO is off):
 - Centered column with `tertiary` crown icon (48.sp), "PRO Feature" title, description body, primary elevated button linking to ProfilePage for activation.
 
 All PRO cards follow the same color, radius, border, and typography tokens as other components. No new tokens introduced.
+
+### 9.12 Section accent bars
+
+Section titles and list metadata headers use a small 4px-wide `tertiary` left bar for visual hierarchy — like a field notebook tab. The bar sits immediately to the left of the text with a 6px gap.
+
+### 9.13 Status indicator dots
+
+GearCard condition indicators use an **outlined circle** (2px border, color = status color) rather than a filled circle avatar. Empty/filled binary: outlined = default, filled = selected state (not currently used).
 
 ---
 
@@ -445,12 +472,13 @@ A future refactor could change the default to `null` or a theme-aware value.
 | File | Role |
 |------|------|
 | `lib/theme/app_colors.dart` | Color palette + semantic accessor |
-| `lib/theme/app_text_styles.dart` | Type scale (Nunito) |
+| `lib/theme/app_text_styles.dart` | Type scale (Fraunces headings + Inter body) |
 | `lib/theme/ui_constants.dart` | Spacing, radii, strokes, icon sizes, misc |
 | `lib/theme/app_theme.dart` | Material ThemeData (light + dark) |
 | `lib/widgets/gear_card.dart` | Gear list item card |
 | `lib/widgets/pack_card.dart` | Pack list item card (gradient header) |
 | `lib/widgets/info_card.dart` | Key-value info card for detail pages |
+| `lib/widgets/paper_texture.dart` | Subtle paper grain overlay (NoisePainter) |
 | `lib/database/app_settings_dao.dart` | App settings persistence (PRO mode toggle, weight unit, theme) |
 | `docs/DESIGN_PHILOSOPHY.md` | **This file — canonical design reference** |
 

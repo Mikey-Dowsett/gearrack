@@ -6,7 +6,7 @@ import '../theme/app_text_styles.dart';
 import '../theme/ui_constants.dart';
 
 class InfoCard extends StatelessWidget {
-  final Object icon; // can be IconData or FaIconData
+  final Object icon;
   final String title;
   final String value;
 
@@ -26,7 +26,6 @@ class InfoCard extends StatelessWidget {
       elevation: UiConstants.cardElevation,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
-        side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
       ),
       child: Padding(
         padding: EdgeInsets.all(UiConstants.spacingM.sp),

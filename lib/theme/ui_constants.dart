@@ -9,18 +9,18 @@ class UiConstants {
   static const double spacingL = 16.0;
   static const double spacingXL = 24.0;
 
-  // Border radii
-  static const double borderRadius = 10.0;
-  static const double cardRadius = 10.0;
-  static const double chipRadius = 20.0;
-  static const double buttonRadius = 10.0;
-  static const double compactCardRadius = 8.0;
+  // Border radii — varied by purpose for visual rhythm
+  static const double borderRadius = 6.0;   // Input fields
+  static const double cardRadius = 8.0;     // Cards
+  static const double chipRadius = 20.0;    // ChoiceChips, FilterChips
+  static const double buttonRadius = 6.0;   // Buttons
+  static const double compactCardRadius = 4.0; // Compact row cards
 
   // Stroke widths
   static const double borderWidth = 2.0;
 
-  // Elevation
-  static const double cardElevation = 2.0;
+  // Elevation — flat design
+  static const double cardElevation = 0.0;
 
   // Icon sizes
   static const double iconSmall = 14.0;

@@ -64,123 +64,131 @@ class GearCard extends StatelessWidget {
         child: Card.filled(
           color: colors.surface,
           elevation: UiConstants.cardElevation,
+          clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
-            side: BorderSide(
-              color: colors.border,
-              width: UiConstants.borderWidth,
-            ),
           ),
-          child: SizedBox(
-            height: 72.sp,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: colors.border, width: 1),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(
-                  width: 52.sp,
-                  child: Stack(
-                    alignment: Alignment.center,
+                  height: 72.sp,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10.sp),
-                            bottomLeft: Radius.circular(10.sp),
+                      SizedBox(
+                        width: 52.sp,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(UiConstants.cardRadius.sp),
+                                  bottomLeft: Radius.circular(UiConstants.cardRadius.sp),
+                                ),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: const Alignment(-0.8, -0.8),
+                                  stops: [0.0, 0.5, 0.5, 1.0],
+                                  colors: [
+                                    colors.surfaceRaised,
+                                    colors.surfaceRaised,
+                                    colors.surfaceSunken,
+                                    colors.surfaceSunken,
+                                  ],
+                                  tileMode: TileMode.repeated,
+                                ),
+                              ),
+                            ),
+                            FaIcon(
+                              icon,
+                              size: 22.sp,
+                              color: categoryColor ?? colors.primary,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            left: UiConstants.spacingS.sp,
+                            right: UiConstants.spacingS.sp,
                           ),
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: const Alignment(-0.8, -0.8),
-                            stops: [0.0, 0.5, 0.5, 1.0],
-                            colors: [
-                              colors.surfaceRaised,
-                              colors.surfaceRaised,
-                              colors.surfaceSunken,
-                              colors.surfaceSunken,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                gear.name,
+                                style: AppTextStyles.titleLarge.copyWith(
+                                  color: colors.onSurface,
+                                ),
+                              ),
+                              if (gear.brand != null)
+                                Text(
+                                  gear.brand!,
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    color: colors.onSurface,
+                                  ),
+                                ),
+                              SizedBox(height: 4.sp),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 10.sp,
+                                    height: 10.sp,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: statusColor,
+                                        width: 2.0,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 4.sp),
+                                  Text(
+                                    conditionText,
+                                    style: AppTextStyles.labelMedium.copyWith(
+                                      color: colors.onSurface,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
-                            tileMode: TileMode.repeated,
                           ),
                         ),
                       ),
-                      FaIcon(
-                        icon,
-                        size: 22.sp,
-                        color: categoryColor ?? colors.primary,
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: UiConstants.spacingS.sp,
-                    right: UiConstants.spacingXS.sp,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        gear.name,
-                        style: AppTextStyles.titleLarge.copyWith(
-                          color: colors.onSurface,
+                      SizedBox(
+                        width: 56.sp,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              _wp.value,
+                              style: AppTextStyles.titleLarge.copyWith(
+                                color: colors.onSurface,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            Text(
+                              _wp.unit,
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: colors.onSurface,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                          ],
                         ),
                       ),
-                      if (gear.brand != null)
-                        Text(
-                          gear.brand!,
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: colors.onSurface,
-                          ),
-                        ),
-                      SizedBox(height: 4.sp),
-                      Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(right: 4.0.sp),
-                            child: CircleAvatar(
-                              backgroundColor: statusColor,
-                              radius: 5.0.sp,
-                            ),
-                          ),
-                          Text(
-                            conditionText,
-                            style: AppTextStyles.labelMedium.copyWith(
-                              color: colors.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-                VerticalDivider(
-                  width: 20.sp,
-                  thickness: UiConstants.borderWidth,
-                  indent: 0,
-                  endIndent: 0,
-                  color: colors.borderStrong,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(left: 8.w, right: 12.w),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Column(
-                        children: [
-                          Text(
-                            _wp.value,
-                            style: AppTextStyles.titleLarge.copyWith(
-                              color: colors.onSurface,
-                            ),
-                          ),
-                          Text(
-                            _wp.unit,
-                            style: AppTextStyles.bodyMedium.copyWith(
-                              color: colors.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
+                      SizedBox(width: 12.sp),
                     ],
                   ),
                 ),

@@ -376,87 +376,96 @@ class _TripDetailPageState extends State<TripDetailPage> {
       padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 3.sp),
       child: Card.filled(
         color: colors.surface,
-        elevation: 1,
+        elevation: UiConstants.cardElevation,
+        clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.compactCardRadius.sp),
-          side: BorderSide(
-            color: colors.border,
-            width: UiConstants.borderWidth,
-          ),
         ),
-        child: SizedBox(
-          height: 56.sp,
-          child: Row(
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: colors.border, width: 1),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              // Icon area
               SizedBox(
-                width: 44.sp,
-                child: Center(
-                  child: FaIcon(
-                    IconRegistry.resolve(iconKey),
-                    size: 20.sp,
-                    color: catColor,
-                  ),
-                ),
-              ),
-              // Name, brand, category
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                height: 56.sp,
+                child: Row(
                   children: [
-                    Text(
-                      item.tripItem.itemName,
-                      style: AppTextStyles.titleLarge.copyWith(fontSize: 13.sp),
-                      overflow: TextOverflow.ellipsis,
+                    // Icon area
+                    SizedBox(
+                      width: 44.sp,
+                      child: Center(
+                        child: FaIcon(
+                          IconRegistry.resolve(iconKey),
+                          size: 20.sp,
+                          color: catColor,
+                        ),
+                      ),
                     ),
-                    Row(
-                      children: [
-                        if (item.brand != null)
+                    // Name, brand, category
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
                           Text(
-                            '${item.brand} \u2022 ',
-                            style: AppTextStyles.bodySmall,
+                            item.tripItem.itemName,
+                            style: AppTextStyles.titleLarge.copyWith(fontSize: 13.sp),
                             overflow: TextOverflow.ellipsis,
                           ),
-                        if (item.categoryName != null)
-                          Text(
-                            item.categoryName!,
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: colors.textSecondary,
-                            ),
+                          Row(
+                            children: [
+                              if (item.brand != null)
+                                Text(
+                                  '${item.brand} \u2022 ',
+                                  style: AppTextStyles.bodySmall,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              if (item.categoryName != null)
+                                Text(
+                                  item.categoryName!,
+                                  style: AppTextStyles.bodySmall.copyWith(
+                                    color: colors.textSecondary,
+                                  ),
+                                ),
+                            ],
                           ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
-              // Quantity badge
-              if (item.tripItem.quantity > 1)
-                Padding(
-                  padding: EdgeInsets.only(right: 4.sp),
-                  child: Text(
-                    '\u00d7${item.tripItem.quantity}',
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                ),
-              // Weight
-              Padding(
-                padding: EdgeInsets.only(right: 8.sp),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                      children: [
-                        Text(
-                          wp.value,
-                          style: AppTextStyles.titleLarge.copyWith(
-                            fontSize: 13.sp,
+                    // Quantity badge
+                    if (item.tripItem.quantity > 1)
+                      Padding(
+                        padding: EdgeInsets.only(right: 4.sp),
+                        child: Text(
+                          '\u00d7${item.tripItem.quantity}',
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: colors.textSecondary,
                           ),
                         ),
-                        Text(wp.unit, style: AppTextStyles.bodySmall),
-                      ],
+                      ),
+                    // Weight
+                    Padding(
+                      padding: EdgeInsets.only(right: 8.sp),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            children: [
+                              Text(
+                                wp.value,
+                                style: AppTextStyles.titleLarge.copyWith(
+                                  fontSize: 13.sp,
+                                ),
+                              ),
+                              Text(wp.unit, style: AppTextStyles.bodySmall),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -466,6 +475,7 @@ class _TripDetailPageState extends State<TripDetailPage> {
         ),
       ),
     );
+    
   }
 
   Widget _buildProGate(AppColorPalette colors) {

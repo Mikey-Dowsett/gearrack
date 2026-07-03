@@ -312,32 +312,44 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       child: Card.filled(
         color: colors.surface,
+        clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
-          side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
         ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
-          onTap: onTap,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: UiConstants.spacingM.sp,
-              vertical: 14.sp,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: colors.border, width: 1),
             ),
-            child: Row(
-              children: [
-                FaIcon(icon, size: 16.sp, color: colors.primary),
-                SizedBox(width: 12.sp),
-                Text(
-                  label,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: colors.onSurface,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              InkWell(
+                borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
+                onTap: onTap,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: UiConstants.spacingM.sp,
+                    vertical: 14.sp,
+                  ),
+                  child: Row(
+                    children: [
+                      FaIcon(icon, size: 16.sp, color: colors.primary),
+                      SizedBox(width: 12.sp),
+                      Text(
+                        label,
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: colors.onSurface,
+                        ),
+                      ),
+                      const Spacer(),
+                      trailing,
+                    ],
                   ),
                 ),
-                const Spacer(),
-                trailing,
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

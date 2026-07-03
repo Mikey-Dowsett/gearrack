@@ -408,22 +408,19 @@ class _LogTripPageState extends State<LogTripPage> {
             ),
             filled: true,
             fillColor: colors.surface,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+            border: UnderlineInputBorder(
               borderSide: BorderSide(
                 color: colors.border,
                 width: UiConstants.borderWidth,
               ),
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+            enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
                 color: colors.border,
                 width: UiConstants.borderWidth,
               ),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+            focusedBorder: UnderlineInputBorder(
               borderSide: BorderSide(
                 color: colors.primary,
                 width: UiConstants.borderWidth,
@@ -549,10 +546,6 @@ class _LogTripPageState extends State<LogTripPage> {
                     Expanded(
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(
-                            color: colors.border,
-                            width: UiConstants.borderWidth,
-                          ),
                           backgroundColor: colors.surface,
                           foregroundColor: colors.onSurface,
                           minimumSize: Size.fromHeight(buttonHeight),
@@ -634,10 +627,7 @@ class _LogTripPageState extends State<LogTripPage> {
           decoration: BoxDecoration(
             color: colors.surface,
             borderRadius: BorderRadius.circular(UiConstants.borderRadius),
-            border: Border.all(
-              color: colors.border,
-              width: UiConstants.borderWidth,
-            ),
+            border: Border(bottom: BorderSide(color: colors.border, width: 1)),
           ),
           child: _availablePacks.isEmpty
               ? Padding(
@@ -671,12 +661,6 @@ class _LogTripPageState extends State<LogTripPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
                           UiConstants.chipRadius.sp,
-                        ),
-                        side: BorderSide(
-                          color: _selectedPack == null
-                              ? colors.primary
-                              : colors.border,
-                          width: UiConstants.borderWidth,
                         ),
                       ),
                       padding: EdgeInsets.symmetric(
@@ -716,10 +700,6 @@ class _LogTripPageState extends State<LogTripPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
                             UiConstants.chipRadius.sp,
-                          ),
-                          side: BorderSide(
-                            color: selected ? colors.primary : colors.border,
-                            width: UiConstants.borderWidth,
                           ),
                         ),
                         padding: EdgeInsets.symmetric(
@@ -774,10 +754,6 @@ class _LogTripPageState extends State<LogTripPage> {
               backgroundColor: colors.surface,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(UiConstants.chipRadius.sp),
-                side: BorderSide(
-                  color: selected ? colors.primary : colors.border,
-                  width: UiConstants.borderWidth,
-                ),
               ),
               padding: EdgeInsets.symmetric(horizontal: 12.sp, vertical: 8.sp),
             );
@@ -810,10 +786,7 @@ class _LogTripPageState extends State<LogTripPage> {
                     borderRadius: BorderRadius.circular(
                       UiConstants.borderRadius,
                     ),
-                    border: Border.all(
-                      color: colors.border,
-                      width: UiConstants.borderWidth,
-                    ),
+                    border: Border(bottom: BorderSide(color: colors.border, width: 1)),
                   ),
                   child: Row(
                     children: [
@@ -849,10 +822,7 @@ class _LogTripPageState extends State<LogTripPage> {
                       borderRadius: BorderRadius.circular(
                         UiConstants.borderRadius,
                       ),
-                      border: Border.all(
-                        color: colors.border,
-                        width: UiConstants.borderWidth,
-                      ),
+                      border: Border(bottom: BorderSide(color: colors.border, width: 1)),
                     ),
                     child: Row(
                       children: [
@@ -895,10 +865,6 @@ class _LogTripPageState extends State<LogTripPage> {
               backgroundColor: colors.surface,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(UiConstants.chipRadius.sp),
-                side: BorderSide(
-                  color: _isMultiDay ? colors.primary : colors.border,
-                  width: UiConstants.borderWidth,
-                ),
               ),
               padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 8.sp),
               showCheckmark: false,
@@ -963,14 +929,11 @@ class _LogTripPageState extends State<LogTripPage> {
               padding: EdgeInsets.symmetric(vertical: 3.sp),
               child: Card.filled(
                 color: c.isSelected ? colors.surface : colors.surfaceSunken,
-                elevation: 1,
+                elevation: UiConstants.cardElevation,
+                clipBehavior: Clip.antiAlias,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(
                     UiConstants.compactCardRadius.sp,
-                  ),
-                  side: BorderSide(
-                    color: c.isSelected ? colors.border : colors.borderStrong,
-                    width: UiConstants.borderWidth,
                   ),
                 ),
                 child: Padding(
@@ -1220,9 +1183,7 @@ class _AddGearToTripSheetState extends State<_AddGearToTripSheet> {
                 ),
                 filled: true,
                 fillColor: colors.surface,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.sp),
-                ),
+                border: UnderlineInputBorder(),
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: 16.sp,
                   vertical: 12.sp,
