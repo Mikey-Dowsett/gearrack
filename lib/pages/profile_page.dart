@@ -79,16 +79,16 @@ class ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        backgroundColor: colors.surfaceRaised,
+        backgroundColor: colors.background,
         elevation: 0,
         centerTitle: true,
         title: Text(
           'Profile',
-          style: AppTextStyles.titleMedium.copyWith(color: colors.onSurface),
+          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
         ),
         actions: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.gear, size: 18.sp, color: colors.onSurface),
+            icon: FaIcon(FontAwesomeIcons.gear, size: 18.sp, color: colors.primary),
             onPressed: _openSettings,
           ),
         ],

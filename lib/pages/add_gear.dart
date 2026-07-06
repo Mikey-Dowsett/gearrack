@@ -507,6 +507,7 @@ class _AddGearPageState extends State<AddGearPage> {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           widget.gear != null ? 'Edit Gear' : 'Add Gear',
           style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),

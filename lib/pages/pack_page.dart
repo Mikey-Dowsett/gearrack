@@ -298,7 +298,8 @@ class _PackPageState extends State<PackPage>
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: Text(_pack.name, style: AppTextStyles.bodyLarge),
+        centerTitle: true,
+        title: Text(_pack.name, style: AppTextStyles.bodyMedium),
         backgroundColor: colors.background,
         actions: [
           IconButton(

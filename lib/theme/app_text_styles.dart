@@ -4,20 +4,20 @@ import 'app_colors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppTextStyles {
-  // Fraunces — serif headings with character (field-guide feel)
-  static TextStyle get titleLarge => GoogleFonts.fraunces(
+  // Rubik — clean modern sans for headings (more approachable than Fraunces)
+  static TextStyle get titleLarge => GoogleFonts.rubik(
     fontSize: 18.sp,
     fontWeight: FontWeight.w700,
     color: AppColors.black,
   );
 
-  static TextStyle get titleMedium => GoogleFonts.fraunces(
+  static TextStyle get titleMedium => GoogleFonts.rubik(
     fontSize: 16.sp,
     fontWeight: FontWeight.w700,
     color: AppColors.black,
   );
 
-  static TextStyle get titleSmall => GoogleFonts.fraunces(
+  static TextStyle get titleSmall => GoogleFonts.rubik(
     fontSize: 14.sp,
     fontWeight: FontWeight.w700,
     color: AppColors.black,

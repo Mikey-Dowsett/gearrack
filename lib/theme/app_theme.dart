@@ -132,19 +132,10 @@ class AppTheme {
 
       cardColor: AppColors.lightSurface,
 
-      appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.lightSurfaceRaised,
-        foregroundColor: AppColors.lightTextPrimary,
-        elevation: 0,
-        centerTitle: true,
-        titleTextStyle: AppTextStyles.titleMedium.copyWith(
-          color: AppColors.lightTextPrimary,
-        ),
-        iconTheme: const IconThemeData(color: AppColors.lightTextPrimary),
-      ),
 
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: AppColors.lightSurfaceRaised,
+
+       bottomNavigationBarTheme: BottomNavigationBarThemeData(
+         backgroundColor: AppColors.lightSurface,
         selectedItemColor: colors.primary,
         unselectedItemColor: AppColors.lightTextSecondary,
         showUnselectedLabels: true,
@@ -290,11 +281,11 @@ class AppTheme {
       cardColor: AppColors.darkSurface,
 
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.darkSurfaceRaised,
+        backgroundColor: AppColors.darkBackground,
         foregroundColor: AppColors.darkTextPrimary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: AppTextStyles.titleMedium.copyWith(
+        titleTextStyle: AppTextStyles.bodyMedium.copyWith(
           color: AppColors.darkTextPrimary,
         ),
         iconTheme: const IconThemeData(color: AppColors.darkTextPrimary),

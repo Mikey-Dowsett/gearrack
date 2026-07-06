@@ -92,14 +92,15 @@ class _GearPageState extends State<GearPage> {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           _isLoadingCategory ? 'Loading...' : categoryName,
-          style: AppTextStyles.bodyLarge.copyWith(color: colors.onBackground),
+          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
         ),
         backgroundColor: colors.background,
         actions: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.pen, size: 16.sp),
+            icon: FaIcon(FontAwesomeIcons.pen, size: 16.sp, color: colors.onBackground),
             onPressed: _navigateToEdit,
           ),
         ],

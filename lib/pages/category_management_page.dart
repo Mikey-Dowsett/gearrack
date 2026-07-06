@@ -118,22 +118,22 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        backgroundColor: colors.surfaceRaised,
+        backgroundColor: colors.background,
         title: Text(
           'Categories',
-          style: AppTextStyles.titleMedium.copyWith(color: colors.onSurface),
+          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: FaIcon(
-              FontAwesomeIcons.plus,
-              size: 18.sp,
-              color: colors.onSurface,
-            ),
-            onPressed: () => _showCategoryDialog(),
+      actions: [
+        IconButton(
+          icon: FaIcon(
+            FontAwesomeIcons.plus,
+            size: 18.sp,
+            color: colors.primary,
           ),
-        ],
+          onPressed: () => _showCategoryDialog(),
+        ),
+      ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

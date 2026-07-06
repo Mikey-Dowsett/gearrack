@@ -162,9 +162,10 @@ class _TripDetailPageState extends State<TripDetailPage> {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           _trip?.name ?? 'Trip Detail',
-          style: AppTextStyles.bodyLarge.copyWith(color: colors.onBackground),
+          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
         ),
         backgroundColor: colors.background,
         actions: [

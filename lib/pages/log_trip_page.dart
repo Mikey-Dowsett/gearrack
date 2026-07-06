@@ -458,6 +458,7 @@ class _LogTripPageState extends State<LogTripPage> {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           _isEditing
               ? 'Edit Trip'
@@ -1014,6 +1015,7 @@ class _LogTripPageState extends State<LogTripPage> {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           _isEditing ? 'Edit Trip' : 'Log Trip',
           style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
