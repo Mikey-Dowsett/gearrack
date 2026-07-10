@@ -16,8 +16,6 @@ import '../utils/icon_registry.dart';
 import '../theme/ui_constants.dart';
 import '../utils/weight_formatter.dart';
 import 'log_trip_page.dart';
-import 'package:gearrack/database/app_settings_dao.dart';
-import 'package:gearrack/pages/profile_page.dart';
 
 class PackPage extends StatefulWidget {
   final Pack pack;
@@ -196,48 +194,6 @@ class _PackPageState extends State<PackPage>
   }
 
   Future<void> _logTripFromPack() async {
-    final dao = await AppSettingsDao.create();
-    final settings = await dao.get();
-    if (!settings.proMode) {
-      if (!mounted) return;
-      final colors = AppColors.of(context);
-      await showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Row(
-            children: [
-              FaIcon(FontAwesomeIcons.crown, size: 16.sp, color: colors.tertiary),
-              SizedBox(width: 8.sp),
-              Text('PRO Feature', style: AppTextStyles.titleMedium),
-            ],
-          ),
-          content: Text(
-            'Logging trips from packs requires PRO mode. Enable it in your profile settings.',
-            style: AppTextStyles.bodyMedium,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: Text('Cancel', style: AppTextStyles.bodyMedium),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(ctx).pop();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ProfilePage()),
-                );
-              },
-              child: Text(
-                'Go to PRO',
-                style: AppTextStyles.bodyMedium.copyWith(color: colors.primary),
-              ),
-            ),
-          ],
-        ),
-      );
-      return;
-    }
     await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => LogTripPage(pack: _pack)),

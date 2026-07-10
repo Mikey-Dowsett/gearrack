@@ -11,8 +11,6 @@ import '../database/trip_dao.dart';
 import '../utils/icon_registry.dart';
 import '../utils/weight_formatter.dart';
 import 'log_trip_page.dart';
-import 'package:gearrack/database/app_settings_dao.dart';
-import 'package:gearrack/pages/profile_page.dart';
 
 class TripDetailPage extends StatefulWidget {
   final String tripId;
@@ -28,7 +26,6 @@ class _TripDetailPageState extends State<TripDetailPage> {
   List<TripItemWithDetails> _items = [];
   List<TripCategoryWeight> _categoryWeights = [];
   bool _isLoading = true;
-  bool _proMode = false;
   double _totalWeight = 0;
   List<TripItem> _tripItems = []; // raw items for editing
 
@@ -41,17 +38,6 @@ class _TripDetailPageState extends State<TripDetailPage> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final settingsDao = await AppSettingsDao.create();
-      final settings = await settingsDao.get();
-      if (!settings.proMode) {
-        setState(() {
-          _proMode = false;
-          _isLoading = false;
-        });
-        return;
-      }
-      _proMode = true;
-
       final dao = await TripDao.create();
       final trip = await dao.getById(widget.tripId);
       final items = await dao.getItemsByTripWithDetails(widget.tripId);
@@ -154,10 +140,6 @@ class _TripDetailPageState extends State<TripDetailPage> {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
-
-    if (!_isLoading && !_proMode) {
-      return _buildProGate(colors);
-    }
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -472,81 +454,4 @@ class _TripDetailPageState extends State<TripDetailPage> {
     );
   }
 
-  Widget _buildProGate(AppColorPalette colors) {
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        title: Text(
-          'Trip Detail',
-          style: AppTextStyles.bodyLarge.copyWith(color: colors.onBackground),
-        ),
-        backgroundColor: colors.background,
-      ),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: UiConstants.spacingXL.sp),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              FaIcon(FontAwesomeIcons.crown, size: 48.sp, color: colors.tertiary),
-              SizedBox(height: 20.sp),
-              Text(
-                'PRO Feature',
-                style: AppTextStyles.titleLarge.copyWith(
-                  color: colors.onSurface,
-                ),
-              ),
-              SizedBox(height: 12.sp),
-              Text(
-                'Trip details require PRO mode. Enable it in your profile settings.',
-                textAlign: TextAlign.center,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: colors.textSecondary,
-                ),
-              ),
-              SizedBox(height: 24.sp),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const ProfilePage(),
-                      ),
-                    );
-                  },
-                  icon: FaIcon(
-                    FontAwesomeIcons.crown,
-                    size: 16.sp,
-                    color: colors.onPrimary,
-                  ),
-                  label: Text(
-                    'Go to PRO Settings',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: colors.onPrimary,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.primary,
-                    foregroundColor: colors.onPrimary,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20.sp,
-                      vertical: 12.sp,
-                    ),
-                    minimumSize: Size(0, 44.sp),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        UiConstants.buttonRadius.sp,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
-}

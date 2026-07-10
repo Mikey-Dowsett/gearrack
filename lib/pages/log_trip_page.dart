@@ -17,8 +17,7 @@ import '../database/category_dao.dart';
 import '../models/category.dart';
 import '../utils/icon_registry.dart';
 import '../utils/weight_formatter.dart';
-import 'package:gearrack/database/app_settings_dao.dart';
-import 'package:gearrack/pages/profile_page.dart';
+
 
 /// A "trip item candidate" used while the user is composing their trip.
 /// Wraps a gear item reference (nullable) with user-facing fields the
@@ -74,7 +73,6 @@ class _LogTripPageState extends State<LogTripPage> {
   bool _isMultiDay = false;
   bool _isLoading = true;
   bool _isSaving = false;
-  bool _proMode = false;
 
   // For "log from pack" mode
   Pack? _selectedPack;
@@ -99,15 +97,6 @@ class _LogTripPageState extends State<LogTripPage> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final settingsDao = await AppSettingsDao.create();
-      final settings = await settingsDao.get();
-      _proMode = settings.proMode;
-
-      if (!_proMode) {
-        setState(() => _isLoading = false);
-        return;
-      }
-
       final packDao = await PackDao.create();
       final gearDao = await GearItemDao.create();
       final categoryDao = await CategoryDao.create();
@@ -450,10 +439,6 @@ class _LogTripPageState extends State<LogTripPage> {
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
     final double buttonHeight = 56.sp;
-
-    if (!_isLoading && !_proMode) {
-      return _buildProGate(colors);
-    }
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -1011,77 +996,7 @@ class _LogTripPageState extends State<LogTripPage> {
     );
   }
 
-  Widget _buildProGate(AppColorPalette colors) {
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          _isEditing ? 'Edit Trip' : 'Log Trip',
-          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
-        ),
-        backgroundColor: colors.background,
-        elevation: 0,
-      ),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: UiConstants.spacingXL.sp),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              FaIcon(FontAwesomeIcons.crown, size: 48.sp, color: colors.tertiary),
-              SizedBox(height: 20.sp),
-              Text(
-                'PRO Feature',
-                style: AppTextStyles.titleLarge.copyWith(
-                  color: colors.onSurface,
-                ),
-              ),
-              SizedBox(height: 12.sp),
-              Text(
-                'Logging trips requires PRO mode. Enable it in your profile settings.',
-                textAlign: TextAlign.center,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: colors.textSecondary,
-                ),
-              ),
-              SizedBox(height: 24.sp),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const ProfilePage(),
-                      ),
-                    );
-                  },
-                  icon: FaIcon(FontAwesomeIcons.crown, size: 16.sp, color: colors.onPrimary),
-                  label: Text(
-                    'Go to PRO Settings',
-                    style: AppTextStyles.bodyMedium.copyWith(color: colors.onPrimary),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.primary,
-                    foregroundColor: colors.onPrimary,
-                    padding: EdgeInsets.symmetric(horizontal: 20.sp, vertical: 12.sp),
-                    minimumSize: Size(0, 44.sp),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        UiConstants.buttonRadius.sp,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
-}
 
 // ---------------------------------------------------------------------------
 // Bottom sheet to pick a gear item and quantity for manual addition

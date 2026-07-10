@@ -2,9 +2,7 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gearrack/pages/home_page.dart';
-import 'package:gearrack/pages/packs_page.dart';
-import 'package:gearrack/pages/trip_history_page.dart';
+import 'package:gearrack/pages/inventory_page.dart';
 import 'package:gearrack/pages/profile_page.dart';
 import 'package:gearrack/widgets/paper_texture.dart';
 import 'package:gearrack/theme/app_colors.dart';
@@ -118,13 +116,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   void initState() {
     super.initState();
     _pages = [
-      const HomePage(),
-      const PacksPage(),
-      const TripHistoryPage(),
-      ProfilePage(
-        onSwitchToTrips: () => _onItemTapped(2),
-        onThemeChanged: widget.onThemeChanged,
-      ),
+      const InventoryPage(),
+      ProfilePage(onThemeChanged: widget.onThemeChanged),
     ];
   }
 
@@ -165,14 +158,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               BottomNavigationBarItem(
                 icon: FaIcon(FontAwesomeIcons.tent),
                 label: 'Gear',
-              ),
-              BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.suitcase),
-                label: 'Packs',
-              ),
-              BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.personHiking),
-                label: 'Trips',
               ),
               BottomNavigationBarItem(
                 icon: FaIcon(FontAwesomeIcons.solidUser),
