@@ -3,7 +3,7 @@
 > **Single source of truth for the GearRack visual design language.**
 > UI code that contradicts this document is a bug — fix the code, not the document.
 >
-> Last updated: 2026-07-03
+> Last updated: 2026-09-14
 
 ---
 
@@ -105,6 +105,8 @@ All sizes use `flutter_screenutil` `.sp` for responsive scaling.
 | `labelLarge` | 15.sp | W400 (Regular) | Inter | Form labels |
 | `labelMedium` | 13.sp | W400 (Regular) | Inter | Small field labels |
 | `labelSmall` | 11.sp | W400 (Regular) | Inter | Tiny badges, timestamps |
+| `specMedium` | 14.sp | W600 (SemiBold) | IBM Plex Mono | Weight / litre readouts, tabular numbers |
+| `specSmall` | 11.sp | W500 (Medium) | IBM Plex Mono, +0.6 tracking | Stamps, counts (`12 ITEMS TRACKED`), units |
 
 ### 3.3 Usage rules
 
@@ -438,7 +440,21 @@ Section titles and list metadata headers use a small 4px-wide `tertiary` left ba
 
 ### 9.13 Status indicator dots
 
-GearCard condition indicators use an **outlined circle** (2px border, color = status color) rather than a filled circle avatar. Empty/filled binary: outlined = default, filled = selected state (not currently used).
+GearCard condition reads as a **5sp side-strip** in the status color (olive `statusGood` / ochre `statusWorn` / grey `statusRetired`) at the card's left rail, before the icon tile. No dot, no stamp tag — glanceable from the list. Weights use `specMedium` (value) + `specSmall` (unit) for a scale-readout feel.
+
+PackCard / trip headers use **solid `primary`** (not `primary→accent` gradient) with a 1.5px `border` bottom rule — trail-sign feel, less generated.
+
+### 9.14 Trailhead chrome
+
+List headers use trailhead voice inside a `TopoBackdrop` (faint contour lines): `Basecamp • 12 ITEMS TRACKED` / `Pack Out • 3 PACKS` / `Trail Log • 5 TRIPS` (Fraunces title + mono spec + 4px tertiary bar via `SectionHeader`), search hint `Search kit…`, empty state `Pack's empty — let's fix that / Log your first piece of kit below`, extended FAB `LOG`.
+
+### 9.15 Patch chips
+
+Category filters use `PatchChip` (`widgets/patch_chip.dart`): 6px radius (not pill), uppercase mono label, category-color icon, count badge, forest fill when selected. Counts always visible — no `name∙3` strings.
+
+### 9.16 Detail hero (gear page, mirrors pack page)
+
+Green `primary` hero: icon badge (`primaryMuted` 25sp tile), uppercase category label, Fraunces 25sp name (2-line clamp), mono brand · weight line, mono price · qty · age line, condition pill (`onPrimary` 20% alpha). Body grouped under `SectionHeader`s: Specifications / Condition & Kit / Field Notes (6-line clamp) / Trail Use. `InfoCard` takes `maxLines` (default 2).
 
 ---
 

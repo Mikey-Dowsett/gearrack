@@ -9,12 +9,14 @@ class InfoCard extends StatelessWidget {
   final Object icon;
   final String title;
   final String value;
+  final int maxLines;
 
   const InfoCard({
     super.key,
     required this.icon,
     required this.title,
     required this.value,
+    this.maxLines = 2,
   });
 
   @override
@@ -54,6 +56,8 @@ class InfoCard extends StatelessWidget {
             Text(
               value,
               style: AppTextStyles.titleLarge.copyWith(color: colors.onSurface),
+              maxLines: maxLines,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

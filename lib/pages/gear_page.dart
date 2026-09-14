@@ -8,7 +8,9 @@ import '../database/category_dao.dart';
 import '../database/trip_dao.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../theme/ui_constants.dart';
 import '../widgets/info_card.dart';
+import '../widgets/section_header.dart';
 import '../utils/icon_registry.dart';
 import 'add_gear.dart';
 import '../utils/weight_formatter.dart';
@@ -28,6 +30,7 @@ class _GearPageState extends State<GearPage> {
   bool _isLoadingCategory = true;
   GearUsageStats? _usageStats;
   bool _isLoadingUsage = true;
+  bool _wasEdited = false;
 
   @override
   void initState() {
@@ -73,9 +76,14 @@ class _GearPageState extends State<GearPage> {
       setState(() {
         _gear = result;
         _isLoadingCategory = true;
+        _wasEdited = true;
       });
       _loadCategory();
     }
+  }
+
+  void _handleBack() {
+    Navigator.of(context).pop(_wasEdited ? _gear : null);
   }
 
   @override
@@ -88,11 +96,22 @@ class _GearPageState extends State<GearPage> {
 
     final categoryName = _category?.name ?? gear.categoryId;
     final categoryIconKey = _category?.icon ?? 'box';
+    final wp = formatWeightParts(gear.weightGrams);
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        _handleBack();
+      },
+      child: Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _handleBack,
+        ),
         title: Text(
           _isLoadingCategory ? 'Loading...' : categoryName,
           style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
@@ -108,53 +127,106 @@ class _GearPageState extends State<GearPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(
-              height: 160.h,
-              child: Stack(
-                alignment: Alignment.center,
+            // Green hero — mirrors pack page weight banner
+            Container(
+              width: double.infinity,
+              color: colors.primary,
+              padding: EdgeInsets.symmetric(
+                vertical: 16.sp,
+                horizontal: 16.sp,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: const Alignment(-0.9, -0.9),
-                        stops: [0.0, 0.5, 0.5, 1.0],
-                        colors: [
-                          colors.surfaceRaised,
-                          colors.surfaceRaised,
-                          colors.surfaceSunken,
-                          colors.surfaceSunken,
-                        ],
-                        tileMode: TileMode.repeated,
+                  Row(
+                    children: [
+                      Container(
+                        width: 25.sp,
+                        height: 25.sp,
+                        decoration: BoxDecoration(
+                          color: colors.primaryMuted,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(
+                              UiConstants.compactCardRadius.sp,
+                            ),
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: FaIcon(
+                          IconRegistry.resolve(categoryIconKey),
+                          size: 15.sp,
+                          color: colors.onPrimary,
+                        ),
                       ),
-                    ),
+                      SizedBox(width: 8.sp),
+                      Expanded(
+                        child: Text(
+                          _isLoadingCategory
+                              ? 'LOADING…'
+                              : categoryName.toUpperCase(),
+                          style: AppTextStyles.labelMedium.copyWith(
+                            color: colors.onPrimary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.sp,
+                          vertical: 2.sp,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colors.onPrimary.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(3.sp),
+                        ),
+                        child: Text(
+                          gear.condition.toUpperCase(),
+                          style: AppTextStyles.specSmall.copyWith(
+                            color: colors.onPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  FaIcon(
-                    IconRegistry.resolve(categoryIconKey),
-                    size: 56.sp,
-                    color: _category != null
-                        ? AppColors.parseHex(_category!.color)
-                        : colors.primary,
+                  SizedBox(height: 12.sp),
+                  Text(
+                    gear.name,
+                    style: AppTextStyles.titleLarge.copyWith(
+                      fontSize: 25.sp,
+                      color: colors.onPrimary,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height: 4.sp),
+                  Text(
+                    '${gear.brand ?? 'No brand'} · ${wp.value} ${wp.unit}',
+                    style: AppTextStyles.specMedium.copyWith(
+                      color: colors.onPrimary.withValues(alpha: 0.85),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height: 2.sp),
+                  Text(
+                    '${gear.price != null ? '\$${gear.price!.toStringAsFixed(2)}' : '—'} · x${gear.quantity} · ${age} yrs',
+                    style: AppTextStyles.specSmall.copyWith(
+                      color: colors.onPrimary.withValues(alpha: 0.8),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.sp, vertical: 4.sp),
+              padding: EdgeInsets.symmetric(horizontal: 12.sp, vertical: 8.sp),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  InfoCard(
-                    icon: FontAwesomeIcons.shop,
-                    title: gear.brand ?? 'No brand',
-                    value: gear.name,
-                  ),
-                  if (gear.isPack && gear.capacityLiters != null)
-                    InfoCard(
-                      icon: FontAwesomeIcons.boxOpen,
-                      title: 'Capacity',
-                      value: '${gear.capacityLiters!.toStringAsFixed(0)} L',
-                    ),
+                  const SectionHeader(title: 'Specifications'),
+                  SizedBox(height: 8.sp),
                   Row(
                     children: [
                       Flexible(
@@ -193,18 +265,40 @@ class _GearPageState extends State<GearPage> {
                       ),
                     ],
                   ),
+                  if (gear.isPack && gear.capacityLiters != null)
+                    InfoCard(
+                      icon: FontAwesomeIcons.boxOpen,
+                      title: 'Capacity',
+                      value: '${gear.capacityLiters!.toStringAsFixed(0)} L',
+                    ),
+                  SizedBox(height: 8.sp),
+                  const SectionHeader(title: 'Condition & Kit'),
+                  SizedBox(height: 8.sp),
                   InfoCard(
                     icon: FontAwesomeIcons.certificate,
                     title: 'Condition',
                     value: gear.condition,
                   ),
-                  if (gear.notes != null && gear.notes!.isNotEmpty)
+                  InfoCard(
+                    icon: FontAwesomeIcons.shop,
+                    title: 'Category',
+                    value: _isLoadingCategory ? '…' : categoryName,
+                  ),
+                  if (gear.notes != null && gear.notes!.isNotEmpty) ...[
+                    SizedBox(height: 8.sp),
+                    const SectionHeader(title: 'Field Notes'),
+                    SizedBox(height: 8.sp),
                     InfoCard(
                       icon: FontAwesomeIcons.solidNoteSticky,
                       title: 'Notes',
                       value: gear.notes!,
+                      maxLines: 6,
                     ),
+                  ],
                   if (!_isLoadingUsage && _usageStats != null) ...[
+                    SizedBox(height: 8.sp),
+                    const SectionHeader(title: 'Trail Use'),
+                    SizedBox(height: 8.sp),
                     Row(
                       children: [
                         Flexible(
@@ -232,6 +326,7 @@ class _GearPageState extends State<GearPage> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

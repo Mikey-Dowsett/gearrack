@@ -21,8 +21,9 @@ import 'package:gearrack/pages/add_pack.dart';
 import 'package:gearrack/pages/log_trip_page.dart';
 import 'package:gearrack/pages/trip_detail_page.dart';
 import 'package:gearrack/pages/pack_page.dart' as pack_detail;
-import 'package:gearrack/utils/icon_registry.dart';
 import 'package:gearrack/utils/weight_formatter.dart';
+import 'package:gearrack/widgets/patch_chip.dart';
+import 'package:gearrack/widgets/section_header.dart';
 
 class InventoryPage extends StatefulWidget {
   const InventoryPage({super.key});
@@ -34,15 +35,24 @@ class InventoryPage extends StatefulWidget {
 class _InventoryPageState extends State<InventoryPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final GlobalKey<GearTabState> _gearKey = GlobalKey<GearTabState>();
+  final GlobalKey<PacksTabState> _packsKey = GlobalKey<PacksTabState>();
+  final GlobalKey<TripsTabState> _tripsKey = GlobalKey<TripsTabState>();
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(_onTabChanged);
+  }
+
+  void _onTabChanged() {
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
     super.dispose();
   }
@@ -68,6 +78,7 @@ class _InventoryPageState extends State<InventoryPage>
     );
 
     if (result != null && mounted) {
+      await _gearKey.currentState?.refresh();
       setState(() {});
     }
   }
@@ -79,6 +90,8 @@ class _InventoryPageState extends State<InventoryPage>
     );
 
     if (result == true && mounted) {
+      await _packsKey.currentState?.refresh();
+      await _gearKey.currentState?.refresh();
       setState(() {});
     }
   }
@@ -89,6 +102,7 @@ class _InventoryPageState extends State<InventoryPage>
       MaterialPageRoute(builder: (context) => const LogTripPage()),
     );
     if (result == true && mounted) {
+      await _tripsKey.currentState?.refresh();
       setState(() {});
     }
   }
@@ -140,10 +154,10 @@ class _InventoryPageState extends State<InventoryPage>
                 padding: EdgeInsets.only(bottom: 64.sp),
                 child: IndexedStack(
                   index: _tabController.index,
-                  children: const [
-                    _GearTab(),
-                    _PacksTab(),
-                    _TripsTab(),
+                  children: [
+                    GearTab(key: _gearKey),
+                    PacksTab(key: _packsKey),
+                    TripsTab(key: _tripsKey),
                   ],
                 ),
               ),
@@ -151,9 +165,10 @@ class _InventoryPageState extends State<InventoryPage>
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _handleFabPress,
-        child: Icon(_fabIcon()),
+        icon: Icon(_fabIcon()),
+        label: const Text('LOG'),
       ),
     );
   }
@@ -163,14 +178,14 @@ class _InventoryPageState extends State<InventoryPage>
 // Gear Tab
 // ---------------------------------------------------------------------------
 
-class _GearTab extends StatefulWidget {
-  const _GearTab();
+class GearTab extends StatefulWidget {
+  const GearTab({super.key});
 
   @override
-  State<_GearTab> createState() => _GearTabState();
+  State<GearTab> createState() => GearTabState();
 }
 
-class _GearTabState extends State<_GearTab> {
+class GearTabState extends State<GearTab> {
   List<GearItem> _gearItems = [];
   List<GearItem> _filteredGearItems = [];
   List<Category> _categories = [];
@@ -184,6 +199,8 @@ class _GearTabState extends State<_GearTab> {
     super.initState();
     _loadGear();
   }
+
+  Future<void> refresh() => _loadGear();
 
   Future<void> _loadGear() async {
     setState(() => _isLoading = true);
@@ -255,32 +272,20 @@ class _GearTabState extends State<_GearTab> {
 
     return Column(
       children: [
-        Padding(
-          padding: EdgeInsets.only(left: 12.sp, top: 12.sp, bottom: 8.sp),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'My Inventory',
-                  style: AppTextStyles.titleLarge.copyWith(
-                    color: colors.onBackground,
-                  ),
-                ),
-                Text(
-                  ' \u2022 ',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: colors.onBackground,
-                  ),
-                ),
-                Text(
-                  '${_gearItems.length} item${_gearItems.length != 1 ? 's' : ''} tracked',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: colors.onBackground,
-                  ),
-                ),
-              ],
+        TopoBackdrop(
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 12.sp,
+              right: 12.sp,
+              top: 12.sp,
+              bottom: 8.sp,
+            ),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: SectionHeader(
+                title: 'Basecamp',
+                spec: '${_gearItems.length} items',
+              ),
             ),
           ),
         ),
@@ -293,14 +298,14 @@ class _GearTabState extends State<_GearTab> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'No gear yet',
+                        'Pack’s empty — let’s fix that',
                         style: AppTextStyles.bodyMedium.copyWith(
                           color: colors.onBackground,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Tap + to add your first item',
+                        'Log your first piece of kit below',
                         style: AppTextStyles.bodySmall.copyWith(
                           color: colors.textSecondary,
                         ),
@@ -321,7 +326,7 @@ class _GearTabState extends State<_GearTab> {
                         ),
                         child: TextField(
                           decoration: InputDecoration(
-                            hintText: 'Search...',
+                            hintText: 'Search kit…',
                             prefixIcon: SizedBox(
                               width: 40.sp,
                               child: Center(
@@ -353,20 +358,14 @@ class _GearTabState extends State<_GearTab> {
                           scrollDirection: Axis.horizontal,
                           padding: EdgeInsets.symmetric(horizontal: 12.sp),
                           children: [
-                            ChoiceChip(
-                              label: Text('All'),
+                            PatchChip(
+                              label: 'All',
+                              count: _gearItems.length,
                               selected: _selectedCategoryId == null,
                               onSelected: (_) {
                                 setState(() => _selectedCategoryId = null);
                                 _applyFilters();
                               },
-                              showCheckmark: false,
-                              selectedColor: colors.primary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  UiConstants.chipRadius.sp,
-                                ),
-                              ),
                             ),
                             ..._categories.map((category) {
                               final count = _gearItems
@@ -377,36 +376,19 @@ class _GearTabState extends State<_GearTab> {
                               );
                               return Padding(
                                 padding: EdgeInsets.only(left: 6.sp),
-                                child: ChoiceChip(
-                                  label: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      FaIcon(
-                                        IconRegistry.resolve(category.icon),
-                                        size: 15.sp,
-                                        color: catColor,
-                                      ),
-                                      SizedBox(
-                                        width: UiConstants.spacingXS.sp,
-                                      ),
-                                      Text('${category.name}\u2022$count'),
-                                    ],
-                                  ),
+                                child: PatchChip(
+                                  label: category.name,
+                                  iconKey: category.icon,
+                                  iconColor: catColor,
+                                  count: count,
                                   selected:
                                       _selectedCategoryId == category.id,
-                                  selectedColor: colors.primary,
                                   onSelected: (_) {
                                     setState(
                                       () => _selectedCategoryId = category.id,
                                     );
                                     _applyFilters();
                                   },
-                                  showCheckmark: false,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      UiConstants.chipRadius.sp,
-                                    ),
-                                  ),
                                 ),
                               );
                             }),
@@ -427,10 +409,15 @@ class _GearTabState extends State<_GearTab> {
                               ),
                             ),
                             SizedBox(width: 6.sp),
-                            Text(
-                              '${_filteredGearItems.length} items \u2022 ${formatWeight(_totalGrams)} total',
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                color: colors.onBackground,
+                            Flexible(
+                              child: Text(
+                                '${_filteredGearItems.length} · ${formatWeight(_totalGrams)}'
+                                    .toUpperCase(),
+                                style: AppTextStyles.specSmall.copyWith(
+                                  color: colors.textSecondary,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Spacer(),
@@ -524,14 +511,14 @@ class _SortButton extends StatelessWidget {
 // Packs Tab
 // ---------------------------------------------------------------------------
 
-class _PacksTab extends StatefulWidget {
-  const _PacksTab();
+class PacksTab extends StatefulWidget {
+  const PacksTab({super.key});
 
   @override
-  State<_PacksTab> createState() => _PacksTabState();
+  State<PacksTab> createState() => PacksTabState();
 }
 
-class _PacksTabState extends State<_PacksTab> {
+class PacksTabState extends State<PacksTab> {
   List<Pack> _packs = [];
   List<GearItem> _bags = [];
   bool _isLoading = true;
@@ -545,6 +532,8 @@ class _PacksTabState extends State<_PacksTab> {
     super.initState();
     _loadPacks();
   }
+
+  Future<void> refresh() => _loadPacks();
 
   Future<void> _loadPacks() async {
     setState(() => _isLoading = true);
@@ -610,27 +599,20 @@ class _PacksTabState extends State<_PacksTab> {
 
     return Column(
       children: [
-        Padding(
-          padding: EdgeInsets.only(left: 12.sp, top: 12.sp, bottom: 8.sp),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'My Packs',
-                  style: AppTextStyles.titleLarge.copyWith(
-                    color: colors.onBackground,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '\u2022 ${_packs.length} pack${_packs.length != 1 ? 's' : ''}',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: colors.onBackground,
-                  ),
-                ),
-              ],
+        TopoBackdrop(
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 12.sp,
+              right: 12.sp,
+              top: 12.sp,
+              bottom: 8.sp,
+            ),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: SectionHeader(
+                title: 'Pack Out',
+                spec: '${_packs.length} packs',
+              ),
             ),
           ),
         ),
@@ -686,14 +668,14 @@ class _PacksTabState extends State<_PacksTab> {
 // Trips Tab
 // ---------------------------------------------------------------------------
 
-class _TripsTab extends StatefulWidget {
-  const _TripsTab();
+class TripsTab extends StatefulWidget {
+  const TripsTab({super.key});
 
   @override
-  State<_TripsTab> createState() => _TripsTabState();
+  State<TripsTab> createState() => TripsTabState();
 }
 
-class _TripsTabState extends State<_TripsTab> {
+class TripsTabState extends State<TripsTab> {
   List<Trip> _trips = [];
   Map<String, double> _totalWeights = {};
   Map<String, int> _itemCounts = {};
@@ -705,6 +687,8 @@ class _TripsTabState extends State<_TripsTab> {
     super.initState();
     _load();
   }
+
+  Future<void> refresh() => _load();
 
   Future<void> _load() async {
     setState(() => _isLoading = true);
@@ -778,27 +762,20 @@ class _TripsTabState extends State<_TripsTab> {
 
     return Column(
       children: [
-        Padding(
-          padding: EdgeInsets.only(left: 12.sp, top: 12.sp, bottom: 8.sp),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Trip History',
-                  style: AppTextStyles.titleLarge.copyWith(
-                    color: colors.onBackground,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '\u2022 ${_trips.length} trip${_trips.length != 1 ? 's' : ''}',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: colors.onBackground,
-                  ),
-                ),
-              ],
+        TopoBackdrop(
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 12.sp,
+              right: 12.sp,
+              top: 12.sp,
+              bottom: 8.sp,
+            ),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: SectionHeader(
+                title: 'Trail Log',
+                spec: '${_trips.length} trips',
+              ),
             ),
           ),
         ),
@@ -878,10 +855,12 @@ class _TripsTabState extends State<_TripsTab> {
                                           UiConstants.cardRadius.sp,
                                         ),
                                       ),
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [colors.primary, colors.accent],
+                                      color: colors.primary,
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: colors.border,
+                                          width: UiConstants.borderWidth,
+                                        ),
                                       ),
                                     ),
                                     padding: EdgeInsets.all(12.sp),

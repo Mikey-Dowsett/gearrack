@@ -60,11 +60,12 @@ class PackCard extends StatelessWidget {
                       topLeft: Radius.circular(UiConstants.cardRadius.sp),
                       topRight: Radius.circular(UiConstants.cardRadius.sp),
                     ),
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [colors.primary, colors.accent],
-                      stops: const [0.0, 1.0],
+                    color: colors.primary,
+                    border: Border(
+                      bottom: BorderSide(
+                        color: colors.border,
+                        width: UiConstants.borderWidth,
+                      ),
                     ),
                   ),
                   padding: EdgeInsets.all(12.sp),
@@ -95,6 +96,8 @@ class PackCard extends StatelessWidget {
                                       alpha: 0.85,
                                     ),
                                   ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             if (bagName != null && bagName!.isNotEmpty)
@@ -112,12 +115,16 @@ class PackCard extends StatelessWidget {
                                       ),
                                     ),
                                     SizedBox(width: 4.sp),
-                                    Text(
-                                      bagName!,
-                                      style: AppTextStyles.labelMedium.copyWith(
-                                        color: colors.onPrimary.withValues(
-                                          alpha: 0.8,
+                                    Flexible(
+                                      child: Text(
+                                        bagName!,
+                                        style: AppTextStyles.labelMedium.copyWith(
+                                          color: colors.onPrimary.withValues(
+                                            alpha: 0.8,
+                                          ),
                                         ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                   ],

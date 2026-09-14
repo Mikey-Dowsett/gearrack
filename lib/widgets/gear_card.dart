@@ -35,12 +35,6 @@ class GearCard extends StatelessWidget {
         ? AppColors.statusWorn
         : AppColors.statusRetired;
 
-    final String conditionText = condition == Condition.Good
-        ? 'Good'
-        : condition == Condition.Worn
-        ? 'Worn'
-        : 'Retired';
-
     final icon = IconRegistry.resolve(categoryIcon);
     final _wp = formatWeightParts(gear.weightGrams);
 
@@ -77,6 +71,8 @@ class GearCard extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      // Condition side-strip — glanceable status at the rail
+                      Container(width: 5.sp, color: statusColor),
                       SizedBox(
                         width: 52.sp,
                         child: Stack(
@@ -84,21 +80,12 @@ class GearCard extends StatelessWidget {
                           children: [
                             Container(
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(UiConstants.cardRadius.sp),
-                                  bottomLeft: Radius.circular(UiConstants.cardRadius.sp),
-                                ),
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: const Alignment(-0.8, -0.8),
-                                  stops: [0.0, 0.5, 0.5, 1.0],
-                                  colors: [
-                                    colors.surfaceRaised,
-                                    colors.surfaceRaised,
-                                    colors.surfaceSunken,
-                                    colors.surfaceSunken,
-                                  ],
-                                  tileMode: TileMode.repeated,
+                                color: colors.surfaceRaised,
+                                border: Border(
+                                  right: BorderSide(
+                                    color: colors.border,
+                                    width: UiConstants.borderWidth,
+                                  ),
                                 ),
                               ),
                             ),
@@ -125,37 +112,18 @@ class GearCard extends StatelessWidget {
                                 style: AppTextStyles.titleLarge.copyWith(
                                   color: colors.onSurface,
                                 ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                               if (gear.brand != null)
                                 Text(
                                   gear.brand!,
                                   style: AppTextStyles.bodyMedium.copyWith(
-                                    color: colors.onSurface,
+                                    color: colors.textSecondary,
                                   ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                              SizedBox(height: 4.sp),
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 10.sp,
-                                    height: 10.sp,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: statusColor,
-                                        width: 2.0,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 4.sp),
-                                  Text(
-                                    conditionText,
-                                    style: AppTextStyles.labelMedium.copyWith(
-                                      color: colors.onSurface,
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ],
                           ),
                         ),
@@ -168,15 +136,15 @@ class GearCard extends StatelessWidget {
                           children: [
                             Text(
                               _wp.value,
-                              style: AppTextStyles.titleLarge.copyWith(
+                              style: AppTextStyles.specMedium.copyWith(
                                 color: colors.onSurface,
                               ),
                               textAlign: TextAlign.right,
                             ),
                             Text(
                               _wp.unit,
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                color: colors.onSurface,
+                              style: AppTextStyles.specSmall.copyWith(
+                                color: colors.textSecondary,
                               ),
                               textAlign: TextAlign.right,
                             ),

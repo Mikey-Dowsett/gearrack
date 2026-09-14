@@ -126,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    'My Inventory',
+                    'Basecamp',
                     style: AppTextStyles.titleLarge.copyWith(
                       color: colors.onBackground,
                     ),
@@ -138,9 +138,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   Text(
-                    '${_gearItems.length} item${_gearItems.length != 1 ? 's' : ''} tracked',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: colors.onBackground,
+                    '${_gearItems.length} ITEMS TRACKED'.toUpperCase(),
+                    style: AppTextStyles.specSmall.copyWith(
+                      color: colors.textSecondary,
                     ),
                   ),
                 ],
@@ -156,7 +156,7 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'No gear yet',
+                          'Pack’s empty — let’s fix that',
                           style: AppTextStyles.bodyMedium.copyWith(
                             color: colors.onBackground,
                           ),
@@ -164,7 +164,7 @@ class _HomePageState extends State<HomePage> {
 
                         const SizedBox(height: 8),
                         Text(
-                          'Tap + to add your first item',
+                          'Log your first piece of kit below',
                           style: AppTextStyles.bodySmall.copyWith(
                             color: colors.textSecondary,
                           ),
@@ -185,7 +185,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           child: TextField(
                             decoration: InputDecoration(
-                              hintText: 'Search...',
+                              hintText: 'Search kit…',
                               prefixIcon: SizedBox(
                                 width: 40.sp,
                                 child: Center(
@@ -341,9 +341,10 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _navigateToAddGear,
-        child: const Icon(Icons.add),
+        icon: const Icon(Icons.add),
+        label: const Text('LOG GEAR'),
       ),
     );
   }

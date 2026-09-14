@@ -39,9 +39,9 @@ class _PaperPainter extends CustomPainter {
     for (int i = 0; i < fiberCount; i++) {
       final x = rng.nextDouble() * size.width;
       final y = rng.nextDouble() * size.height;
-      final length = rng.nextDouble() * 40 + 8;
+      final length = rng.nextDouble() * 28 + 6;
       final angle = rng.nextDouble() * pi;
-      final alpha = (rng.nextDouble() * 2 + 1).round().clamp(1, 3);
+      final alpha = (rng.nextDouble() * 1 + 1).round().clamp(1, 2);
 
       fiberPaint.color = Color.fromARGB(alpha, 60, 45, 30);
       canvas.drawLine(

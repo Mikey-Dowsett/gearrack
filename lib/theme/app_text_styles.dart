@@ -4,22 +4,36 @@ import 'app_colors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppTextStyles {
-  // Rubik — clean modern sans for headings (more approachable than Fraunces)
-  static TextStyle get titleLarge => GoogleFonts.rubik(
+  // Fraunces — old-style serif for headings (field-guide personality, per DESIGN_PHILOSOPHY §3.1)
+  static TextStyle get titleLarge => GoogleFonts.fraunces(
     fontSize: 18.sp,
     fontWeight: FontWeight.w700,
     color: AppColors.black,
   );
 
-  static TextStyle get titleMedium => GoogleFonts.rubik(
+  static TextStyle get titleMedium => GoogleFonts.fraunces(
     fontSize: 16.sp,
     fontWeight: FontWeight.w700,
     color: AppColors.black,
   );
 
-  static TextStyle get titleSmall => GoogleFonts.rubik(
+  static TextStyle get titleSmall => GoogleFonts.fraunces(
     fontSize: 14.sp,
     fontWeight: FontWeight.w700,
+    color: AppColors.black,
+  );
+
+  // Spec mono — tabular readout for weights / litres / counts (trail-tag feel)
+  static TextStyle get specMedium => GoogleFonts.ibmPlexMono(
+    fontSize: 14.sp,
+    fontWeight: FontWeight.w600,
+    color: AppColors.black,
+  );
+
+  static TextStyle get specSmall => GoogleFonts.ibmPlexMono(
+    fontSize: 11.sp,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0.6,
     color: AppColors.black,
   );
 
