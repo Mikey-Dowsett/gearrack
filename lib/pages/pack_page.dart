@@ -43,6 +43,7 @@ class _PackPageState extends State<PackPage>
   String _currencySymbol = '\$';
   bool _showLbs = false;
   GearItem? _bagGear;
+  bool _bagChecked = false;
 
   int get _gearCount {
     final itemCount = _packItems.fold<int>(
@@ -525,15 +526,7 @@ class _PackPageState extends State<PackPage>
                     controller: _tabController,
                     children: [
                       _buildBuildTab(colors),
-                      // Checklist tab placeholder
-                      Center(
-                        child: Text(
-                          'Checklist coming soon',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: colors.textSecondary,
-                          ),
-                        ),
-                      ),
+                      _buildChecklistTab(colors),
                     ],
                   ),
                 ),
@@ -686,6 +679,193 @@ class _PackPageState extends State<PackPage>
       }
     }
     return widgets;
+  }
+
+  Future<void> _toggleCheck(PackItemWithGear pwg, bool? value) async {
+    final newValue = value ?? !pwg.packItem.isChecked;
+    final idx = _packItems.indexWhere((p) => p.packItem.id == pwg.packItem.id);
+    if (idx < 0) return;
+    final old = _packItems[idx];
+    setState(() {
+      _packItems[idx] = PackItemWithGear(
+        packItem: old.packItem.copyWith(isChecked: newValue),
+        gearItem: old.gearItem,
+      );
+    });
+    try {
+      final dao = await PackItemDao.create();
+      await dao.update(_packItems[idx].packItem);
+    } catch (e) {
+      if (mounted) {
+        setState(() => _packItems[idx] = old);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to update: $e')));
+      }
+    }
+  }
+
+  /// Checklist tab — same category sections as Build, but each row is a
+  /// checkbox with no weight and no add/remove actions.
+  Widget _buildChecklistTab(AppColorPalette colors) {
+    if (_packItems.isEmpty && _bagGear == null) {
+      return Center(
+        child: Text(
+          'No gear added yet.\nAdd gear in the Build tab.',
+          textAlign: TextAlign.center,
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: colors.textSecondary,
+          ),
+        ),
+      );
+    }
+    final groups = <String, List<PackItemWithGear>>{};
+    for (final pwg in _packItems) {
+      groups.putIfAbsent(pwg.gearItem.categoryId, () => []).add(pwg);
+    }
+    final order = {
+      for (var i = 0; i < _categories.length; i++) _categories[i].id: i,
+    };
+    final ids = groups.keys.toList()
+      ..sort((a, b) => (order[a] ?? 1 << 30).compareTo(order[b] ?? 1 << 30));
+
+    return ListView(
+      children: [
+        if (_bagGear != null)
+          _buildChecklistSection(
+            colors,
+            name: _categories
+                    .where((c) => c.id == _bagGear!.categoryId)
+                    .firstOrNull
+                    ?.name ??
+                'Bag',
+            iconKey: _categoryIcon(_bagGear!.categoryId),
+            iconColor: _categoryColorById(
+              _bagGear!.categoryId,
+              colors.primary,
+            ),
+            checkedCount: _bagChecked ? 1 : 0,
+            totalCount: 1,
+            rows: [
+              _buildChecklistRow(
+                colors,
+                name: _bagGear!.name,
+                brand: _bagGear!.brand,
+                checked: _bagChecked,
+                onChanged: (v) =>
+                    setState(() => _bagChecked = v ?? !_bagChecked),
+              ),
+            ],
+          ),
+        for (final id in ids)
+          _buildChecklistSection(
+            colors,
+            name: _categories.where((c) => c.id == id).firstOrNull?.name ?? id,
+            iconKey: _categoryIcon(id),
+            iconColor: _categoryColorById(id, colors.textSecondary),
+            checkedCount: groups[id]!
+                .where((pwg) => pwg.packItem.isChecked)
+                .length,
+            totalCount: groups[id]!.length,
+            rows: [
+              for (final pwg in groups[id]!)
+                _buildChecklistRow(
+                  colors,
+                  name: pwg.gearItem.name,
+                  brand: pwg.gearItem.brand,
+                  checked: pwg.packItem.isChecked,
+                  onChanged: (v) => _toggleCheck(pwg, v),
+                ),
+            ],
+          ),
+      ],
+    );
+  }
+
+  Widget _buildChecklistSection(
+    AppColorPalette colors, {
+    required String name,
+    required String iconKey,
+    required Color iconColor,
+    required int checkedCount,
+    required int totalCount,
+    required List<Widget> rows,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(12.sp, 10.sp, 12.sp, 2.sp),
+          child: SectionHeader(
+            title: name,
+            spec: '$checkedCount/$totalCount',
+            icon: IconRegistry.resolve(iconKey),
+            iconColor: iconColor,
+          ),
+        ),
+        ...rows,
+      ],
+    );
+  }
+
+  Widget _buildChecklistRow(
+    AppColorPalette colors, {
+    required String name,
+    String? brand,
+    required bool checked,
+    required ValueChanged<bool?> onChanged,
+  }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 3.sp),
+      child: Card.filled(
+        color: colors.surface,
+        elevation: UiConstants.cardElevation,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(UiConstants.compactCardRadius.sp),
+          side: BorderSide(
+            color: checked ? Colors.green : colors.border,
+            width: checked
+                ? UiConstants.borderWidth + 0.5
+                : UiConstants.borderWidth,
+          ),
+        ),
+        child: SizedBox(
+          height: 56.sp,
+          child: Row(
+            children: [
+              SizedBox(width: 12.sp),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      name,
+                      style: AppTextStyles.titleLarge.copyWith(
+                        fontSize: 13.sp,
+                        decoration: checked
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (brand != null)
+                      Text(
+                        brand,
+                        style: AppTextStyles.bodySmall,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                  ],
+                ),
+              ),
+              Checkbox(value: checked, onChanged: onChanged),
+              SizedBox(width: 8.sp),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildBagCard(AppColorPalette colors, GearItem bag, String iconKey) {
