@@ -107,6 +107,7 @@ class Schema {
     CREATE TABLE IF NOT EXISTS app_settings (
       id INTEGER PRIMARY KEY DEFAULT 1,
       weight_unit TEXT NOT NULL DEFAULT 'grams',
+      show_lbs INTEGER NOT NULL DEFAULT 0,
       theme TEXT NOT NULL DEFAULT 'light',
       accent_color TEXT NOT NULL DEFAULT '#385A41',
       currency TEXT NOT NULL DEFAULT 'USD',
@@ -251,6 +252,7 @@ class Schema {
     await db.insert('app_settings', {
       'id': 1,
       'weight_unit': 'grams',
+      'show_lbs': 0,
       'theme': 'light',
       'accent_color': '#385A41',
       'currency': 'USD',

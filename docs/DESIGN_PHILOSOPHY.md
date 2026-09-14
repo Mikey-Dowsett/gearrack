@@ -395,6 +395,8 @@ Card.filled(
 **Bag card variant** (in pack detail): uses `primaryContainer` background,
 `primary` 1.5px border, elevation 0.
 
+**Build tab grouping:** pack Build lists group rows under one `SectionHeader` per category (master category order, unknowns last) — category icon + name + mono `count · weight` spec. Bag card stays first, outside groups.
+
 ### 9.9 Empty states
 
 ```dart
@@ -455,6 +457,10 @@ Category filters use `PatchChip` (`widgets/patch_chip.dart`): 6px radius (not pi
 ### 9.16 Detail hero (gear page, mirrors pack page)
 
 Green `primary` hero: icon badge (`primaryMuted` 25sp tile), uppercase category label, Fraunces 25sp name (2-line clamp), mono brand · weight line, mono price · qty · age line, condition pill (`onPrimary` 20% alpha). Body grouped under `SectionHeader`s: Specifications / Condition & Kit / Field Notes (6-line clamp) / Trail Use. `InfoCard` takes `maxLines` (default 2).
+
+### 9.17 Form shell (add/edit pages)
+
+`FormShell` (`widgets/form_shell.dart`): plain centered AppBar, 12sp padded scroll body, shared 56sp primary bottom-sheet save button with check icon. `FormHero`: slim `primary` banner (icon badge + uppercase label + live name + mono spec, all ellipsis). Bodies grouped with `SectionHeader`: add-gear = Identity / Specifications / Condition & Kit (`PatchChip` category + condition pickers, status-color icons); add-pack = Pack; log-trip = Trip / Details / Items. Field labels uppercase mono (`specSmall`); short hints.
 
 ---
 

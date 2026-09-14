@@ -11,6 +11,9 @@ import '../models/gear_item.dart';
 import '../database/gear_item_dao.dart';
 import '../database/category_dao.dart';
 import '../utils/icon_registry.dart';
+import '../widgets/form_shell.dart';
+import '../widgets/patch_chip.dart';
+import '../widgets/section_header.dart';
 
 class AddGearPage extends StatefulWidget {
   final GearItem? gear;
@@ -30,6 +33,7 @@ class _AddGearPageState extends State<AddGearPage> {
   Category? _selectedCategory;
   Condition? _selectedCondition;
   List<Category> _categories = [];
+  List<String> _allBrands = [];
   bool _isPack = false;
 
   final TextEditingController _nameController = TextEditingController();
@@ -44,6 +48,8 @@ class _AddGearPageState extends State<AddGearPage> {
   @override
   void initState() {
     super.initState();
+    // Live hero title as the name is typed.
+    _nameController.addListener(() => setState(() {}));
     _loadCategories();
   }
 
@@ -51,8 +57,16 @@ class _AddGearPageState extends State<AddGearPage> {
     try {
       final dao = await CategoryDao.create();
       final cats = await dao.getAll();
+      List<String> brands = [];
+      try {
+        final gearDao = await GearItemDao.create();
+        brands = await gearDao.getDistinctBrands();
+      } catch (_) {
+        // Brands are best-effort; ignore failures.
+      }
       setState(() {
         _categories = cats;
+        _allBrands = brands;
       });
       // After categories are loaded, populate fields if editing.
       final gear = widget.gear;
@@ -129,8 +143,8 @@ class _AddGearPageState extends State<AddGearPage> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          label,
-          style: AppTextStyles.labelMedium.copyWith(color: colors.onBackground),
+          label.toUpperCase(),
+          style: AppTextStyles.specSmall.copyWith(color: colors.onBackground),
         ),
         if (required) ...[
           SizedBox(width: 4.sp),
@@ -213,6 +227,146 @@ class _AddGearPageState extends State<AddGearPage> {
     );
   }
 
+  Widget _buildBrandField(BuildContext context) {
+    final colors = AppColors.of(context);
+
+    InputDecoration decoration(String hint) => InputDecoration(
+          hintText: hint,
+          hintStyle: AppTextStyles.bodyMedium.copyWith(
+            color: colors.textSecondary,
+          ),
+          filled: true,
+          fillColor: colors.surface,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+            borderSide: BorderSide(
+              color: colors.border,
+              width: UiConstants.borderWidth,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+            borderSide: BorderSide(
+              color: colors.border,
+              width: UiConstants.borderWidth,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+            borderSide: BorderSide(
+              color: colors.primary,
+              width: UiConstants.borderWidth,
+            ),
+          ),
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 16.sp,
+            vertical: 14.sp,
+          ),
+        );
+
+    textFieldBuilder(
+      TextEditingController c,
+      FocusNode f,
+      VoidCallback onSubmit,
+    ) =>
+        TextFormField(
+          controller: c,
+          focusNode: f,
+          onFieldSubmitted: (_) => onSubmit(),
+          style: AppTextStyles.bodyLarge.copyWith(color: colors.onSurface),
+          decoration: decoration('Brand (optional)'),
+        );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _fieldLabel(context, 'Brand'),
+        SizedBox(height: 6.sp),
+        LayoutBuilder(
+          builder: (context, constraints) => Autocomplete<String>(
+            initialValue: TextEditingValue(text: _brandController.text),
+            optionsBuilder: (value) {
+              final q = value.text.trim().toLowerCase();
+              // Exclude current item's own brand? No — keep it so editing
+              // still suggests the current value.
+              final matches = q.isEmpty
+                  ? _allBrands
+                  : _allBrands
+                      .where((b) => b.toLowerCase().contains(q))
+                      .toList();
+              // If typed text is new, offer it as first "create" option
+              // by just letting free text through; Autocomplete already
+              // keeps raw text on submit.
+              return matches;
+            },
+            onSelected: (selection) {
+              _brandController.text = selection;
+            },
+            fieldViewBuilder:
+                (context, fieldController, fieldFocus, onFieldSubmitted) {
+              // Keep controllers in sync both ways.
+              if (fieldController.text != _brandController.text &&
+                  fieldFocus.hasFocus == false &&
+                  _brandController.text.isNotEmpty) {
+                fieldController.text = _brandController.text;
+              }
+              fieldController.addListener(() {
+                if (_brandController.text != fieldController.text) {
+                  _brandController.text = fieldController.text;
+                }
+              });
+              return textFieldBuilder(
+                  fieldController, fieldFocus, onFieldSubmitted);
+            },
+            optionsViewBuilder: (context, onSelected, options) {
+              return Align(
+                alignment: Alignment.topLeft,
+                child: Material(
+                  elevation: 4,
+                  borderRadius:
+                      BorderRadius.circular(UiConstants.borderRadius),
+                  color: colors.surface,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: constraints.maxWidth,
+                      maxHeight: 220.sp,
+                    ),
+                    child: ListView.builder(
+                      padding: EdgeInsets.all(4.sp),
+                      shrinkWrap: true,
+                      itemCount: options.length,
+                      itemBuilder: (context, index) {
+                        final option = options.elementAt(index);
+                        return InkWell(
+                          onTap: () => onSelected(option),
+                          borderRadius: BorderRadius.circular(
+                              UiConstants.borderRadius),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12.sp,
+                              vertical: 10.sp,
+                            ),
+                            child: Text(
+                              option,
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: colors.onSurface,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        SizedBox(height: 12.sp),
+      ],
+    );
+  }
+
   Widget _rowOfTwoFields(BuildContext context, Widget left, Widget right) {
     return Row(
       children: [
@@ -243,7 +397,12 @@ class _AddGearPageState extends State<AddGearPage> {
               decoration: BoxDecoration(
                 color: colors.surface,
                 borderRadius: BorderRadius.circular(UiConstants.borderRadius),
-                border: Border(bottom: BorderSide(color: hasError ? colors.error : colors.border, width: UiConstants.borderWidth)),
+                border: Border(
+                  bottom: BorderSide(
+                    color: hasError ? colors.error : colors.border,
+                    width: UiConstants.borderWidth,
+                  ),
+                ),
               ),
               child: _categories.isEmpty
                   ? Padding(
@@ -260,29 +419,10 @@ class _AddGearPageState extends State<AddGearPage> {
                       runSpacing: 8.sp,
                       children: _categories.map((c) {
                         final selected = field.value == c;
-                        final icon = IconRegistry.resolve(c.icon);
-                        final catColor = AppColors.parseHex(c.color);
-                        return ChoiceChip(
-                          showCheckmark: false,
-                          label: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              FaIcon(
-                                icon,
-                                size: 14.sp,
-                                color: selected ? colors.onPrimary : catColor,
-                              ),
-                              SizedBox(width: 6.sp),
-                              Text(
-                                c.name,
-                                style: AppTextStyles.labelMedium.copyWith(
-                                  color: selected
-                                      ? colors.onPrimary
-                                      : colors.onSurface,
-                                ),
-                              ),
-                            ],
-                          ),
+                        return PatchChip(
+                          label: c.name,
+                          iconKey: c.icon,
+                          iconColor: AppColors.parseHex(c.color),
                           selected: selected,
                           onSelected: (s) {
                             field.didChange(s ? c : null);
@@ -290,17 +430,6 @@ class _AddGearPageState extends State<AddGearPage> {
                               _selectedCategory = s ? c : null;
                             });
                           },
-                          backgroundColor: colors.surface,
-                          selectedColor: colors.primary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              UiConstants.chipRadius.sp,
-                            ),
-                          ),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 12.sp,
-                            vertical: 8.sp,
-                          ),
                         );
                       }).toList(),
                     ),
@@ -332,35 +461,27 @@ class _AddGearPageState extends State<AddGearPage> {
               decoration: BoxDecoration(
                 color: colors.surface,
                 borderRadius: BorderRadius.circular(UiConstants.borderRadius),
-                border: Border(bottom: BorderSide(color: hasError ? colors.error : colors.border, width: 1)),
+                border: Border(
+                  bottom: BorderSide(
+                    color: hasError ? colors.error : colors.border,
+                    width: 1,
+                  ),
+                ),
               ),
               child: Wrap(
                 spacing: 8.sp,
                 runSpacing: 8.sp,
                 children: Condition.values.map((c) {
                   final selected = field.value == c;
-                  final icon = _conditionIcons[c] ?? FontAwesomeIcons.question;
-                  return ChoiceChip(
-                    showCheckmark: false,
-                    label: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          _prettyEnumName(c),
-                          style: AppTextStyles.labelMedium.copyWith(
-                            color: selected
-                                ? colors.onPrimary
-                                : colors.onSurface,
-                          ),
-                        ),
-                        SizedBox(width: 6.sp),
-                        FaIcon(
-                          icon,
-                          size: 14.sp,
-                          color: selected ? colors.onPrimary : colors.onSurface,
-                        ),
-                      ],
-                    ),
+                  final statusColor = c == Condition.Good
+                      ? AppColors.statusGood
+                      : c == Condition.Worn
+                      ? AppColors.statusWorn
+                      : AppColors.statusRetired;
+                  return PatchChip(
+                    label: _prettyEnumName(c),
+                    iconData: _conditionIcons[c],
+                    iconColor: statusColor,
                     selected: selected,
                     onSelected: (s) {
                       field.didChange(s ? c : null);
@@ -368,17 +489,6 @@ class _AddGearPageState extends State<AddGearPage> {
                         _selectedCondition = s ? c : null;
                       });
                     },
-                    backgroundColor: colors.surface,
-                    selectedColor: colors.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        UiConstants.chipRadius.sp,
-                      ),
-                    ),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 12.sp,
-                      vertical: 8.sp,
-                    ),
                   );
                 }).toList(),
               ),
@@ -433,8 +543,8 @@ class _AddGearPageState extends State<AddGearPage> {
   Widget _buildCapacityField(BuildContext context) {
     return _buildLabeledField(
       context,
-      label: 'Capacity',
-      hint: 'Capacity in liters (e.g. 45)',
+      label: 'Capacity(L)',
+      hint: '45L',
       requiredField: false,
       keyboardType: TextInputType.numberWithOptions(decimal: true),
       controller: _capacityController,
@@ -500,49 +610,53 @@ class _AddGearPageState extends State<AddGearPage> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppColors.of(context);
-    // Shared fixed height for bottom-sheet buttons so they always match
-    final double buttonHeight = 56.sp;
+    final isEditing = widget.gear != null;
+    final heroIcon = _selectedCategory != null
+        ? IconRegistry.resolve(_selectedCategory!.icon)
+        : FontAwesomeIcons.box;
+    final heroLabel =
+        '${isEditing ? 'Editing' : 'New gear'} · ${_selectedCategory?.name ?? 'no category'}';
 
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          widget.gear != null ? 'Edit Gear' : 'Add Gear',
-          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
-        ),
-        backgroundColor: colors.background,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(8.sp),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildLabeledField(
+    return FormShell(
+      title: isEditing ? 'Edit Gear' : 'Add Gear',
+      saveLabel: isEditing ? 'Update Gear' : 'Save Gear',
+      onSave: _saveGear,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FormHero(
+              icon: heroIcon,
+              label: heroLabel,
+              title: _nameController.text.isEmpty
+                  ? 'Untitled piece'
+                  : _nameController.text,
+              spec: _selectedCondition != null
+                  ? _prettyEnumName(_selectedCondition!).toUpperCase()
+                  : null,
+            ),
+            SizedBox(height: 12.sp),
+            const SectionHeader(title: 'Identity'),
+            SizedBox(height: 8.sp),
+            _buildLabeledField(
                 context,
                 label: 'Name',
                 hint: 'Gear Name',
                 requiredField: true,
                 controller: _nameController,
               ),
-              _buildLabeledField(
-                context,
-                label: 'Brand',
-                hint: 'Brand (optional)',
-                requiredField: false,
-                controller: _brandController,
-              ),
+              _buildBrandField(context),
               _buildCategoryField(context, true),
+              SizedBox(height: 4.sp),
+              const SectionHeader(title: 'Specifications'),
+              SizedBox(height: 8.sp),
               _rowOfTwoFields(
                 context,
                 _buildLabeledField(
                   context,
-                  label: 'Weight',
-                  hint: 'Weight in grams (e.g. 1500)',
+                  label: 'Weight(g)',
+                  hint: '1500g',
                   requiredField: true,
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   controller: _weightController,
@@ -581,6 +695,9 @@ class _AddGearPageState extends State<AddGearPage> {
                   controller: _quantityController,
                 ),
               ),
+              SizedBox(height: 4.sp),
+              const SectionHeader(title: 'Condition & Notes'),
+              SizedBox(height: 8.sp),
               _buildConditionField(context, true),
               _buildLabeledField(
                 context,
@@ -598,54 +715,6 @@ class _AddGearPageState extends State<AddGearPage> {
             ],
           ),
         ),
-      ),
-      bottomSheet: SafeArea(
-        left: false,
-        right: false,
-        bottom: true,
-        child: Container(
-          margin: EdgeInsets.zero,
-          padding: EdgeInsets.symmetric(horizontal: 32.sp, vertical: 8.sp),
-          color: colors.background,
-          child: Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.primary,
-                    foregroundColor: colors.onPrimary,
-                    minimumSize: Size.fromHeight(buttonHeight),
-                    padding: EdgeInsets.symmetric(vertical: 0.sp),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        UiConstants.buttonRadius.sp,
-                      ),
-                    ),
-                  ),
-                  onPressed: _saveGear,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FaIcon(
-                        FontAwesomeIcons.check,
-                        color: colors.onPrimary,
-                        size: 25.sp,
-                      ),
-                      SizedBox(width: 8.sp),
-                      Text(
-                        widget.gear != null ? 'Update Gear' : 'Save Gear',
-                        style: AppTextStyles.bodyLarge.copyWith(
-                          color: colors.onPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

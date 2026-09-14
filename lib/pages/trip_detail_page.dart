@@ -8,6 +8,7 @@ import '../widgets/info_card.dart';
 import '../models/trip.dart';
 import '../models/trip_item.dart';
 import '../database/trip_dao.dart';
+import '../database/app_settings_dao.dart';
 import '../utils/icon_registry.dart';
 import '../utils/weight_formatter.dart';
 import 'log_trip_page.dart';
@@ -27,6 +28,7 @@ class _TripDetailPageState extends State<TripDetailPage> {
   List<TripCategoryWeight> _categoryWeights = [];
   bool _isLoading = true;
   double _totalWeight = 0;
+  bool _showLbs = false;
   List<TripItem> _tripItems = []; // raw items for editing
 
   @override
@@ -44,6 +46,7 @@ class _TripDetailPageState extends State<TripDetailPage> {
       final categoryWeights = await dao.getWeightByCategory(widget.tripId);
       final totalWeight = await dao.getTotalWeightByTrip(widget.tripId);
       final rawItems = await dao.getItemsByTrip(widget.tripId);
+      final settings = await (await AppSettingsDao.create()).get();
 
       setState(() {
         _trip = trip;
@@ -51,6 +54,7 @@ class _TripDetailPageState extends State<TripDetailPage> {
         _categoryWeights = categoryWeights;
         _totalWeight = totalWeight;
         _tripItems = rawItems;
+        _showLbs = settings.showLbs;
         _isLoading = false;
       });
     } catch (e) {
@@ -310,6 +314,15 @@ class _TripDetailPageState extends State<TripDetailPage> {
                   color: colors.onPrimary,
                 ),
               ),
+              if (_showLbs) ...[
+                SizedBox(width: 8.sp),
+                Text(
+                  '(${formatLbs(_totalWeight)})',
+                  style: AppTextStyles.titleMedium.copyWith(
+                    color: colors.onPrimary,
+                  ),
+                ),
+              ],
             ],
           ),
           SizedBox(height: 8.sp),

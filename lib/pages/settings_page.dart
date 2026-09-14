@@ -1,8 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gearrack/database/app_settings_dao.dart';
 import 'package:gearrack/models/app_settings.dart';
+import 'package:gearrack/services/backup_service.dart';
 import 'package:gearrack/theme/app_colors.dart';
 import 'package:gearrack/theme/app_text_styles.dart';
 import 'package:gearrack/theme/ui_constants.dart';
@@ -18,8 +23,9 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  AppSettings _settings = const AppSettings();
+  AppSettings _settings = AppSettings();
   bool _isLoading = true;
+  bool _isBusy = false;
 
   @override
   void initState() {
@@ -92,6 +98,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 _sectionHeader(colors, 'DATA'),
                 SizedBox(height: 8.sp),
                 _buildManageCategoriesTile(colors),
+                _buildExportTile(colors),
+                _buildImportTile(colors),
                 SizedBox(height: 24.sp),
                 _sectionHeader(colors, 'ABOUT'),
                 SizedBox(height: 8.sp),
@@ -156,39 +164,16 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildWeightUnitSelector(AppColorPalette colors) {
-    final isGrams = _settings.weightUnit == 'grams';
-
     return _settingCard(
       colors,
       icon: FontAwesomeIcons.scaleBalanced,
-      label: 'Weight Unit',
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'g',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: isGrams ? colors.primary : colors.textSecondary,
-              fontWeight: isGrams ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-          SizedBox(width: 6.sp),
-          Switch(
-            value: isGrams,
-            activeColor: colors.primary,
-            onChanged: (val) {
-              _updateSettings(_settings.copyWith(weightUnit: val ? 'grams' : 'pounds'));
-            },
-          ),
-          SizedBox(width: 6.sp),
-          Text(
-            'lb',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: !isGrams ? colors.primary : colors.textSecondary,
-              fontWeight: !isGrams ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-        ],
+      label: 'Show weight in lbs',
+      trailing: Switch(
+        value: _settings.showLbs,
+        activeColor: colors.primary,
+        onChanged: (val) {
+          _updateSettings(_settings.copyWith(showLbs: val));
+        },
       ),
     );
   }
@@ -282,6 +267,149 @@ class _SettingsPageState extends State<SettingsPage> {
         );
       },
     );
+  }
+
+  Widget _buildExportTile(AppColorPalette colors) {
+    final lastExport = _settings.lastExportAt;
+    return _settingCard(
+      colors,
+      icon: FontAwesomeIcons.fileExport,
+      label: 'Export Data',
+      trailing: _isBusy
+          ? SizedBox(
+              width: 16.sp,
+              height: 16.sp,
+              child: const CircularProgressIndicator(strokeWidth: 2),
+            )
+          : Text(
+              lastExport != null
+                  ? '${lastExport.month}/${lastExport.day}/${lastExport.year}'
+                  : 'Backup',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: colors.textSecondary,
+              ),
+            ),
+      onTap: _isBusy ? null : _exportData,
+    );
+  }
+
+  Widget _buildImportTile(AppColorPalette colors) {
+    return _settingCard(
+      colors,
+      icon: FontAwesomeIcons.fileImport,
+      label: 'Import Data',
+      trailing: _isBusy
+          ? SizedBox(
+              width: 16.sp,
+              height: 16.sp,
+              child: const CircularProgressIndicator(strokeWidth: 2),
+            )
+          : FaIcon(
+              FontAwesomeIcons.chevronRight,
+              size: 14.sp,
+              color: colors.textSecondary,
+            ),
+      onTap: _isBusy ? null : _importData,
+    );
+  }
+
+  Future<void> _exportData() async {
+    setState(() => _isBusy = true);
+    try {
+      final backup = await BackupService.exportAll();
+      final json = BackupService.encode(backup);
+      final fileName =
+          'gearrack-backup-${DateTime.now().toIso8601String().split('T').first}.json';
+
+      final saved = await FilePicker.saveFile(
+        dialogTitle: 'Save GearRack backup',
+        fileName: fileName,
+        bytes: utf8.encode(json),
+        mimeType: 'application/json',
+      );
+      // Null means the user cancelled the dialog.
+      if (saved == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Export cancelled')),
+          );
+        }
+        return;
+      }
+      await BackupService.stampExport();
+      await _loadSettings();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Backup saved to $saved')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
+  Future<void> _importData() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Import Data', style: AppTextStyles.titleMedium),
+        content: Text(
+          'Importing a backup replaces all current data. This cannot be undone. Continue?',
+          style: AppTextStyles.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text('Cancel', style: AppTextStyles.bodyMedium),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text('Import', style: AppTextStyles.bodyMedium),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    setState(() => _isBusy = true);
+    try {
+      final picked = await FilePicker.pickFile(
+        dialogTitle: 'Choose GearRack backup',
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+      if (picked == null) return;
+
+      final String json;
+      if (picked.path != null) {
+        json = await File(picked.path!).readAsString();
+      } else {
+        json = utf8.decode(await picked.readAsBytes());
+      }
+
+      await BackupService.importAll(BackupService.decode(json));
+      await _loadSettings();
+      widget.onThemeChanged?.call();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Backup imported')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Import failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
   }
 
   Widget _buildAboutSection(AppColorPalette colors) {

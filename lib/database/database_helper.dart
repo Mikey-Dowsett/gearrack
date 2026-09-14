@@ -20,7 +20,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 7,
+      version: 8,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -34,6 +34,11 @@ class DatabaseHelper {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    // --- Migration: v7 -> v8 (add show_lbs to app_settings) ---
+    if (oldVersion < 8) {
+      await _migrateV7toV8(db);
+    }
+
     // --- Migration: v6 -> v7 (mark 5 permanent categories as default) ---
     if (oldVersion < 7) {
       await _migrateV6toV7(db);
@@ -138,6 +143,17 @@ class DatabaseHelper {
   Future<void> _migrateV5toV6(Database db) async {
     await db.execute('''
       ALTER TABLE app_settings ADD COLUMN pro_mode INTEGER NOT NULL DEFAULT 0
+    ''');
+  }
+
+  /// Add show_lbs column for v8 (replaces weight_unit g/lb toggle).
+  /// Users who previously used pounds get show_lbs enabled.
+  Future<void> _migrateV7toV8(Database db) async {
+    await db.execute('''
+      ALTER TABLE app_settings ADD COLUMN show_lbs INTEGER NOT NULL DEFAULT 0
+    ''');
+    await db.execute('''
+      UPDATE app_settings SET show_lbs = 1 WHERE weight_unit = 'pounds'
     ''');
   }
 

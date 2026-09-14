@@ -17,6 +17,8 @@ import '../database/category_dao.dart';
 import '../models/category.dart';
 import '../utils/icon_registry.dart';
 import '../utils/weight_formatter.dart';
+import '../widgets/form_shell.dart';
+import '../widgets/section_header.dart';
 
 
 /// A "trip item candidate" used while the user is composing their trip.
@@ -91,6 +93,7 @@ class _LogTripPageState extends State<LogTripPage> {
   @override
   void initState() {
     super.initState();
+    _nameController.addListener(() => setState(() {}));
     _loadData();
   }
 
@@ -354,8 +357,8 @@ class _LogTripPageState extends State<LogTripPage> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          label,
-          style: AppTextStyles.labelMedium.copyWith(color: colors.onBackground),
+          label.toUpperCase(),
+          style: AppTextStyles.specSmall.copyWith(color: colors.onBackground),
         ),
         if (required) ...[
           SizedBox(width: 4.sp),
@@ -438,144 +441,91 @@ class _LogTripPageState extends State<LogTripPage> {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
-    final double buttonHeight = 56.sp;
+    final packName = _selectedPack?.name ?? widget.pack?.name;
+    final dateSpec = _endDate != null
+        ? '${_formatDate(_startDate)} – ${_formatDate(_endDate!)}'
+        : _formatDate(_startDate);
 
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          _isEditing
-              ? 'Edit Trip'
-              : (_isFromPack ? 'Log Trip from Pack' : 'Log Trip'),
-          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
-        ),
-        backgroundColor: colors.background,
-        elevation: 0,
-      ),
-      body: _isLoading
+    return FormShell(
+      title: _isEditing
+          ? 'Edit Trip'
+          : (_isFromPack ? 'Log Trip from Pack' : 'Log Trip'),
+      saveLabel: _isEditing ? 'Update Trip' : 'Log Trip',
+      onSave: _saveTrip,
+      isSaving: _isSaving,
+      child: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: EdgeInsets.all(8.sp),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Pack selector (if not pre-selected)
-                    if (widget.pack == null) _buildPackSelector(colors),
+          : Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  FormHero(
+                    icon: FontAwesomeIcons.personHiking,
+                    label: _isEditing
+                        ? 'Editing trip'
+                        : (_isFromPack ? 'Logging from pack' : 'New trip'),
+                    title: _nameController.text.isEmpty
+                        ? 'Untitled trip'
+                        : _nameController.text,
+                    spec:
+                        '${packName ?? 'No pack'} · $dateSpec'.toUpperCase(),
+                  ),
+                  SizedBox(height: 12.sp),
+                  const SectionHeader(title: 'Trip'),
+                  SizedBox(height: 8.sp),
+                  // Pack selector (if not pre-selected)
+                  if (widget.pack == null) _buildPackSelector(colors),
 
-                    // Trip name
-                    _buildTextField(
-                      label: 'Trip Name',
-                      hint: 'e.g. Red Rock weekend',
-                      requiredField: true,
-                      controller: _nameController,
-                    ),
+                  // Trip name
+                  _buildTextField(
+                    label: 'Trip Name',
+                    hint: 'e.g. Red Rock weekend',
+                    requiredField: true,
+                    controller: _nameController,
+                  ),
 
-                    // Activity type
-                    _buildActivityField(colors),
+                  // Activity type
+                  _buildActivityField(colors),
 
-                    // Date pickers
-                    _buildDateSection(colors),
+                  // Date pickers
+                  _buildDateSection(colors),
 
-                    // Location
-                    _buildTextField(
-                      label: 'Location',
-                      hint: 'e.g. Yosemite NP',
-                      controller: _locationController,
-                    ),
+                  SizedBox(height: 4.sp),
+                  const SectionHeader(title: 'Details'),
+                  SizedBox(height: 8.sp),
+                  // Location
+                  _buildTextField(
+                    label: 'Location',
+                    hint: 'e.g. Yosemite NP',
+                    controller: _locationController,
+                  ),
 
-                    // Conditions
-                    _buildTextField(
-                      label: 'Conditions',
-                      hint: 'e.g. Sunny, 75°F',
-                      controller: _conditionsController,
-                    ),
+                  // Conditions
+                  _buildTextField(
+                    label: 'Conditions',
+                    hint: 'e.g. Sunny, 75°F',
+                    controller: _conditionsController,
+                  ),
 
-                    // Notes
-                    _buildTextField(
-                      label: 'Notes',
-                      hint: 'Trip highlights, lessons learned...',
-                      controller: _notesController,
-                      keyboardType: TextInputType.multiline,
-                      minLines: 1,
-                      maxLines: 3,
-                    ),
+                  // Notes
+                  _buildTextField(
+                    label: 'Notes',
+                    hint: 'Highlights, lessons…',
+                    controller: _notesController,
+                    keyboardType: TextInputType.multiline,
+                    minLines: 1,
+                    maxLines: 3,
+                  ),
 
-                    // Divider
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.sp),
-                      child: Divider(color: colors.border),
-                    ),
+                  SizedBox(height: 4.sp),
+                  const SectionHeader(title: 'Items'),
+                  SizedBox(height: 8.sp),
+                  // Items section
+                  _buildItemsSection(colors),
 
-                    // Items section
-                    _buildItemsSection(colors),
-
-                    SizedBox(height: 100.sp),
-                  ],
-                ),
-              ),
-            ),
-      bottomSheet: _isLoading
-          ? null
-          : SafeArea(
-              left: false,
-              right: false,
-              bottom: true,
-              child: Container(
-                margin: EdgeInsets.zero,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 32.sp,
-                  vertical: 8.sp,
-                ),
-                color: colors.background,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: colors.primary,
-                          foregroundColor: colors.onPrimary,
-                          minimumSize: Size.fromHeight(buttonHeight),
-                          padding: EdgeInsets.symmetric(vertical: 0.sp),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              UiConstants.buttonRadius.sp,
-                            ),
-                          ),
-                        ),
-                        onPressed: _isSaving ? null : _saveTrip,
-                        child: _isSaving
-                            ? SizedBox(
-                                height: 24.sp,
-                                width: 24.sp,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.sp,
-                                  color: colors.onPrimary,
-                                ),
-                              )
-                            : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  FaIcon(
-                                    FontAwesomeIcons.check,
-                                    color: colors.onPrimary,
-                                    size: 25.sp,
-                                  ),
-                                  SizedBox(width: 8.sp),
-                                  Text(
-                                    _isEditing ? 'Update Trip' : 'Log Trip',
-                                    style: AppTextStyles.bodyLarge.copyWith(
-                                      color: colors.onPrimary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                      ),
-                    ),
-                  ],
-                ),
+                  SizedBox(height: 100.sp),
+                ],
               ),
             ),
     );
@@ -1056,13 +1006,12 @@ class _AddGearToTripSheetState extends State<_AddGearToTripSheet> {
     final colors = AppColors.of(context);
     final height = MediaQuery.of(context).size.height * 0.7;
 
-    return Container(
-      height: height,
-      decoration: BoxDecoration(
-        color: colors.background,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.sp)),
-      ),
-      child: Column(
+    return Material(
+      color: colors.background,
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16.sp)),
+      child: SizedBox(
+        height: height,
+        child: Column(
         children: [
           Padding(
             padding: EdgeInsets.all(12.sp),
@@ -1144,6 +1093,7 @@ class _AddGearToTripSheetState extends State<_AddGearToTripSheet> {
                   ),
           ),
         ],
+        ),
       ),
     );
   }

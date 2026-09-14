@@ -42,7 +42,7 @@ dependencies:
   flutter_screenutil: ^5.0.0
   font_awesome_flutter: ^11.0.0
   uuid: ^4.5.1
-
+  file_picker: ^13.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../models/gear_item.dart';
 import '../models/category.dart';
 import '../database/category_dao.dart';
+import '../database/gear_item_dao.dart';
 import '../database/trip_dao.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -86,6 +87,52 @@ class _GearPageState extends State<GearPage> {
     Navigator.of(context).pop(_wasEdited ? _gear : null);
   }
 
+  Future<void> _deleteGear() async {
+    final colors = AppColors.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Delete Gear', style: AppTextStyles.titleMedium),
+        content: Text(
+          'Delete "${_gear.name}"? This cannot be undone.',
+          style: AppTextStyles.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text('Cancel', style: AppTextStyles.bodyMedium),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(
+              'Delete',
+              style: AppTextStyles.bodyMedium.copyWith(color: colors.error),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      try {
+        final dao = await GearItemDao.create();
+        await dao.delete(_gear.id);
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Gear deleted')));
+          Navigator.of(context).pop(_gear);
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to delete: $e')));
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
@@ -96,7 +143,7 @@ class _GearPageState extends State<GearPage> {
 
     final categoryName = _category?.name ?? gear.categoryId;
     final categoryIconKey = _category?.icon ?? 'box';
-    final wp = formatWeightParts(gear.weightGrams);
+    final totalWp = formatWeightParts(gear.weightGrams * gear.quantity);
 
     return PopScope(
       canPop: false,
@@ -121,6 +168,12 @@ class _GearPageState extends State<GearPage> {
           IconButton(
             icon: FaIcon(FontAwesomeIcons.pen, size: 16.sp, color: colors.onBackground),
             onPressed: _navigateToEdit,
+            tooltip: 'Edit Gear',
+          ),
+          IconButton(
+            icon: FaIcon(FontAwesomeIcons.trash, size: 16.sp, color: colors.onBackground),
+            onPressed: _deleteGear,
+            tooltip: 'Delete Gear',
           ),
         ],
       ),
@@ -201,7 +254,7 @@ class _GearPageState extends State<GearPage> {
                   ),
                   SizedBox(height: 4.sp),
                   Text(
-                    '${gear.brand ?? 'No brand'} · ${wp.value} ${wp.unit}',
+                    '${gear.brand ?? 'No brand'} · ${totalWp.value} ${totalWp.unit}',
                     style: AppTextStyles.specMedium.copyWith(
                       color: colors.onPrimary.withValues(alpha: 0.85),
                     ),
@@ -210,7 +263,7 @@ class _GearPageState extends State<GearPage> {
                   ),
                   SizedBox(height: 2.sp),
                   Text(
-                    '${gear.price != null ? '\$${gear.price!.toStringAsFixed(2)}' : '—'} · x${gear.quantity} · ${age} yrs',
+                    '${gear.price != null ? '\$${(gear.price! * gear.quantity).toStringAsFixed(2)}' : '—'} · x${gear.quantity} · ${age} yrs',
                     style: AppTextStyles.specSmall.copyWith(
                       color: colors.onPrimary.withValues(alpha: 0.8),
                     ),

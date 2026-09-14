@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
@@ -8,8 +9,16 @@ import '../theme/app_text_styles.dart';
 class SectionHeader extends StatelessWidget {
   final String title;
   final String? spec;
+  final FaIconData? icon;
+  final Color? iconColor;
 
-  const SectionHeader({super.key, required this.title, this.spec});
+  const SectionHeader({
+    super.key,
+    required this.title,
+    this.spec,
+    this.icon,
+    this.iconColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +35,14 @@ class SectionHeader extends StatelessWidget {
           ),
         ),
         SizedBox(width: 8.sp),
+        if (icon != null) ...[
+          FaIcon(
+            icon!,
+            size: 14.sp,
+            color: iconColor ?? colors.textSecondary,
+          ),
+          SizedBox(width: 6.sp),
+        ],
         Flexible(
           child: Text(
             title,

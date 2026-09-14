@@ -12,6 +12,7 @@ import '../utils/icon_registry.dart';
 class PatchChip extends StatelessWidget {
   final String label;
   final String? iconKey;
+  final FaIconData? iconData;
   final Color? iconColor;
   final int? count;
   final bool selected;
@@ -21,6 +22,7 @@ class PatchChip extends StatelessWidget {
     super.key,
     required this.label,
     this.iconKey,
+    this.iconData,
     this.iconColor,
     this.count,
     required this.selected,
@@ -31,17 +33,19 @@ class PatchChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
     final fg = selected ? colors.onPrimary : colors.onSurface;
+    final resolvedIcon = iconData ??
+        (iconKey != null ? IconRegistry.resolve(iconKey!) : null);
     return ChoiceChip(
       label: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (iconKey != null)
+          if (resolvedIcon != null)
             FaIcon(
-              IconRegistry.resolve(iconKey!),
+              resolvedIcon,
               size: UiConstants.iconSmall.sp,
               color: selected ? fg : (iconColor ?? colors.textSecondary),
             ),
-          if (iconKey != null) SizedBox(width: 6.sp),
+          if (resolvedIcon != null) SizedBox(width: 6.sp),
           Flexible(
             child: Text(
               label.toUpperCase(),

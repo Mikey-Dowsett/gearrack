@@ -11,10 +11,13 @@ import '../database/pack_dao.dart';
 import '../database/pack_item_dao.dart';
 import '../database/gear_item_dao.dart';
 import '../database/category_dao.dart';
+import '../database/app_settings_dao.dart';
 import '../models/category.dart';
 import '../utils/icon_registry.dart';
 import '../theme/ui_constants.dart';
 import '../utils/weight_formatter.dart';
+import '../widgets/section_header.dart';
+import '../widgets/patch_chip.dart';
 import 'log_trip_page.dart';
 
 class PackPage extends StatefulWidget {
@@ -36,6 +39,9 @@ class _PackPageState extends State<PackPage>
   List<Category> _categories = [];
   bool _isLoading = true;
   double _totalWeight = 0;
+  double _totalValue = 0;
+  String _currencySymbol = '\$';
+  bool _showLbs = false;
   GearItem? _bagGear;
 
   int get _gearCount {
@@ -62,6 +68,13 @@ class _PackPageState extends State<PackPage>
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
+    await _refreshSilent();
+    if (mounted) setState(() => _isLoading = false);
+  }
+
+  /// Reload pack items + derived totals without showing the full-screen
+  /// spinner. Used for add/remove so the list doesn't flash.
+  Future<void> _refreshSilent() async {
     try {
       final packItemDao = await PackItemDao.create();
       final categoryDao = await CategoryDao.create();
@@ -76,6 +89,9 @@ class _PackPageState extends State<PackPage>
       if (_pack.bagId != null) {
         bagGear = await gearDao.getById(_pack.bagId!);
       }
+
+      final settingsDao = await AppSettingsDao.create();
+      final settings = await settingsDao.get();
 
       // Inject the bag's weight into the category breakdown so it appears
       // in both the total and the progress bar.
@@ -120,12 +136,20 @@ class _PackPageState extends State<PackPage>
         _packItems = items;
         _categoryWeights = adjustedCategoryWeights;
         _totalWeight = totalWeight + (bagGear?.weightGrams ?? 0);
+        _totalValue =
+            items.fold<double>(
+              0,
+              (sum, pwg) =>
+                  sum +
+                  (pwg.gearItem.price ?? 0) * pwg.packItem.quantityInPack,
+            ) +
+            (bagGear?.price ?? 0);
+        _currencySymbol = _currencySymbolFor(settings.currency);
+        _showLbs = settings.showLbs;
         _categories = categories;
         _bagGear = bagGear;
-        _isLoading = false;
       });
     } catch (e) {
-      setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -134,13 +158,92 @@ class _PackPageState extends State<PackPage>
     }
   }
 
+  /// Recompute weight/value/category breakdown from in-memory items.
+  /// Used for optimistic add/remove so the header updates instantly.
+  void _recalculateTotals() {
+    double itemsWeight = 0;
+    double itemsValue = 0;
+    final Map<String, double> weightByCat = {};
+    final Map<String, CategoryWeight> metaByCat = {};
+    for (final cw in _categoryWeights) {
+      metaByCat[cw.categoryId] = cw;
+    }
+    for (final pwg in _packItems) {
+      final w = pwg.gearItem.weightGrams * pwg.packItem.quantityInPack;
+      itemsWeight += w;
+      itemsValue += (pwg.gearItem.price ?? 0) * pwg.packItem.quantityInPack;
+      weightByCat.update(
+        pwg.gearItem.categoryId,
+        (v) => v + w,
+        ifAbsent: () => w,
+      );
+    }
+    final bagW = _bagGear?.weightGrams ?? 0;
+    final bagV = _bagGear?.price ?? 0;
+    if (_bagGear != null) {
+      weightByCat.update(
+        _bagGear!.categoryId,
+        (v) => v + bagW,
+        ifAbsent: () => bagW,
+      );
+    }
+    final weights = <CategoryWeight>[];
+    for (final entry in weightByCat.entries) {
+      final existing = metaByCat[entry.key];
+      if (existing != null) {
+        weights.add(
+          CategoryWeight(
+            categoryId: existing.categoryId,
+            categoryName: existing.categoryName,
+            icon: existing.icon,
+            color: existing.color,
+            totalWeightGrams: entry.value,
+          ),
+        );
+      } else {
+        final cat = _categories.where((c) => c.id == entry.key).firstOrNull;
+        weights.add(
+          CategoryWeight(
+            categoryId: entry.key,
+            categoryName: cat?.name ?? entry.key,
+            icon: cat?.icon ?? 'box',
+            color: cat?.color ?? '#888888',
+            totalWeightGrams: entry.value,
+          ),
+        );
+      }
+    }
+    weights.sort((a, b) => b.totalWeightGrams.compareTo(a.totalWeightGrams));
+    _categoryWeights = weights;
+    _totalWeight = itemsWeight + bagW;
+    _totalValue = itemsValue + bagV;
+  }
+
   Future<void> _removeGearItem(String packItemId) async {
+    final removedIdx = _packItems.indexWhere((p) => p.packItem.id == packItemId);
+    final removed = removedIdx >= 0 ? _packItems[removedIdx] : null;
+    // Optimistic: update UI instantly without the full-screen spinner.
+    if (removed != null) {
+      setState(() {
+        _packItems.removeAt(removedIdx);
+        _recalculateTotals();
+      });
+    }
     try {
       final dao = await PackItemDao.create();
       await dao.delete(packItemId);
-      await _loadData();
+      await _refreshSilent();
+      if (mounted) setState(() {});
     } catch (e) {
-      if (mounted) {
+      // Roll back on failure.
+      if (removed != null && mounted) {
+        setState(() {
+          _packItems.insert(
+            removedIdx.clamp(0, _packItems.length),
+            removed,
+          );
+          _recalculateTotals();
+        });
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Failed to remove: $e')));
@@ -151,6 +254,8 @@ class _PackPageState extends State<PackPage>
   Future<void> _addGearItem(String gearItemId) async {
     try {
       final dao = await PackItemDao.create();
+      final gearDao = await GearItemDao.create();
+      final gear = await gearDao.getById(gearItemId);
       final packItem = PackItem(
         id: const Uuid().v4(),
         packId: _pack.id,
@@ -159,7 +264,15 @@ class _PackPageState extends State<PackPage>
         sortOrder: _packItems.length,
       );
       await dao.insert(packItem);
-      await _loadData();
+      // Optimistic: append instantly if we have the gear details.
+      if (gear != null && mounted) {
+        setState(() {
+          _packItems.add(PackItemWithGear(packItem: packItem, gearItem: gear));
+          _recalculateTotals();
+        });
+      }
+      await _refreshSilent();
+      if (mounted) setState(() {});
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -178,6 +291,24 @@ class _PackPageState extends State<PackPage>
     return cat?.icon ?? 'box';
   }
 
+  static const _currencySymbols = {
+    'USD': '\$',
+    'EUR': '€',
+    'GBP': '£',
+    'JPY': '¥',
+    'CAD': 'C\$',
+    'AUD': 'A\$',
+    'CHF': 'CHF ',
+    'CNY': '¥',
+    'INR': '₹',
+    'BRL': 'R\$',
+  };
+
+  String _currencySymbolFor(String code) => _currencySymbols[code] ?? '$code ';
+
+  String get _formattedTotalValue =>
+      '$_currencySymbol${_totalValue.toStringAsFixed(2)}';
+
   void _showAddGearSheet() {
     showModalBottomSheet(
       context: context,
@@ -186,11 +317,14 @@ class _PackPageState extends State<PackPage>
       builder: (ctx) => _AddGearBottomSheet(
         excludeGearIds: _gearIdsInPack,
         onGearSelected: (gearItemId) {
-          Navigator.of(ctx).pop();
+          // Stay open to allow adding more items.
           _addGearItem(gearItemId);
         },
       ),
-    );
+    ).then((_) async {
+      await _refreshSilent();
+      if (mounted) setState(() {});
+    });
   }
 
   Future<void> _logTripFromPack() async {
@@ -341,7 +475,25 @@ class _PackPageState extends State<PackPage>
                               color: colors.onPrimary,
                             ),
                           ),
+                          if (_showLbs) ...[
+                            SizedBox(width: 8.sp),
+                            Text(
+                              '(${formatLbs(_totalWeight)})',
+                              style: AppTextStyles.titleMedium.copyWith(
+                                color: colors.onPrimary,
+                              ),
+                            ),
+                          ],
                         ],
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          _formattedTotalValue,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: colors.onPrimary,
+                          ),
+                        ),
                       ),
                       SizedBox(height: 8.sp),
                       // Progress bar by category
@@ -430,27 +582,16 @@ class _PackPageState extends State<PackPage>
                     ),
                   ),
                 )
-              : ListView.builder(
-                  itemCount: _packItems.length + (_bagGear != null ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    // Show bag first if present
-                    if (_bagGear != null && index == 0) {
-                      final iconKey = _categoryIcon(_bagGear!.categoryId);
-                      return _buildBagCard(colors, _bagGear!, iconKey);
-                    }
-
-                    final adjusted = _bagGear != null ? index - 1 : index;
-                    final pwg = _packItems[adjusted];
-                    final gear = pwg.gearItem;
-                    final iconKey = _categoryIcon(gear.categoryId);
-
-                    return _buildMinimalGearCard(
-                      colors,
-                      gear,
-                      iconKey,
-                      pwg.packItem.id,
-                    );
-                  },
+              : ListView(
+                  children: [
+                    if (_bagGear != null)
+                      _buildBagCard(
+                        colors,
+                        _bagGear!,
+                        _categoryIcon(_bagGear!.categoryId),
+                      ),
+                    ..._buildCategoryGroups(colors),
+                  ],
                 ),
         ),
         SafeArea(
@@ -488,6 +629,63 @@ class _PackPageState extends State<PackPage>
   Color _categoryColorById(String categoryId, Color fallback) {
     final cat = _categories.where((c) => c.id == categoryId).firstOrNull;
     return cat != null ? AppColors.parseHex(cat.color) : fallback;
+  }
+
+  /// Grouped category sections for the Build tab — one trailhead-style
+  /// header per category (icon + name + item count · weight), then rows.
+  List<Widget> _buildCategoryGroups(AppColorPalette colors) {
+    final groups = <String, List<PackItemWithGear>>{};
+    for (final pwg in _packItems) {
+      groups.putIfAbsent(pwg.gearItem.categoryId, () => []).add(pwg);
+    }
+    if (groups.isEmpty) return [];
+
+    // Master category order first, unknown ids last.
+    final order = {
+      for (var i = 0; i < _categories.length; i++) _categories[i].id: i,
+    };
+    final ids = groups.keys.toList()
+      ..sort((a, b) => (order[a] ?? 1 << 30).compareTo(order[b] ?? 1 << 30));
+
+    final widgets = <Widget>[];
+    for (final id in ids) {
+      final items = groups[id]!;
+      final cat = _categories.where((c) => c.id == id).firstOrNull;
+      final name = cat?.name ?? items.first.gearItem.categoryId;
+      final weight = items.fold<double>(
+        0,
+        (sum, pwg) =>
+            sum + pwg.gearItem.weightGrams * pwg.packItem.quantityInPack,
+      );
+      final count = items.fold<int>(
+        0,
+        (sum, pwg) => sum + pwg.packItem.quantityInPack,
+      );
+      widgets.add(
+        Padding(
+          padding: EdgeInsets.fromLTRB(12.sp, 10.sp, 12.sp, 2.sp),
+          child: SectionHeader(
+            title: name,
+            spec: '$count · ${formatWeight(weight)}',
+            icon: IconRegistry.resolve(cat?.icon ?? 'box'),
+            iconColor: cat != null
+                ? AppColors.parseHex(cat.color)
+                : colors.textSecondary,
+          ),
+        ),
+      );
+      for (final pwg in items) {
+        widgets.add(
+          _buildMinimalGearCard(
+            colors,
+            pwg.gearItem,
+            _categoryIcon(pwg.gearItem.categoryId),
+            pwg.packItem.id,
+          ),
+        );
+      }
+    }
+    return widgets;
   }
 
   Widget _buildBagCard(AppColorPalette colors, GearItem bag, String iconKey) {
@@ -688,8 +886,10 @@ class _AddGearBottomSheet extends StatefulWidget {
 }
 
 class _AddGearBottomSheetState extends State<_AddGearBottomSheet> {
-  List<GearItem> _filteredGear = [];
+  List<GearItem> _allGear = [];
   List<Category> _categories = [];
+  String _searchQuery = '';
+  String? _selectedCategoryId;
   bool _isLoading = true;
 
   @override
@@ -711,7 +911,7 @@ class _AddGearBottomSheetState extends State<_AddGearBottomSheet> {
           .toList();
 
       setState(() {
-        _filteredGear = filtered;
+        _allGear = filtered;
         _categories = categories;
         _isLoading = false;
       });
@@ -730,18 +930,36 @@ class _AddGearBottomSheetState extends State<_AddGearBottomSheet> {
     return cat != null ? AppColors.parseHex(cat.color) : fallback;
   }
 
+  List<GearItem> get _visibleGear {
+    final query = _searchQuery.toLowerCase();
+    return _allGear.where((item) {
+      final matchesSearch = _searchQuery.isEmpty ||
+          item.name.toLowerCase().contains(query) ||
+          (item.brand?.toLowerCase() ?? '').contains(query);
+      final matchesCategory = _selectedCategoryId == null ||
+          item.categoryId == _selectedCategoryId;
+      return matchesSearch && matchesCategory;
+    }).toList();
+  }
+
+  void _handleTap(GearItem gear) {
+    widget.onGearSelected(gear.id);
+    setState(() {
+      _allGear.removeWhere((g) => g.id == gear.id);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.65,
-      decoration: BoxDecoration(
-        color: colors.background,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.sp)),
-      ),
-      child: Column(
+    return Material(
+      color: colors.background,
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16.sp)),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.85,
+        child: Column(
         children: [
           // Handle bar
           Padding(
@@ -756,16 +974,97 @@ class _AddGearBottomSheetState extends State<_AddGearBottomSheet> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(12.sp),
-            child: Text('Add Gear to Pack', style: AppTextStyles.titleLarge),
+            padding: EdgeInsets.fromLTRB(12.sp, 4.sp, 12.sp, 0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Add Gear to Pack',
+                    style: AppTextStyles.titleLarge,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text('Done', style: AppTextStyles.bodyMedium),
+                ),
+              ],
+            ),
           ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(12.sp, 4.sp, 12.sp, 4.sp),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search kit…',
+                prefixIcon: SizedBox(
+                  width: 40.sp,
+                  child: Center(
+                    child: FaIcon(FontAwesomeIcons.magnifyingGlass, size: 14.sp),
+                  ),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(
+                    UiConstants.borderRadius,
+                  ),
+                ),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16.sp,
+                  vertical: 12.sp,
+                ),
+                filled: true,
+                fillColor: colors.surface,
+                isDense: true,
+              ),
+              onChanged: (value) =>
+                  setState(() => _searchQuery = value),
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: colors.onSurface,
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 48.sp,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(horizontal: 12.sp),
+              children: [
+                PatchChip(
+                  label: 'All',
+                  count: _allGear.length,
+                  selected: _selectedCategoryId == null,
+                  onSelected: (_) =>
+                      setState(() => _selectedCategoryId = null),
+                ),
+                ..._categories.map((category) {
+                  final count = _allGear
+                      .where((i) => i.categoryId == category.id)
+                      .length;
+                  return Padding(
+                    padding: EdgeInsets.only(left: 6.sp),
+                    child: PatchChip(
+                      label: category.name,
+                      iconKey: category.icon,
+                      iconColor: AppColors.parseHex(category.color),
+                      count: count,
+                      selected: _selectedCategoryId == category.id,
+                      onSelected: (_) => setState(
+                        () => _selectedCategoryId = category.id,
+                      ),
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+          SizedBox(height: 4.sp),
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : _filteredGear.isEmpty
+                : _visibleGear.isEmpty
                 ? Center(
                     child: Text(
-                      'All gear is already in the pack\nor no gear available.',
+                      _allGear.isEmpty
+                          ? 'All gear is already in the pack\nor no gear available.'
+                          : 'No matches. Try another search or category.',
                       textAlign: TextAlign.center,
                       style: AppTextStyles.bodyMedium.copyWith(
                         color: colors.textSecondary,
@@ -773,9 +1072,9 @@ class _AddGearBottomSheetState extends State<_AddGearBottomSheet> {
                     ),
                   )
                 : ListView.builder(
-                    itemCount: _filteredGear.length,
+                    itemCount: _visibleGear.length,
                     itemBuilder: (context, index) {
-                      final gear = _filteredGear[index];
+                      final gear = _visibleGear[index];
                       final iconKey = _getIconKey(gear.categoryId);
 
                       return ListTile(
@@ -795,13 +1094,14 @@ class _AddGearBottomSheetState extends State<_AddGearBottomSheet> {
                           formatWeight(gear.weightGrams),
                           style: AppTextStyles.bodyMedium,
                         ),
-                        onTap: () => widget.onGearSelected(gear.id),
+                        onTap: () => _handleTap(gear),
                       );
                     },
                   ),
           ),
           SizedBox(height: bottomInset),
         ],
+        ),
       ),
     );
   }

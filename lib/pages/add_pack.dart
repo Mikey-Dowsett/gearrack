@@ -9,6 +9,8 @@ import '../models/pack.dart';
 import '../models/gear_item.dart';
 import '../database/pack_dao.dart';
 import '../database/gear_item_dao.dart';
+import '../widgets/form_shell.dart';
+import '../widgets/section_header.dart';
 
 class AddPackPage extends StatefulWidget {
   final Pack? pack;
@@ -34,6 +36,7 @@ class _AddPackPageState extends State<AddPackPage> {
   @override
   void initState() {
     super.initState();
+    _nameController.addListener(() => setState(() {}));
     _loadBags();
   }
 
@@ -70,8 +73,8 @@ class _AddPackPageState extends State<AddPackPage> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          label,
-          style: AppTextStyles.labelMedium.copyWith(color: colors.onBackground),
+          label.toUpperCase(),
+          style: AppTextStyles.specSmall.copyWith(color: colors.onBackground),
         ),
         if (required) ...[
           SizedBox(width: 4.sp),
@@ -287,92 +290,45 @@ class _AddPackPageState extends State<AddPackPage> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppColors.of(context);
-    final double buttonHeight = 56.sp;
-
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        title: Text(
-          widget.pack != null ? 'Edit Pack' : 'New Pack',
-          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
-        ),
-        backgroundColor: colors.background,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(8.sp),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildLabeledField(
-                label: 'Pack Name',
-                hint: 'e.g. Weekend Backpacking Trip',
-                requiredField: true,
-                controller: _nameController,
-              ),
-              _buildLabeledField(
-                label: 'Description',
-                hint: 'Trip details, notes, etc.',
-                requiredField: false,
-                keyboardType: TextInputType.multiline,
-                controller: _descriptionController,
-                minLines: 1,
-                maxLines: 3,
-              ),
-              _buildBagSelector(),
-              SizedBox(height: 100.sp),
-            ],
-          ),
-        ),
-      ),
-      bottomSheet: SafeArea(
-        left: false,
-        right: false,
-        bottom: true,
-        child: Container(
-          margin: EdgeInsets.zero,
-          padding: EdgeInsets.symmetric(horizontal: 32.sp, vertical: 8.sp),
-          color: colors.background,
-          child: Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.primary,
-                    foregroundColor: colors.onPrimary,
-                    minimumSize: Size.fromHeight(buttonHeight),
-                    padding: EdgeInsets.symmetric(vertical: 0.sp),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        UiConstants.buttonRadius.sp,
-                      ),
-                    ),
-                  ),
-                  onPressed: _savePack,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FaIcon(
-                        FontAwesomeIcons.check,
-                        color: colors.onPrimary,
-                        size: 25.sp,
-                      ),
-                      SizedBox(width: 8.sp),
-                      Text(
-                        widget.pack != null ? 'Update Pack' : 'Save Pack',
-                        style: AppTextStyles.bodyLarge.copyWith(
-                          color: colors.onPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+    final isEditing = widget.pack != null;
+    return FormShell(
+      title: isEditing ? 'Edit Pack' : 'New Pack',
+      saveLabel: isEditing ? 'Update Pack' : 'Save Pack',
+      onSave: _savePack,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FormHero(
+              icon: FontAwesomeIcons.suitcase,
+              label: isEditing ? 'Editing pack' : 'New pack',
+              title: _nameController.text.isEmpty
+                  ? 'Untitled pack'
+                  : _nameController.text,
+              spec: _selectedBag?.name.toUpperCase(),
+            ),
+            SizedBox(height: 12.sp),
+            const SectionHeader(title: 'Pack'),
+            SizedBox(height: 8.sp),
+            _buildLabeledField(
+              label: 'Pack Name',
+              hint: 'e.g. Summer alpine',
+              requiredField: true,
+              controller: _nameController,
+            ),
+            _buildLabeledField(
+              label: 'Description',
+              hint: 'Route, dates, notes…',
+              requiredField: false,
+              keyboardType: TextInputType.multiline,
+              controller: _descriptionController,
+              minLines: 1,
+              maxLines: 3,
+            ),
+            _buildBagSelector(),
+            SizedBox(height: 100.sp),
+          ],
         ),
       ),
     );

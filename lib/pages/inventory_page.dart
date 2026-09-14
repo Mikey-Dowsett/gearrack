@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gearrack/database/gear_item_dao.dart';
 import 'package:gearrack/database/category_dao.dart';
+import 'package:gearrack/database/app_settings_dao.dart';
 import 'package:gearrack/database/pack_dao.dart';
 import 'package:gearrack/database/pack_item_dao.dart';
 import 'package:gearrack/database/trip_dao.dart';
@@ -150,16 +151,13 @@ class _InventoryPageState extends State<InventoryPage>
               ],
             ),
             Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(bottom: 64.sp),
-                child: IndexedStack(
-                  index: _tabController.index,
-                  children: [
-                    GearTab(key: _gearKey),
-                    PacksTab(key: _packsKey),
-                    TripsTab(key: _tripsKey),
-                  ],
-                ),
+              child: IndexedStack(
+                index: _tabController.index,
+                children: [
+                  GearTab(key: _gearKey),
+                  PacksTab(key: _packsKey),
+                  TripsTab(key: _tripsKey),
+                ],
               ),
             ),
           ],
@@ -193,6 +191,21 @@ class GearTabState extends State<GearTab> {
   String _searchQuery = '';
   bool _isLoading = true;
   int _sortMode = 0;
+  bool _sortAscending = true;
+  String _currencySymbol = '\$';
+
+  static const _currencySymbols = {
+    'USD': '\$',
+    'EUR': '€',
+    'GBP': '£',
+    'JPY': '¥',
+    'CAD': 'C\$',
+    'AUD': 'A\$',
+    'CHF': 'CHF ',
+    'CNY': '¥',
+    'INR': '₹',
+    'BRL': 'R\$',
+  };
 
   @override
   void initState() {
@@ -207,11 +220,15 @@ class GearTabState extends State<GearTab> {
     try {
       final dao = await GearItemDao.create();
       final categoryDao = await CategoryDao.create();
+      final settingsDao = await AppSettingsDao.create();
       final items = await dao.getAll();
       final categories = await categoryDao.getAll();
+      final settings = await settingsDao.get();
       setState(() {
         _gearItems = items;
         _categories = categories;
+        _currencySymbol =
+            _currencySymbols[settings.currency] ?? '${settings.currency} ';
         _applyFilters();
         _isLoading = false;
       });
@@ -245,21 +262,27 @@ class GearTabState extends State<GearTab> {
   }
 
   void _applySort() {
-    switch (_sortMode) {
-      case 0:
-        _filteredGearItems.sort((a, b) => a.name.compareTo(b.name));
-        break;
-      case 1:
-        _filteredGearItems.sort(
-          (a, b) => a.weightGrams.compareTo(b.weightGrams),
-        );
-        break;
-      case 2:
-        _filteredGearItems.sort(
-          (a, b) => (a.price ?? 0).compareTo(b.price ?? 0),
-        );
-        break;
+    final catNames = {for (final c in _categories) c.id: c.name};
+    int compare(GearItem a, GearItem b) {
+      switch (_sortMode) {
+        case 1:
+          return a.weightGrams.compareTo(b.weightGrams);
+        case 2:
+          return (a.price ?? 0).compareTo(b.price ?? 0);
+        case 3:
+          final byCat = (catNames[a.categoryId] ?? a.categoryId)
+              .compareTo(catNames[b.categoryId] ?? b.categoryId);
+          if (byCat != 0) return byCat;
+          return a.name.compareTo(b.name);
+        case 0:
+        default:
+          return a.name.compareTo(b.name);
+      }
     }
+
+    _filteredGearItems.sort(
+      (a, b) => _sortAscending ? compare(a, b) : compare(b, a),
+    );
   }
 
   @override
@@ -268,6 +291,10 @@ class GearTabState extends State<GearTab> {
     final _totalGrams = _filteredGearItems.fold(
       0.0,
       (sum, item) => sum + item.weightGrams,
+    );
+    final _totalPrice = _filteredGearItems.fold(
+      0.0,
+      (sum, item) => sum + (item.price ?? 0) * item.quantity,
     );
 
     return Column(
@@ -409,9 +436,9 @@ class GearTabState extends State<GearTab> {
                               ),
                             ),
                             SizedBox(width: 6.sp),
-                            Flexible(
+                            Expanded(
                               child: Text(
-                                '${_filteredGearItems.length} · ${formatWeight(_totalGrams)}'
+                                '${_filteredGearItems.length} · ${formatWeight(_totalGrams)} · $_currencySymbol${_totalPrice.toStringAsFixed(2)}'
                                     .toUpperCase(),
                                 style: AppTextStyles.specSmall.copyWith(
                                   color: colors.textSecondary,
@@ -420,12 +447,22 @@ class GearTabState extends State<GearTab> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            Spacer(),
+                            SizedBox(width: 12.sp),
                             _SortButton(
                               sortMode: _sortMode,
                               onPressed: () {
                                 setState(() {
-                                  _sortMode = (_sortMode + 1) % 3;
+                                  _sortMode = (_sortMode + 1) % 4;
+                                  _applySort();
+                                });
+                              },
+                            ),
+                            SizedBox(width: 6.sp),
+                            _SortDirectionButton(
+                              ascending: _sortAscending,
+                              onPressed: () {
+                                setState(() {
+                                  _sortAscending = !_sortAscending;
                                   _applySort();
                                 });
                               },
@@ -481,6 +518,8 @@ class _SortButton extends StatelessWidget {
         return 'Weight';
       case 2:
         return 'Price';
+      case 3:
+        return 'Category';
       default:
         return '';
     }
@@ -489,10 +528,8 @@ class _SortButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
-    return OutlinedButton.icon(
+    return OutlinedButton(
       onPressed: onPressed,
-      icon: FaIcon(FontAwesomeIcons.arrowDownWideShort, size: 14.sp),
-      label: Text(_label, style: TextStyle(fontSize: 12.sp)),
       style: OutlinedButton.styleFrom(
         backgroundColor: colors.surface,
         foregroundColor: colors.onSurface,
@@ -502,6 +539,41 @@ class _SortButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.buttonRadius.sp),
         ),
+      ),
+      child: Text(_label, style: TextStyle(fontSize: 12.sp)),
+    );
+  }
+}
+
+class _SortDirectionButton extends StatelessWidget {
+  final bool ascending;
+  final VoidCallback onPressed;
+
+  const _SortDirectionButton({
+    required this.ascending,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+    return OutlinedButton(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        backgroundColor: ascending ? colors.primary : colors.surface,
+        foregroundColor: ascending ? colors.onPrimary : colors.onSurface,
+        padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 4.sp),
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(UiConstants.buttonRadius.sp),
+        ),
+      ),
+      child: FaIcon(
+        ascending
+            ? FontAwesomeIcons.arrowDownWideShort
+            : FontAwesomeIcons.arrowUpWideShort,
+        size: 14.sp,
       ),
     );
   }
@@ -550,13 +622,17 @@ class PacksTabState extends State<PacksTab> {
       final Map<String, String> bagNames = {};
 
       for (final pack in packs) {
-        weights[pack.id] = await packItemDao.getTotalWeightByPack(pack.id);
-        counts[pack.id] = await packItemDao.getItemCountByPack(pack.id);
+        final itemsWeight = await packItemDao.getTotalWeightByPack(pack.id);
+        final itemsCount = await packItemDao.getItemQuantitySumByPack(pack.id);
 
+        GearItem? bag;
         if (pack.bagId != null) {
-          final bag = bags.where((b) => b.id == pack.bagId).firstOrNull;
+          bag = bags.where((b) => b.id == pack.bagId).firstOrNull;
           bagNames[pack.id] = bag?.name ?? '';
         }
+        // Match pack detail semantics: totals include the backpack itself.
+        weights[pack.id] = itemsWeight + (bag?.weightGrams ?? 0);
+        counts[pack.id] = itemsCount + (bag != null ? 1 : 0);
       }
 
       setState(() {
