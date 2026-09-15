@@ -87,7 +87,6 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 _sectionHeader(colors, 'PREFERENCES'),
                 SizedBox(height: 8.sp),
-                _buildThemeSelector(colors),
                 _buildWeightUnitSelector(colors),
                 _buildCurrencySelector(colors),
                 SizedBox(height: 24.sp),
@@ -118,47 +117,6 @@ class _SettingsPageState extends State<SettingsPage> {
           color: colors.textSecondary,
           letterSpacing: 1.2,
         ),
-      ),
-    );
-  }
-
-  Widget _buildThemeSelector(AppColorPalette colors) {
-    final themeOptions = ['light', 'dark', 'system'];
-    final labels = ['Light', 'Dark', 'System'];
-    final icons = [
-      FontAwesomeIcons.sun,
-      FontAwesomeIcons.moon,
-      FontAwesomeIcons.display,
-    ];
-    final currentIndex = themeOptions.indexOf(_settings.theme).clamp(0, 2);
-
-    return _settingCard(
-      colors,
-      icon: FontAwesomeIcons.palette,
-      label: 'Theme',
-      trailing: DropdownButton<int>(
-        value: currentIndex,
-        underline: const SizedBox(),
-        dropdownColor: colors.surfaceRaised,
-        style: AppTextStyles.bodyMedium.copyWith(color: colors.onSurface),
-        items: List.generate(themeOptions.length, (i) {
-          return DropdownMenuItem(
-            value: i,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FaIcon(icons[i], size: 14.sp, color: colors.onSurface),
-                SizedBox(width: 6.sp),
-                Text(labels[i]),
-              ],
-            ),
-          );
-        }),
-        onChanged: (value) {
-          if (value != null) {
-            _updateSettings(_settings.copyWith(theme: themeOptions[value]));
-          }
-        },
       ),
     );
   }

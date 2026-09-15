@@ -6,7 +6,6 @@ import 'package:gearrack/pages/inventory_page.dart';
 import 'package:gearrack/widgets/paper_texture.dart';
 import 'package:gearrack/theme/app_theme.dart';
 import 'package:gearrack/database/database_helper.dart';
-import 'package:gearrack/database/app_settings_dao.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -42,45 +41,19 @@ class GearRackApp extends StatefulWidget {
 }
 
 class _GearRackAppState extends State<GearRackApp> {
-  ThemeMode _themeMode = ThemeMode.light;
-
   @override
   void initState() {
     super.initState();
-    _loadTheme();
   }
 
-  Future<void> _loadTheme() async {
-    try {
-      final dao = await AppSettingsDao.create();
-      final settings = await dao.get();
-      _applyTheme(settings.theme);
-    } catch (_) {
-      // Keep default
-    }
-  }
-
-  void _applyTheme(String theme) {
-    setState(() {
-      _themeMode = switch (theme) {
-        'dark' => ThemeMode.dark,
-        'system' => ThemeMode.system,
-        _ => ThemeMode.light,
-      };
-    });
-  }
-
-  void _onThemeChanged() {
-    _loadTheme();
-  }
+  void _onThemeChanged() {}
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'GearRack',
       theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: _themeMode,
+      themeMode: ThemeMode.light,
       home: MainNavigationScreen(onThemeChanged: _onThemeChanged),
       builder: (context, child) {
         return Stack(

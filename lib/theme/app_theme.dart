@@ -132,7 +132,18 @@ class AppTheme {
 
       cardColor: AppColors.lightSurface,
 
-
+      appBarTheme: AppBarTheme(
+        backgroundColor: AppColors.lightBackground,
+        foregroundColor: AppColors.lightTextPrimary,
+        elevation: 0,
+        centerTitle: true,
+        toolbarHeight: 32,
+        titleTextStyle: AppTextStyles.specSmall.copyWith(
+          color: AppColors.lightTextSecondary,
+          letterSpacing: 1.4,
+        ),
+        iconTheme: const IconThemeData(size: 18, color: AppColors.lightTextSecondary),
+      ),
 
        bottomNavigationBarTheme: BottomNavigationBarThemeData(
          backgroundColor: AppColors.lightSurface,

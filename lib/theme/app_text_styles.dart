@@ -4,20 +4,20 @@ import 'app_colors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppTextStyles {
-  // Fraunces — old-style serif for headings (field-guide personality, per DESIGN_PHILOSOPHY §3.1)
-  static TextStyle get titleLarge => GoogleFonts.fraunces(
+  // Winky Rough — hand-drawn display for headings (replaces Fraunces)
+  static TextStyle get titleLarge => GoogleFonts.winkyRough(
     fontSize: 18.sp,
     fontWeight: FontWeight.w700,
     color: AppColors.black,
   );
 
-  static TextStyle get titleMedium => GoogleFonts.fraunces(
+  static TextStyle get titleMedium => GoogleFonts.winkyRough(
     fontSize: 16.sp,
     fontWeight: FontWeight.w700,
     color: AppColors.black,
   );
 
-  static TextStyle get titleSmall => GoogleFonts.fraunces(
+  static TextStyle get titleSmall => GoogleFonts.winkyRough(
     fontSize: 14.sp,
     fontWeight: FontWeight.w700,
     color: AppColors.black,

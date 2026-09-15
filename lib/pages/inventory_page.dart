@@ -118,21 +118,25 @@ class _InventoryPageState extends State<InventoryPage> {
       appBar: AppBar(
         backgroundColor: colors.background,
         elevation: 0,
+        toolbarHeight: 32.sp,
         automaticallyImplyLeading: false,
         title: Text(
-          switch (_selectedIndex) {
-            0 => 'Gear',
-            1 => 'Packs',
-            _ => 'Trips',
-          },
-          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
+          'GearRack',
+          style: AppTextStyles.specSmall.copyWith(
+            color: colors.textSecondary,
+            letterSpacing: 1.4,
+            fontSize: 11.sp,
+          ),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.gear, size: 18.sp, color: colors.primary),
+            icon: FaIcon(FontAwesomeIcons.gear, size: 14.sp, color: colors.textSecondary),
             onPressed: _openSettings,
             tooltip: 'Settings',
+            visualDensity: VisualDensity.compact,
+            padding: EdgeInsets.zero,
+            constraints: BoxConstraints.tightFor(width: 32.sp, height: 32.sp),
           ),
         ],
       ),
@@ -328,8 +332,8 @@ class GearTabState extends State<GearTab> {
             padding: EdgeInsets.only(
               left: 12.sp,
               right: 12.sp,
-              top: 12.sp,
-              bottom: 8.sp,
+              top: 24.sp,
+              bottom: 20.sp,
             ),
             child: Align(
               alignment: Alignment.centerLeft,
@@ -704,8 +708,8 @@ class PacksTabState extends State<PacksTab> {
             padding: EdgeInsets.only(
               left: 12.sp,
               right: 12.sp,
-              top: 12.sp,
-              bottom: 8.sp,
+              top: 24.sp,
+              bottom: 20.sp,
             ),
             child: Align(
               alignment: Alignment.centerLeft,
@@ -867,8 +871,8 @@ class TripsTabState extends State<TripsTab> {
             padding: EdgeInsets.only(
               left: 12.sp,
               right: 12.sp,
-              top: 12.sp,
-              bottom: 8.sp,
+              top: 24.sp,
+              bottom: 20.sp,
             ),
             child: Align(
               alignment: Alignment.centerLeft,
