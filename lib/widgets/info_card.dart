@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -38,8 +38,8 @@ class InfoCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                FaIcon(
-                  icon as FaIconData,
+                PhosphorIcon(
+                  icon as IconData,
                   size: UiConstants.iconMedium.sp,
                   color: colors.onSurface,
                 ),

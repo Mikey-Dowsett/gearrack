@@ -109,7 +109,7 @@ class DatabaseHelper {
       'First Aid': 'first-aid',
       'Tools & Repair': 'wrench',
       'Electronics': 'plug',
-      'Packs & Bags': 'person-hiking',
+      'Packs & Bags': 'backpack',
       'Climbing': 'mountain',
       'Snow Sports': 'snowflake',
       'Water Sports': 'water',

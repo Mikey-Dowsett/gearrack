@@ -231,7 +231,7 @@ class Schema {
       Category(id: uuid.v4(), name: 'First Aid', icon: 'first-aid', color: '#D48A8A', isDefault: true),
       Category(id: uuid.v4(), name: 'Tools & Repair', icon: 'wrench', color: '#A8A898'),
       Category(id: uuid.v4(), name: 'Electronics', icon: 'plug', color: '#8AAAC8'),
-      Category(id: uuid.v4(), name: 'Packs & Bags', icon: 'person-hiking', color: '#8ABA8A'),
+      Category(id: uuid.v4(), name: 'Packs & Bags', icon: 'backpack', color: '#8ABA8A'),
       Category(id: uuid.v4(), name: 'Climbing', icon: 'mountain', color: '#B8A078'),
       Category(id: uuid.v4(), name: 'Snow Sports', icon: 'snowflake', color: '#98BCC8'),
       Category(id: uuid.v4(), name: 'Water Sports', icon: 'water', color: '#78A8B8'),

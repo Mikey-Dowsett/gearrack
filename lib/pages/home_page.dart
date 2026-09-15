@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import 'package:gearrack/database/gear_item_dao.dart';
 import 'package:gearrack/database/category_dao.dart';
 import 'package:gearrack/models/gear_item.dart';
@@ -189,7 +189,7 @@ class _HomePageState extends State<HomePage> {
                               prefixIcon: SizedBox(
                                 width: 40.sp,
                                 child: Center(
-                                  child: FaIcon(FontAwesomeIcons.search),
+                                  child: PhosphorIcon(PhosphorIconsFill.magnifyingGlass),
                                 ),
                               ),
                               border: OutlineInputBorder(
@@ -245,7 +245,7 @@ class _HomePageState extends State<HomePage> {
                                     label: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        FaIcon(
+                                        PhosphorIcon(
                                           IconRegistry.resolve(category.icon),
                                           size: 15.sp,
                                           color: catColor,
@@ -374,7 +374,7 @@ class _SortButton extends StatelessWidget {
     final colors = AppColors.of(context);
     return OutlinedButton.icon(
       onPressed: onPressed,
-      icon: FaIcon(FontAwesomeIcons.arrowDownWideShort, size: 14.sp),
+      icon: PhosphorIcon(PhosphorIconsFill.arrowsDownUp, size: 14.sp),
       label: Text(_label, style: TextStyle(fontSize: 12.sp)),
       style: OutlinedButton.styleFrom(
         backgroundColor: colors.surface,

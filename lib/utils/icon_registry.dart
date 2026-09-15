@@ -1,550 +1,65 @@
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter/widgets.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 
-/// Central registry mapping icon key strings to Font Awesome icons.
-///
-/// Both [Category] and [GearItem] store their icon as a string key.
-/// This registry resolves those keys to concrete [FaIconData] for display.
 class IconRegistry {
   IconRegistry._();
-
-  static const Map<String, FaIconData> _icons = {
-    // ---- Category icons ----
-    'tent': FontAwesomeIcons.tent,
-    'bed': FontAwesomeIcons.bed,
-    'shirt': FontAwesomeIcons.shirt,
-    'shoe-prints': FontAwesomeIcons.shoePrints,
-    'compass': FontAwesomeIcons.compass,
-    'lightbulb': FontAwesomeIcons.lightbulb,
-    'fire': FontAwesomeIcons.fire,
-    'utensils': FontAwesomeIcons.utensils,
-    'first-aid': FontAwesomeIcons.kitMedical,
-    'wrench': FontAwesomeIcons.wrench,
-    'plug': FontAwesomeIcons.plug,
-    'suitcase': FontAwesomeIcons.suitcase,
-    'person-hiking': FontAwesomeIcons.personHiking,
-    'snowflake': FontAwesomeIcons.snowflake,
-    'water': FontAwesomeIcons.water,
-    'soap': FontAwesomeIcons.soap,
-    'shield': FontAwesomeIcons.shield,
-    'ellipsis': FontAwesomeIcons.ellipsis,
-
-    // ---- Condition icons ----
-    'check': FontAwesomeIcons.check,
-    'rotate': FontAwesomeIcons.rotate,
-    'trash': FontAwesomeIcons.trash,
-
-    // ---- Generic / fallback ----
-    'box': FontAwesomeIcons.box,
-    'box-open': FontAwesomeIcons.boxOpen,
-    'scale-balanced': FontAwesomeIcons.scaleBalanced,
-    'tag': FontAwesomeIcons.tag,
-    'clock': FontAwesomeIcons.clock,
-    'certificate': FontAwesomeIcons.certificate,
-    'note-sticky': FontAwesomeIcons.solidNoteSticky,
-    'shop': FontAwesomeIcons.shop,
-    'xmark': FontAwesomeIcons.xmark,
-
-    // ---- Outdoor & Nature ----
-    'mountain': FontAwesomeIcons.mountain,
-    'tree': FontAwesomeIcons.tree,
-    'sun': FontAwesomeIcons.sun,
-    'cloud': FontAwesomeIcons.cloud,
-    'cloud-rain': FontAwesomeIcons.cloudRain,
-    'cloud-sun': FontAwesomeIcons.cloudSun,
-    'cloud-moon': FontAwesomeIcons.cloudMoon,
-    'snowflake-weather': FontAwesomeIcons.snowflake,
-    'wind': FontAwesomeIcons.wind,
-    'rainbow': FontAwesomeIcons.rainbow,
-    'leaf': FontAwesomeIcons.leaf,
-    'seedling': FontAwesomeIcons.seedling,
-    'volcano': FontAwesomeIcons.volcano,
-    'globe': FontAwesomeIcons.globe,
-    'earth-americas': FontAwesomeIcons.earthAmericas,
-    'binoculars': FontAwesomeIcons.binoculars,
-    'campground': FontAwesomeIcons.campground,
-    'water-ladder': FontAwesomeIcons.waterLadder,
-    'hill-rocks': FontAwesomeIcons.mound,
-    'hill-tree': FontAwesomeIcons.mound,
-    'clover': FontAwesomeIcons.clover,
-    'feather': FontAwesomeIcons.feather,
-
-    // ---- Navigation & Maps ----
-    'map': FontAwesomeIcons.map,
-    'map-location-dot': FontAwesomeIcons.mapLocationDot,
-    'location-dot': FontAwesomeIcons.locationDot,
-    'location-crosshairs': FontAwesomeIcons.locationCrosshairs,
-    'location-arrow': FontAwesomeIcons.locationArrow,
-    'route': FontAwesomeIcons.route,
-    'signs-post': FontAwesomeIcons.signsPost,
-    'flag': FontAwesomeIcons.flag,
-    'flag-checkered': FontAwesomeIcons.flagCheckered,
-    'compass-drafting': FontAwesomeIcons.compassDrafting,
-    'crosshairs': FontAwesomeIcons.crosshairs,
-    'gps': FontAwesomeIcons.satellite,
-    'satellite': FontAwesomeIcons.satellite,
-    'signal': FontAwesomeIcons.signal,
-    'tower-broadcast': FontAwesomeIcons.towerBroadcast,
-    'milestone': FontAwesomeIcons.mapPin,
-
-    // ---- Clothing & Accessories ----
-    'boot': FontAwesomeIcons.shoePrints,
-    'hat-cowboy': FontAwesomeIcons.hatCowboy,
-    'hat-wizard': FontAwesomeIcons.hatWizard,
-    'mitten': FontAwesomeIcons.mitten,
-    'gloves': FontAwesomeIcons.mitten,
-    'socks': FontAwesomeIcons.socks,
-    'vest': FontAwesomeIcons.vest,
-    'vest-patches': FontAwesomeIcons.vestPatches,
-    'bandage': FontAwesomeIcons.bandage,
-    'life-ring': FontAwesomeIcons.lifeRing,
-
-    // ---- Outdoor Activities ----
-    'person-running': FontAwesomeIcons.personRunning,
-    'person-walking': FontAwesomeIcons.personWalking,
-    'person-swimming': FontAwesomeIcons.personSwimming,
-    'person-biking': FontAwesomeIcons.personBiking,
-    'person-skiing': FontAwesomeIcons.personSkiing,
-    'person-snowboarding': FontAwesomeIcons.personSnowboarding,
-    'person-hiking-solid': FontAwesomeIcons.personHiking,
-    'horse': FontAwesomeIcons.horse,
-    'ski': FontAwesomeIcons.snowflake,
-    'snowplow': FontAwesomeIcons.snowplow,
-    'frog': FontAwesomeIcons.frog,
-    'fish': FontAwesomeIcons.fish,
-    'dove': FontAwesomeIcons.dove,
-    'paw': FontAwesomeIcons.paw,
-    'bone': FontAwesomeIcons.bone,
-    'dog': FontAwesomeIcons.dog,
-    'cat': FontAwesomeIcons.cat,
-
-    // ---- Food & Drink ----
-    'apple-whole': FontAwesomeIcons.appleWhole,
-    'carrot': FontAwesomeIcons.carrot,
-    'bread-slice': FontAwesomeIcons.breadSlice,
-    'cheese': FontAwesomeIcons.cheese,
-    'egg': FontAwesomeIcons.egg,
-    'bacon': FontAwesomeIcons.bacon,
-    'burger': FontAwesomeIcons.burger,
-    'hotdog': FontAwesomeIcons.hotdog,
-    'pizza-slice': FontAwesomeIcons.pizzaSlice,
-    'bowl-food': FontAwesomeIcons.bowlFood,
-    'coffee': FontAwesomeIcons.coffee,
-    'mug-hot': FontAwesomeIcons.mugHot,
-    'mug-saucer': FontAwesomeIcons.mugSaucer,
-    'wine-bottle': FontAwesomeIcons.wineBottle,
-    'wine-glass': FontAwesomeIcons.wineGlass,
-    'bottle-water': FontAwesomeIcons.bottleWater,
-    'beer-mug-empty': FontAwesomeIcons.beerMugEmpty,
-    'cup-straw': FontAwesomeIcons.bottleWater,
-    'flask': FontAwesomeIcons.flask,
-    'jar': FontAwesomeIcons.jar,
-    'jug-detergent': FontAwesomeIcons.jugDetergent,
-    'campfire': FontAwesomeIcons.fire,
-
-    // ---- Cooking & Kitchen ----
-    'kitchen-set': FontAwesomeIcons.kitchenSet,
-    'stove': FontAwesomeIcons.fire,
-    'plate-utensils': FontAwesomeIcons.utensils,
-    'pot-food': FontAwesomeIcons.kitchenSet,
-    'bowl-rice': FontAwesomeIcons.bowlRice,
-    'bowl-chopsticks': FontAwesomeIcons.bowlRice,
-    'faucet': FontAwesomeIcons.faucet,
-    'fire-burner': FontAwesomeIcons.fireBurner,
-    'heat': FontAwesomeIcons.fire,
-    'mattress-pillow': FontAwesomeIcons.mattressPillow,
-    'tap': FontAwesomeIcons.faucet,
-
-    // ---- Tools & Hardware ----
-    'hammer': FontAwesomeIcons.hammer,
-    'screwdriver': FontAwesomeIcons.screwdriverWrench,
-    'saw': FontAwesomeIcons.scissors,
-    'axe': FontAwesomeIcons.hammer,
-    'knife': FontAwesomeIcons.kitchenSet,
-    'scissors': FontAwesomeIcons.scissors,
-    'tape': FontAwesomeIcons.tape,
-    'paint-roller': FontAwesomeIcons.paintRoller,
-    'paintbrush': FontAwesomeIcons.paintbrush,
-    'helmet-safety': FontAwesomeIcons.helmetSafety,
-    'drill': FontAwesomeIcons.screwdriverWrench,
-    'compass-drawing': FontAwesomeIcons.compassDrafting,
-    'ruler': FontAwesomeIcons.ruler,
-    'ruler-combined': FontAwesomeIcons.rulerCombined,
-    'toolbox': FontAwesomeIcons.toolbox,
-    'tools': FontAwesomeIcons.screwdriverWrench,
-    'trowel': FontAwesomeIcons.trowel,
-    'trowel-bricks': FontAwesomeIcons.trowelBricks,
-    'bucket': FontAwesomeIcons.bucket,
-    'broom': FontAwesomeIcons.broom,
-    'chainsaw': FontAwesomeIcons.scissors,
-    'file': FontAwesomeIcons.file,
-    'gasoline': FontAwesomeIcons.gasPump,
-    'gauge-high': FontAwesomeIcons.gaugeHigh,
-    'blender': FontAwesomeIcons.blender,
-    'weight-scale': FontAwesomeIcons.scaleBalanced,
-
-    // ---- Technology & Electronics ----
-    'camera': FontAwesomeIcons.camera,
-    'headphones': FontAwesomeIcons.headphones,
-    'microphone': FontAwesomeIcons.microphone,
-    'mobile': FontAwesomeIcons.mobile,
-    'mobile-screen': FontAwesomeIcons.mobileScreenButton,
-    'computer': FontAwesomeIcons.computer,
-    'laptop': FontAwesomeIcons.laptop,
-    'tablet': FontAwesomeIcons.tablet,
-    'battery-full': FontAwesomeIcons.batteryFull,
-    'battery-half': FontAwesomeIcons.batteryHalf,
-    'battery-quarter': FontAwesomeIcons.batteryQuarter,
-    'battery-empty': FontAwesomeIcons.batteryEmpty,
-    'charging-station': FontAwesomeIcons.chargingStation,
-    'power-off': FontAwesomeIcons.powerOff,
-    'solar-panel': FontAwesomeIcons.solarPanel,
-    'fan': FontAwesomeIcons.fan,
-    'radio': FontAwesomeIcons.walkieTalkie,
-    'walkie-talkie': FontAwesomeIcons.walkieTalkie,
-    'flashlight': FontAwesomeIcons.lightbulb,
-    'bulb': FontAwesomeIcons.lightbulb,
-    'lamp-desk': FontAwesomeIcons.lightbulb,
-    'lamp-floor': FontAwesomeIcons.lightbulb,
-    'torch': FontAwesomeIcons.fire,
-    'microchip': FontAwesomeIcons.microchip,
-    'memory': FontAwesomeIcons.memory,
-    'sd-card': FontAwesomeIcons.sdCard,
-    'usb': FontAwesomeIcons.usb,
-    'cable-car': FontAwesomeIcons.cableCar,
-
-    // ---- Communication & Navigation ----
-    'satellite-dish': FontAwesomeIcons.satelliteDish,
-    'antenna': FontAwesomeIcons.towerCell,
-    'radio-comm': FontAwesomeIcons.walkieTalkie,
-    'phone': FontAwesomeIcons.phone,
-    'walkie-talkie-comm': FontAwesomeIcons.walkieTalkie,
-    'tower-signal': FontAwesomeIcons.towerBroadcast,
-    'broadcast-tower': FontAwesomeIcons.towerBroadcast,
-    'bluetooth': FontAwesomeIcons.bluetooth,
-    'wifi': FontAwesomeIcons.wifi,
-
-    // ---- Medical & Safety ----
-    'kit-medical': FontAwesomeIcons.kitMedical,
-    'medical-cross': FontAwesomeIcons.medkit,
-    'medkit': FontAwesomeIcons.medkit,
-    'hospital': FontAwesomeIcons.hospital,
-    'syringe': FontAwesomeIcons.syringe,
-    'pill': FontAwesomeIcons.medkit,
-    'prescription': FontAwesomeIcons.prescription,
-    'prescription-bottle': FontAwesomeIcons.prescriptionBottle,
-    'prescription-bottle-medical': FontAwesomeIcons.prescriptionBottleMedical,
-    'crutch': FontAwesomeIcons.crutch,
-    'face-mask': FontAwesomeIcons.maskFace,
-    'ear-protection': FontAwesomeIcons.headphones,
-    'hard-hat-safety': FontAwesomeIcons.helmetSafety,
-    'safety-vest': FontAwesomeIcons.vest,
-    'fire-extinguisher': FontAwesomeIcons.fireExtinguisher,
-    'alarm-exclamation': FontAwesomeIcons.bell,
-    'triangle-exclamation': FontAwesomeIcons.triangleExclamation,
-    'eye': FontAwesomeIcons.eye,
-    'eye-slash': FontAwesomeIcons.eyeSlash,
-
-    // ---- Transport & Travel ----
-    'car': FontAwesomeIcons.car,
-    'car-side': FontAwesomeIcons.carSide,
-    'truck': FontAwesomeIcons.truck,
-    'truck-pickup': FontAwesomeIcons.truckPickup,
-    'truck-moving': FontAwesomeIcons.truckMoving,
-    'rv': FontAwesomeIcons.truck,
-    'motorcycle': FontAwesomeIcons.motorcycle,
-    'bicycle': FontAwesomeIcons.bicycle,
-    'bus': FontAwesomeIcons.bus,
-    'train': FontAwesomeIcons.train,
-    'train-subway': FontAwesomeIcons.trainSubway,
-    'plane': FontAwesomeIcons.plane,
-    'plane-up': FontAwesomeIcons.planeUp,
-    'helicopter': FontAwesomeIcons.helicopter,
-    'ship': FontAwesomeIcons.ship,
-    'anchor': FontAwesomeIcons.anchor,
-    'sailboat': FontAwesomeIcons.sailboat,
-    'boat': FontAwesomeIcons.sailboat,
-    'ferry': FontAwesomeIcons.ferry,
-    'sailboat-ocean': FontAwesomeIcons.sailboat,
-    'life-preserver': FontAwesomeIcons.lifeRing,
-    'trailer': FontAwesomeIcons.trailer,
-    'tractor': FontAwesomeIcons.tractor,
-    'atv': FontAwesomeIcons.motorcycle,
-    'snowmobile': FontAwesomeIcons.snowplow,
-
-    // ---- Sports & Recreation ----
-    'baseball': FontAwesomeIcons.baseball,
-    'basketball': FontAwesomeIcons.basketball,
-    'football': FontAwesomeIcons.football,
-    'volleyball': FontAwesomeIcons.volleyball,
-    'tennis-ball': FontAwesomeIcons.tableTennisPaddleBall,
-    'table-tennis': FontAwesomeIcons.tableTennisPaddleBall,
-    'hockey-puck': FontAwesomeIcons.hockeyPuck,
-    'golf-ball': FontAwesomeIcons.golfBallTee,
-    'golf-club': FontAwesomeIcons.golfBallTee,
-    'bowling-ball': FontAwesomeIcons.bowlingBall,
-    'bowling-pins': FontAwesomeIcons.bowlingBall,
-    'fishing-rod': FontAwesomeIcons.fish,
-    'fishing-reel': FontAwesomeIcons.fish,
-    'dumbbell': FontAwesomeIcons.dumbbell,
-    'weights': FontAwesomeIcons.dumbbell,
-    'running-shoe': FontAwesomeIcons.shoePrints,
-    'stopwatch': FontAwesomeIcons.stopwatch,
-    'timer': FontAwesomeIcons.stopwatch,
-    'trophy': FontAwesomeIcons.trophy,
-    'medal': FontAwesomeIcons.medal,
-    'target': FontAwesomeIcons.bullseye,
-    'bullseye': FontAwesomeIcons.bullseye,
-    'clapperboard': FontAwesomeIcons.clapperboard,
-    'gamepad': FontAwesomeIcons.gamepad,
-    'chess-board': FontAwesomeIcons.chessBoard,
-    'chess-king': FontAwesomeIcons.chessKing,
-    'chess-knight': FontAwesomeIcons.chessKnight,
-    'dice': FontAwesomeIcons.dice,
-    'dice-six': FontAwesomeIcons.diceSix,
-    'puzzle-piece': FontAwesomeIcons.puzzlePiece,
-
-    // ---- Weather ----
-    'sun-bright': FontAwesomeIcons.sun,
-    'moon': FontAwesomeIcons.moon,
-    'star': FontAwesomeIcons.star,
-    'cloud-sun-rain': FontAwesomeIcons.cloudSunRain,
-    'cloud-showers-heavy': FontAwesomeIcons.cloudShowersHeavy,
-    'cloud-bolt': FontAwesomeIcons.cloudBolt,
-    'cloud-meatball': FontAwesomeIcons.cloudMeatball,
-    'cloud-moon-rain': FontAwesomeIcons.cloudMoonRain,
-    'smog': FontAwesomeIcons.smog,
-    'tornado': FontAwesomeIcons.tornado,
-    'hurricane': FontAwesomeIcons.hurricane,
-    'icicles': FontAwesomeIcons.icicles,
-    'temperature-high': FontAwesomeIcons.temperatureHigh,
-    'temperature-low': FontAwesomeIcons.temperatureLow,
-    'thermometer': FontAwesomeIcons.thermometer,
-    'droplet': FontAwesomeIcons.droplet,
-    'water-droplet': FontAwesomeIcons.droplet,
-    'umbrella': FontAwesomeIcons.umbrella,
-    'umbrella-beach': FontAwesomeIcons.umbrellaBeach,
-    'cloud-snow': FontAwesomeIcons.snowflake,
-    'cloud-hail': FontAwesomeIcons.cloudRain,
-    'cloud-fog': FontAwesomeIcons.cloud,
-    'smoke': FontAwesomeIcons.cloud,
-    'smoking': FontAwesomeIcons.smoking,
-
-    // ---- Household & Misc ----
-    'house': FontAwesomeIcons.house,
-    'house-chimney': FontAwesomeIcons.houseChimney,
-    'house-fire': FontAwesomeIcons.houseFire,
-    'house-flood-water': FontAwesomeIcons.houseFloodWater,
-    'key': FontAwesomeIcons.key,
-    'lock': FontAwesomeIcons.lock,
-    'lock-open': FontAwesomeIcons.lockOpen,
-    'book': FontAwesomeIcons.book,
-    'book-open': FontAwesomeIcons.bookOpen,
-    'bookmark': FontAwesomeIcons.bookmark,
-    'newspaper': FontAwesomeIcons.newspaper,
-    'pen': FontAwesomeIcons.pen,
-    'pen-to-square': FontAwesomeIcons.penToSquare,
-    'pencil': FontAwesomeIcons.pencil,
-    'clipboard': FontAwesomeIcons.clipboard,
-    'clipboard-list': FontAwesomeIcons.clipboardList,
-    'paperclip': FontAwesomeIcons.paperclip,
-    'envelope': FontAwesomeIcons.envelope,
-    'inbox': FontAwesomeIcons.inbox,
-    'calendar': FontAwesomeIcons.calendar,
-    'calendar-days': FontAwesomeIcons.calendarDays,
-    'bell': FontAwesomeIcons.bell,
-    'camera-retro': FontAwesomeIcons.cameraRetro,
-    'video': FontAwesomeIcons.video,
-    'image': FontAwesomeIcons.image,
-    'images': FontAwesomeIcons.images,
-    'map-pin': FontAwesomeIcons.mapPin,
-    'thumbtack': FontAwesomeIcons.thumbtack,
-    'link': FontAwesomeIcons.link,
-    'qrcode': FontAwesomeIcons.qrcode,
-    'barcode': FontAwesomeIcons.barcode,
-
-    // ---- UI & Actions ----
-    'plus': FontAwesomeIcons.plus,
-    'minus': FontAwesomeIcons.minus,
-    'circle-plus': FontAwesomeIcons.circlePlus,
-    'circle-minus': FontAwesomeIcons.circleMinus,
-    'circle-check': FontAwesomeIcons.circleCheck,
-    'circle-xmark': FontAwesomeIcons.circleXmark,
-    'circle-info': FontAwesomeIcons.circleInfo,
-    'circle-question': FontAwesomeIcons.circleQuestion,
-    'circle-exclamation': FontAwesomeIcons.circleExclamation,
-    'arrow-up': FontAwesomeIcons.arrowUp,
-    'arrow-down': FontAwesomeIcons.arrowDown,
-    'arrow-left': FontAwesomeIcons.arrowLeft,
-    'arrow-right': FontAwesomeIcons.arrowRight,
-    'arrow-up-wide-short': FontAwesomeIcons.arrowUpWideShort,
-    'arrow-down-wide-short': FontAwesomeIcons.arrowDownWideShort,
-    'arrows-rotate': FontAwesomeIcons.arrowsRotate,
-    'sliders': FontAwesomeIcons.sliders,
-    'gear': FontAwesomeIcons.gear,
-    'gears': FontAwesomeIcons.gears,
-    'cog': FontAwesomeIcons.cog,
-    'cogs': FontAwesomeIcons.cogs,
-    'search': FontAwesomeIcons.magnifyingGlass,
-    'magnifying-glass': FontAwesomeIcons.magnifyingGlass,
-    'filter': FontAwesomeIcons.filter,
-    'download': FontAwesomeIcons.download,
-    'upload': FontAwesomeIcons.upload,
-    'share': FontAwesomeIcons.share,
-    'share-nodes': FontAwesomeIcons.shareNodes,
-    'print': FontAwesomeIcons.print,
-    'copy': FontAwesomeIcons.copy,
-    'paste': FontAwesomeIcons.paste,
-    'cut': FontAwesomeIcons.scissors,
-    'save': FontAwesomeIcons.floppyDisk,
-    'floppy-disk': FontAwesomeIcons.floppyDisk,
-    'export': FontAwesomeIcons.fileExport,
-    'import': FontAwesomeIcons.fileImport,
-    'list': FontAwesomeIcons.list,
-    'list-ul': FontAwesomeIcons.listUl,
-    'grid-2': FontAwesomeIcons.grip,
-    'grid-2-plus': FontAwesomeIcons.gripVertical,
-    'table': FontAwesomeIcons.table,
-    'columns': FontAwesomeIcons.tableColumns,
-    'layer-group': FontAwesomeIcons.layerGroup,
-    'bars': FontAwesomeIcons.bars,
-    'bars-staggered': FontAwesomeIcons.barsStaggered,
-    'ellipsis-vertical': FontAwesomeIcons.ellipsisVertical,
-    'grip': FontAwesomeIcons.grip,
-    'grip-vertical': FontAwesomeIcons.gripVertical,
-    'grip-lines': FontAwesomeIcons.gripLines,
-    'grip-lines-vertical': FontAwesomeIcons.gripLinesVertical,
-
-    // ---- Emoji / Symbols ----
-    'smile': FontAwesomeIcons.smile,
-    'face-smile': FontAwesomeIcons.faceSmile,
-    'face-frown': FontAwesomeIcons.faceFrown,
-    'face-meh': FontAwesomeIcons.faceMeh,
-    'thumbs-up': FontAwesomeIcons.thumbsUp,
-    'thumbs-down': FontAwesomeIcons.thumbsDown,
-    'heart': FontAwesomeIcons.heart,
-    'heart-pulse': FontAwesomeIcons.heartPulse,
-    'star-half': FontAwesomeIcons.starHalf,
-    'star-half-stroke': FontAwesomeIcons.starHalfStroke,
-    'bolt': FontAwesomeIcons.bolt,
-    'bomb': FontAwesomeIcons.bomb,
-    'poop': FontAwesomeIcons.poop,
-    'skull': FontAwesomeIcons.skull,
-    'ghost': FontAwesomeIcons.ghost,
-    'spider': FontAwesomeIcons.spider,
-    'bug': FontAwesomeIcons.bug,
-    'crown': FontAwesomeIcons.crown,
-    'gem': FontAwesomeIcons.gem,
-    'award': FontAwesomeIcons.award,
-    'seed': FontAwesomeIcons.seedling,
-    'fire-flame': FontAwesomeIcons.fire,
-    'fire-flame-curved': FontAwesomeIcons.fireFlameCurved,
-    'fire-flame-simple': FontAwesomeIcons.fireFlameSimple,
-
-    // ---- Security ----
-    'user-lock': FontAwesomeIcons.userLock,
-    'user-shield': FontAwesomeIcons.userShield,
-    'user-secret': FontAwesomeIcons.userSecret,
-    'user-gear': FontAwesomeIcons.userGear,
-    'user-pen': FontAwesomeIcons.userPen,
-    'fingerprint': FontAwesomeIcons.fingerprint,
-    'id-card': FontAwesomeIcons.idCard,
-    'id-badge': FontAwesomeIcons.idBadge,
-    'passport': FontAwesomeIcons.passport,
-    'camera-security': FontAwesomeIcons.camera,
-
-    // ---- Arrows & Direction ----
-    'up-down': FontAwesomeIcons.upDown,
-    'left-right': FontAwesomeIcons.leftRight,
-    'up-long': FontAwesomeIcons.upLong,
-    'down-long': FontAwesomeIcons.downLong,
-    'left-long': FontAwesomeIcons.leftLong,
-    'right-long': FontAwesomeIcons.rightLong,
-    'arrow-trend-up': FontAwesomeIcons.arrowTrendUp,
-    'arrow-trend-down': FontAwesomeIcons.arrowTrendDown,
-    'arrow-pointer': FontAwesomeIcons.arrowPointer,
-    'expand': FontAwesomeIcons.expand,
-    'compress': FontAwesomeIcons.compress,
-    'maximize': FontAwesomeIcons.maximize,
-    'minimize': FontAwesomeIcons.minimize,
-    'up-right-and-down-left-center': FontAwesomeIcons.upRightAndDownLeftFromCenter,
-    'down-left-and-up-right-center': FontAwesomeIcons.downLeftAndUpRightToCenter,
-
-    // ---- Finance & Shopping ----
-    'wallet': FontAwesomeIcons.wallet,
-    'money-bill': FontAwesomeIcons.moneyBill,
-    'money-bill-wave': FontAwesomeIcons.moneyBillWave,
-    'credit-card': FontAwesomeIcons.creditCard,
-    'coin': FontAwesomeIcons.coins,
-    'coins': FontAwesomeIcons.coins,
-    'sack-dollar': FontAwesomeIcons.sackDollar,
-    'dollar-sign': FontAwesomeIcons.dollarSign,
-    'euro-sign': FontAwesomeIcons.euroSign,
-    'pound-sign': FontAwesomeIcons.poundSign,
-    'yen-sign': FontAwesomeIcons.yenSign,
-    'barcode-scan': FontAwesomeIcons.barcode,
-    'receipt': FontAwesomeIcons.receipt,
-    'chart-line': FontAwesomeIcons.chartLine,
-    'chart-simple': FontAwesomeIcons.chartSimple,
-    'chart-pie': FontAwesomeIcons.chartPie,
-    'chart-bar': FontAwesomeIcons.chartBar,
-    'calculator': FontAwesomeIcons.calculator,
-    'abacus': FontAwesomeIcons.calculator,
-    'percent': FontAwesomeIcons.percent,
-    'badge-percent': FontAwesomeIcons.percent,
-    'tags': FontAwesomeIcons.tags,
-    'basket-shopping': FontAwesomeIcons.basketShopping,
-    'cart-shopping': FontAwesomeIcons.cartShopping,
-    'bag-shopping': FontAwesomeIcons.bagShopping,
-    'gift': FontAwesomeIcons.gift,
-    'hand-holding-heart': FontAwesomeIcons.handHoldingHeart,
-    'hand-holding-dollar': FontAwesomeIcons.handHoldingDollar,
-    'donate': FontAwesomeIcons.handHoldingHeart,
+  static const Map<String, IconData> _icons = {
+    'tent': PhosphorIconsFill.tent,
+    'bed': PhosphorIconsFill.bed,
+    'shirt': PhosphorIconsFill.tShirt,
+    'shoe-prints': PhosphorIconsFill.sneaker,
+    'compass': PhosphorIconsFill.compass,
+    'lightbulb': PhosphorIconsFill.lightbulb,
+    'fire': PhosphorIconsFill.fire,
+    'utensils': PhosphorIconsFill.forkKnife,
+    'first-aid': PhosphorIconsFill.firstAidKit,
+    'wrench': PhosphorIconsFill.wrench,
+    'plug': PhosphorIconsFill.plug,
+    'suitcase': PhosphorIconsFill.suitcaseSimple,
+    'backpack': PhosphorIconsFill.backpack,
+    'person-hiking': PhosphorIconsFill.backpack, // legacy alias
+    'snowflake': PhosphorIconsFill.snowflake,
+    'water': PhosphorIconsFill.drop,
+    'mountain': PhosphorIconsFill.mountains,
+    'climbing': PhosphorIconsFill.mountains,
+    'soap': PhosphorIconsFill.handSoap,
+    'shield': PhosphorIconsFill.shield,
+    'box': PhosphorIconsFill.package,
+    'box-open': PhosphorIconsFill.package,
+    'check': PhosphorIconsFill.check,
+    'rotate': PhosphorIconsFill.arrowsClockwise,
+    'trash': PhosphorIconsFill.trash,
+    'ellipsis': PhosphorIconsFill.dotsThree,
   };
-
-  /// Resolve an icon key to its [FaIconData].
-  ///
-  /// Returns a default box icon if the key is not found.
-  static FaIconData resolve(String key) {
-    return _icons[key] ?? FontAwesomeIcons.boxOpen;
-  }
-
-  /// All registered icon keys (useful for debugging or pickers).
+  static IconData resolve(String key) =>
+      _icons[key] ?? PhosphorIconsFill.package;
   static List<String> get keys => _icons.keys.toList();
-
-  /// All icon entries (key, name, IconData) for picker UIs.
-  static List<IconEntry> get all => _icons.entries
-      .map((e) => IconEntry(key: e.key, name: _formatName(e.key), icon: e.value))
-      .toList()
-    ..sort((a, b) => a.name.compareTo(b.name));
-
-  /// Search icons by query (matches key and formatted name).
-  static List<IconEntry> search(String query) {
-    if (query.isEmpty) return all;
-    final q = query.toLowerCase();
-    return all.where((e) =>
-      e.name.toLowerCase().contains(q) ||
-      e.key.toLowerCase().contains(q)
-    ).toList();
+  static List<IconEntry> get all =>
+      _icons.entries
+          .map(
+            (e) =>
+                IconEntry(key: e.key, name: _formatName(e.key), icon: e.value),
+          )
+          .toList()
+        ..sort((a, b) => a.name.compareTo(b.name));
+  static List<IconEntry> search(String q) {
+    if (q.isEmpty) return all;
+    final l = q.toLowerCase();
+    return all
+        .where((e) => e.name.toLowerCase().contains(l) || e.key.contains(l))
+        .toList();
   }
 
-  static String _formatName(String key) {
-    return key
-        .replaceAll('-', ' ')
-        .split(' ')
-        .map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : '')
-        .join(' ');
-  }
+  static String _formatName(String k) => k
+      .replaceAll('-', ' ')
+      .split(' ')
+      .map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : '')
+      .join(' ');
 }
 
-/// A display-friendly icon entry used by the icon picker.
 class IconEntry {
   final String key;
   final String name;
-  final FaIconData icon;
-
-  const IconEntry({
-    required this.key,
-    required this.name,
-    required this.icon,
-  });
+  final IconData icon;
+  const IconEntry({required this.key, required this.name, required this.icon});
 }

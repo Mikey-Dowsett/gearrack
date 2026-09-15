@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 
 import '../models/gear_item.dart';
 import '../models/category.dart';
@@ -166,12 +166,12 @@ class _GearPageState extends State<GearPage> {
         backgroundColor: colors.background,
         actions: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.pen, size: 16.sp, color: colors.onBackground),
+            icon: PhosphorIcon(PhosphorIconsFill.pen, size: 16.sp, color: colors.onBackground),
             onPressed: _navigateToEdit,
             tooltip: 'Edit Gear',
           ),
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.trash, size: 16.sp, color: colors.onBackground),
+            icon: PhosphorIcon(PhosphorIconsFill.trash, size: 16.sp, color: colors.onBackground),
             onPressed: _deleteGear,
             tooltip: 'Delete Gear',
           ),
@@ -205,7 +205,7 @@ class _GearPageState extends State<GearPage> {
                           ),
                         ),
                         alignment: Alignment.center,
-                        child: FaIcon(
+                        child: PhosphorIcon(
                           IconRegistry.resolve(categoryIconKey),
                           size: 15.sp,
                           color: colors.onPrimary,
@@ -284,14 +284,14 @@ class _GearPageState extends State<GearPage> {
                     children: [
                       Flexible(
                         child: InfoCard(
-                          icon: FontAwesomeIcons.scaleBalanced,
+                          icon: PhosphorIconsFill.scales,
                           title: 'Weight',
                           value: formatWeight(gear.weightGrams),
                         ),
                       ),
                       Flexible(
                         child: InfoCard(
-                          icon: FontAwesomeIcons.tag,
+                          icon: PhosphorIconsFill.tag,
                           title: 'Price',
                           value: gear.price != null
                               ? '\$${gear.price!.toStringAsFixed(2)}'
@@ -304,14 +304,14 @@ class _GearPageState extends State<GearPage> {
                     children: [
                       Flexible(
                         child: InfoCard(
-                          icon: FontAwesomeIcons.box,
+                          icon: PhosphorIconsFill.package,
                           title: 'Quantity',
                           value: 'x${gear.quantity}',
                         ),
                       ),
                       Flexible(
                         child: InfoCard(
-                          icon: FontAwesomeIcons.clock,
+                          icon: PhosphorIconsFill.clock,
                           title: 'Age',
                           value: '${age} yrs',
                         ),
@@ -320,7 +320,7 @@ class _GearPageState extends State<GearPage> {
                   ),
                   if (gear.isPack && gear.capacityLiters != null)
                     InfoCard(
-                      icon: FontAwesomeIcons.boxOpen,
+                      icon: PhosphorIconsFill.package,
                       title: 'Capacity',
                       value: '${gear.capacityLiters!.toStringAsFixed(0)} L',
                     ),
@@ -328,12 +328,12 @@ class _GearPageState extends State<GearPage> {
                   const SectionHeader(title: 'Condition & Kit'),
                   SizedBox(height: 8.sp),
                   InfoCard(
-                    icon: FontAwesomeIcons.certificate,
+                    icon: PhosphorIconsFill.certificate,
                     title: 'Condition',
                     value: gear.condition,
                   ),
                   InfoCard(
-                    icon: FontAwesomeIcons.shop,
+                    icon: PhosphorIconsFill.storefront,
                     title: 'Category',
                     value: _isLoadingCategory ? '…' : categoryName,
                   ),
@@ -342,7 +342,7 @@ class _GearPageState extends State<GearPage> {
                     const SectionHeader(title: 'Field Notes'),
                     SizedBox(height: 8.sp),
                     InfoCard(
-                      icon: FontAwesomeIcons.solidNoteSticky,
+                      icon: PhosphorIconsFill.note,
                       title: 'Notes',
                       value: gear.notes!,
                       maxLines: 6,
@@ -356,7 +356,7 @@ class _GearPageState extends State<GearPage> {
                       children: [
                         Flexible(
                           child: InfoCard(
-                            icon: FontAwesomeIcons.personHiking,
+                            icon: PhosphorIconsFill.backpack,
                             title: 'Times Used',
                             value:
                                 '${_usageStats!.timesUsed} trip${_usageStats!.timesUsed != 1 ? 's' : ''}',
@@ -364,7 +364,7 @@ class _GearPageState extends State<GearPage> {
                         ),
                         Flexible(
                           child: InfoCard(
-                            icon: FontAwesomeIcons.clock,
+                            icon: PhosphorIconsFill.clock,
                             title: 'Last Used',
                             value: _usageStats!.lastUsedDate != null
                                 ? '${_usageStats!.lastUsedDate!.month}/${_usageStats!.lastUsedDate!.day}/${_usageStats!.lastUsedDate!.year}'

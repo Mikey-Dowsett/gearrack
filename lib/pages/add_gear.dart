@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import 'package:uuid/uuid.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_colors.dart';
@@ -127,10 +127,10 @@ class _AddGearPageState extends State<AddGearPage> {
     );
   }
 
-  final Map<Condition, FaIconData> _conditionIcons = {
-    Condition.Good: FontAwesomeIcons.check,
-    Condition.Worn: FontAwesomeIcons.rotate,
-    Condition.Retired: FontAwesomeIcons.trash,
+  final Map<Condition, IconData> _conditionIcons = {
+    Condition.Good: PhosphorIconsFill.check,
+    Condition.Worn: PhosphorIconsFill.arrowsClockwise,
+    Condition.Retired: PhosphorIconsFill.trash,
   };
 
   Widget _fieldLabel(
@@ -647,7 +647,7 @@ class _AddGearPageState extends State<AddGearPage> {
     final isEditing = widget.gear != null;
     final heroIcon = _selectedCategory != null
         ? IconRegistry.resolve(_selectedCategory!.icon)
-        : FontAwesomeIcons.box;
+        : PhosphorIconsFill.package;
     final heroLabel =
         '${isEditing ? 'Editing' : 'New gear'} · ${_selectedCategory?.name ?? 'no category'}';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/ui_constants.dart';
@@ -78,8 +78,8 @@ class FormShell extends StatelessWidget {
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            FaIcon(
-                              FontAwesomeIcons.check,
+                            PhosphorIcon(
+                              PhosphorIconsFill.check,
                               color: colors.onPrimary,
                               size: 25.sp,
                             ),
@@ -105,7 +105,7 @@ class FormShell extends StatelessWidget {
 /// Slim green context hero for forms — same construction as the
 /// gear detail hero badge row, single-line + ellipsis throughout.
 class FormHero extends StatelessWidget {
-  final FaIconData icon;
+  final IconData icon;
   final String label;
   final String title;
   final String? spec;
@@ -137,7 +137,7 @@ class FormHero extends StatelessWidget {
               ),
             ),
             alignment: Alignment.center,
-            child: FaIcon(icon, size: 15.sp, color: colors.onPrimary),
+            child: PhosphorIcon(icon, size: 15.sp, color: colors.onPrimary),
           ),
           SizedBox(width: 8.sp),
           Expanded(

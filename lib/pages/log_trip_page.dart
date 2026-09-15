@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import 'package:uuid/uuid.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_colors.dart';
@@ -461,7 +461,7 @@ class _LogTripPageState extends State<LogTripPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   FormHero(
-                    icon: FontAwesomeIcons.personHiking,
+                    icon: PhosphorIconsFill.backpack,
                     label: _isEditing
                         ? 'Editing trip'
                         : (_isFromPack ? 'Logging from pack' : 'New trip'),
@@ -591,8 +591,8 @@ class _LogTripPageState extends State<LogTripPage> {
                         label: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            FaIcon(
-                              FontAwesomeIcons.suitcase,
+                            PhosphorIcon(
+                              PhosphorIconsFill.suitcase,
                               size: 14.sp,
                               color: selected
                                   ? colors.onPrimary
@@ -706,8 +706,8 @@ class _LogTripPageState extends State<LogTripPage> {
                   ),
                   child: Row(
                     children: [
-                      FaIcon(
-                        FontAwesomeIcons.calendarDays,
+                      PhosphorIcon(
+                        PhosphorIconsFill.calendar,
                         size: 16.sp,
                         color: colors.textSecondary,
                       ),
@@ -742,8 +742,8 @@ class _LogTripPageState extends State<LogTripPage> {
                     ),
                     child: Row(
                       children: [
-                        FaIcon(
-                          FontAwesomeIcons.calendarDays,
+                        PhosphorIcon(
+                          PhosphorIconsFill.calendar,
                           size: 16.sp,
                           color: colors.textSecondary,
                         ),
@@ -765,8 +765,8 @@ class _LogTripPageState extends State<LogTripPage> {
             SizedBox(width: 8.sp),
             // Multi-day toggle
             ChoiceChip(
-              label: FaIcon(
-                FontAwesomeIcons.arrowsLeftRight,
+              label: PhosphorIcon(
+                PhosphorIconsFill.arrowsLeftRight,
                 size: 14.sp,
                 color: _isMultiDay ? colors.onPrimary : colors.onSurface,
               ),
@@ -815,7 +815,7 @@ class _LogTripPageState extends State<LogTripPage> {
             const Spacer(),
             TextButton.icon(
               onPressed: _addManualItem,
-              icon: FaIcon(FontAwesomeIcons.plus, size: 14.sp),
+              icon: PhosphorIcon(PhosphorIconsFill.plus, size: 14.sp),
               label: Text('Add Item', style: AppTextStyles.bodySmall),
             ),
           ],
@@ -899,8 +899,8 @@ class _LogTripPageState extends State<LogTripPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: FaIcon(
-                              FontAwesomeIcons.minus,
+                            icon: PhosphorIcon(
+                              PhosphorIconsFill.minus,
                               size: 12.sp,
                               color: colors.textSecondary,
                             ),
@@ -920,8 +920,8 @@ class _LogTripPageState extends State<LogTripPage> {
                             style: AppTextStyles.bodyMedium,
                           ),
                           IconButton(
-                            icon: FaIcon(
-                              FontAwesomeIcons.plus,
+                            icon: PhosphorIcon(
+                              PhosphorIconsFill.plus,
                               size: 12.sp,
                               color: colors.textSecondary,
                             ),
@@ -1021,8 +1021,8 @@ class _AddGearToTripSheetState extends State<_AddGearToTripSheet> {
                 prefixIcon: SizedBox(
                   width: 40.sp,
                   child: Center(
-                    child: FaIcon(
-                      FontAwesomeIcons.magnifyingGlass,
+                    child: PhosphorIcon(
+                      PhosphorIconsFill.magnifyingGlass,
                       size: 16.sp,
                     ),
                   ),
@@ -1065,7 +1065,7 @@ class _AddGearToTripSheetState extends State<_AddGearToTripSheet> {
                         child: ListTile(
                           leading: CircleAvatar(
                             backgroundColor: colors.surfaceRaised,
-                            child: FaIcon(
+                            child: PhosphorIcon(
                               IconRegistry.resolve(iconKey),
                               size: 18.sp,
                               color: catColor ?? colors.primary,

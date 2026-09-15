@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import 'package:gearrack/database/category_dao.dart';
 import 'package:gearrack/database/gear_item_dao.dart';
 import 'package:gearrack/models/category.dart';
@@ -126,8 +126,8 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
         centerTitle: true,
       actions: [
         IconButton(
-          icon: FaIcon(
-            FontAwesomeIcons.plus,
+          icon: PhosphorIcon(
+            PhosphorIconsFill.plus,
             size: 18.sp,
             color: colors.primary,
           ),
@@ -190,7 +190,7 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
                     borderRadius: BorderRadius.circular(10.sp),
                   ),
                   child: Center(
-                    child: FaIcon(
+                    child: PhosphorIcon(
                       IconRegistry.resolve(cat.icon),
                       size: 18.sp,
                       color: catColor,
@@ -232,15 +232,15 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
                   children: [
                     if (!cat.isDefault)
                       IconButton(
-                        icon: FaIcon(
-                          FontAwesomeIcons.trash,
+                        icon: PhosphorIcon(
+                          PhosphorIconsFill.trash,
                           size: 14.sp,
                           color: colors.textSecondary,
                         ),
                         onPressed: () => _deleteCategory(cat),
                       ),
-                    FaIcon(
-                      FontAwesomeIcons.penToSquare,
+                    PhosphorIcon(
+                      PhosphorIconsFill.pencilSimple,
                       size: 14.sp,
                       color: colors.textSecondary,
                     ),
@@ -336,7 +336,7 @@ class _CategoryDialogState extends State<_CategoryDialog> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      FaIcon(
+                      PhosphorIcon(
                         IconRegistry.resolve(_selectedIcon),
                         size: 20.sp,
                         color: AppColors.parseHex(_selectedColor),
@@ -485,8 +485,8 @@ class _IconPickerState extends State<_IconPicker> {
             prefixIcon: SizedBox(
               width: 40.sp,
               child: Center(
-                child: FaIcon(
-                  FontAwesomeIcons.magnifyingGlass,
+                child: PhosphorIcon(
+                  PhosphorIconsFill.magnifyingGlass,
                   size: 14.sp,
                   color: colors.textSecondary,
                 ),
@@ -523,7 +523,7 @@ class _IconPickerState extends State<_IconPicker> {
                       ),
                     ),
                     child: Center(
-                      child: FaIcon(
+                      child: PhosphorIcon(
                         entry.icon,
                         size: 20.sp,
                         color: isSelected ? colors.primary : colors.onSurface,

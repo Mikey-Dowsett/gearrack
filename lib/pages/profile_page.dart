@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import 'package:gearrack/theme/app_colors.dart';
 import 'package:gearrack/theme/app_text_styles.dart';
 import 'package:gearrack/pages/settings_page.dart';
@@ -40,7 +40,7 @@ class ProfilePageState extends State<ProfilePage> {
         ),
         actions: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.gear, size: 18.sp, color: colors.primary),
+            icon: PhosphorIcon(PhosphorIconsFill.gear, size: 18.sp, color: colors.primary),
             onPressed: _openSettings,
           ),
         ],
@@ -52,8 +52,8 @@ class ProfilePageState extends State<ProfilePage> {
             CircleAvatar(
               radius: 40.sp,
               backgroundColor: colors.surfaceRaised,
-              child: FaIcon(
-                FontAwesomeIcons.user,
+              child: PhosphorIcon(
+                PhosphorIconsFill.user,
                 size: 36.sp,
                 color: colors.onSurface,
               ),

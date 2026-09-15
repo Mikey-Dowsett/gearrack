@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_colors.dart';
 import '../theme/ui_constants.dart';
@@ -47,164 +47,153 @@ class PackCard extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
-            side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
+            side: BorderSide(
+              color: colors.border,
+              width: UiConstants.borderWidth,
+            ),
           ),
           child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Gradient section
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(UiConstants.cardRadius.sp),
-                      topRight: Radius.circular(UiConstants.cardRadius.sp),
-                    ),
-                    color: colors.primary,
-                    border: Border(
-                      bottom: BorderSide(
-                        color: colors.border,
-                        width: UiConstants.borderWidth,
-                      ),
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Gradient section
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(UiConstants.cardRadius.sp),
+                    topRight: Radius.circular(UiConstants.cardRadius.sp),
+                  ),
+                  color: colors.primary,
+                  border: Border(
+                    bottom: BorderSide(
+                      color: colors.border,
+                      width: UiConstants.borderWidth,
                     ),
                   ),
-                  padding: EdgeInsets.all(12.sp),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+                padding: EdgeInsets.all(12.sp),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            pack.name,
+                            style: AppTextStyles.titleLarge.copyWith(
+                              color: colors.onPrimary,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (pack.description != null &&
+                              pack.description!.isNotEmpty)
+                            Padding(
+                              padding: EdgeInsets.only(
+                                top: UiConstants.spacingXS.sp,
+                              ),
+                              child: Text(
+                                pack.description!,
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: colors.onPrimary.withValues(
+                                    alpha: 0.85,
+                                  ),
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          if (bagName != null && bagName!.isNotEmpty)
+                            Padding(
+                              padding: EdgeInsets.only(
+                                top: UiConstants.spacingXS.sp,
+                              ),
+                              child: Text(
+                                bagName!,
+                                style: AppTextStyles.labelMedium.copyWith(
+                                  color: colors.onPrimary.withValues(
+                                    alpha: 0.8,
+                                  ),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: UiConstants.spacingS.sp),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              pack.name,
+                              _wp.value +
+                                  (_wp.unit == 'kg' ? ' ' + _wp.unit : ''),
                               style: AppTextStyles.titleLarge.copyWith(
                                 color: colors.onPrimary,
                               ),
-                              overflow: TextOverflow.ellipsis,
                             ),
-                            if (pack.description != null &&
-                                pack.description!.isNotEmpty)
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  top: UiConstants.spacingXS.sp,
-                                ),
-                                child: Text(
-                                  pack.description!,
-                                  style: AppTextStyles.bodyMedium.copyWith(
-                                    color: colors.onPrimary.withValues(
-                                      alpha: 0.85,
-                                    ),
+                            if (_wp.unit == 'g')
+                              Text(
+                                _wp.unit,
+                                style: AppTextStyles.labelMedium.copyWith(
+                                  color: colors.onPrimary.withValues(
+                                    alpha: 0.8,
                                   ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            if (bagName != null && bagName!.isNotEmpty)
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  top: UiConstants.spacingXS.sp,
-                                ),
-                                child: Row(
-                                  children: [
-                                    FaIcon(
-                                      FontAwesomeIcons.suitcase,
-                                      size: 14.sp,
-                                      color: colors.onPrimary.withValues(
-                                        alpha: 0.8,
-                                      ),
-                                    ),
-                                    SizedBox(width: 4.sp),
-                                    Flexible(
-                                      child: Text(
-                                        bagName!,
-                                        style: AppTextStyles.labelMedium.copyWith(
-                                          color: colors.onPrimary.withValues(
-                                            alpha: 0.8,
-                                          ),
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
                                 ),
                               ),
                           ],
                         ),
-                      ),
-                      SizedBox(width: UiConstants.spacingS.sp),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                _wp.value +
-                                    (_wp.unit == 'kg' ? ' ' + _wp.unit : ''),
-                                style: AppTextStyles.titleLarge.copyWith(
-                                  color: colors.onPrimary,
-                                ),
-                              ),
-                              if (_wp.unit == 'g')
-                                Text(
-                                  _wp.unit,
-                                  style: AppTextStyles.labelMedium.copyWith(
-                                    color: colors.onPrimary.withValues(
-                                      alpha: 0.8,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
-                // Non-gradient bottom section
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 12.sp,
-                    vertical: 10.sp,
-                  ),
-                  child: Row(
-                    children: [
-                      FaIcon(
-                        FontAwesomeIcons.box,
-                        size: 15.sp,
+              ),
+              // Non-gradient bottom section
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 12.sp,
+                  vertical: 10.sp,
+                ),
+                child: Row(
+                  children: [
+                    PhosphorIcon(
+                      PhosphorIconsFill.listChecks,
+                      size: 15.sp,
+                      color: colors.textSecondary,
+                    ),
+                    SizedBox(width: 6.sp),
+                    Text(
+                      '$totalItems item${totalItems != 1 ? 's' : ''}',
+                      style: AppTextStyles.bodyMedium.copyWith(
                         color: colors.textSecondary,
                       ),
-                      SizedBox(width: 6.sp),
-                      Text(
-                        '$totalItems item${totalItems != 1 ? 's' : ''}',
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: colors.textSecondary,
-                        ),
-                      ),
-                      SizedBox(width: 16.sp),
-                      FaIcon(
-                        FontAwesomeIcons.boxOpen,
-                        size: 15.sp,
+                    ),
+                    SizedBox(width: 16.sp),
+                    PhosphorIcon(
+                      PhosphorIconsFill.backpack,
+                      size: 15.sp,
+                      color: colors.textSecondary,
+                    ),
+                    SizedBox(width: 6.sp),
+                    Text(
+                      capacityLiters != null
+                          ? '${capacityLiters!.toStringAsFixed(0)} L'
+                          : '— L',
+                      style: AppTextStyles.bodyMedium.copyWith(
                         color: colors.textSecondary,
                       ),
-                      SizedBox(width: 6.sp),
-                      Text(
-                        capacityLiters != null
-                            ? '${capacityLiters!.toStringAsFixed(0)} L'
-                            :                   '— L',
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: colors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-      );
+      ),
+    );
   }
 }

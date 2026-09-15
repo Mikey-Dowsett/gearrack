@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/ui_constants.dart';
@@ -12,7 +12,7 @@ import '../utils/icon_registry.dart';
 class PatchChip extends StatelessWidget {
   final String label;
   final String? iconKey;
-  final FaIconData? iconData;
+  final IconData? iconData;
   final Color? iconColor;
   final int? count;
   final bool selected;
@@ -40,7 +40,7 @@ class PatchChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (resolvedIcon != null)
-            FaIcon(
+            PhosphorIcon(
               resolvedIcon,
               size: UiConstants.iconSmall.sp,
               color: selected ? fg : (iconColor ?? colors.textSecondary),

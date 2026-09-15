@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import 'package:gearrack/database/gear_item_dao.dart';
 import 'package:gearrack/database/category_dao.dart';
 import 'package:gearrack/database/app_settings_dao.dart';
@@ -131,7 +131,7 @@ class _InventoryPageState extends State<InventoryPage> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.gear, size: 14.sp, color: colors.textSecondary),
+            icon: PhosphorIcon(PhosphorIconsFill.gear, size: 14.sp, color: colors.textSecondary),
             onPressed: _openSettings,
             tooltip: 'Settings',
             visualDensity: VisualDensity.compact,
@@ -181,15 +181,15 @@ class _InventoryPageState extends State<InventoryPage> {
             onTap: _onTabTapped,
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.tent),
+                icon: PhosphorIcon(PhosphorIconsFill.tent),
                 label: 'Gear',
               ),
               BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.suitcase),
+                icon: PhosphorIcon(PhosphorIconsFill.suitcase),
                 label: 'Packs',
               ),
               BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.route),
+                icon: PhosphorIcon(PhosphorIconsFill.path),
                 label: 'Trips',
               ),
             ],
@@ -385,7 +385,7 @@ class GearTabState extends State<GearTab> {
                             prefixIcon: SizedBox(
                               width: 40.sp,
                               child: Center(
-                                child: FaIcon(FontAwesomeIcons.search),
+                                child: PhosphorIcon(PhosphorIconsFill.magnifyingGlass),
                               ),
                             ),
                             border: OutlineInputBorder(
@@ -597,10 +597,10 @@ class _SortDirectionButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(UiConstants.buttonRadius.sp),
         ),
       ),
-      child: FaIcon(
+      child: PhosphorIcon(
         ascending
-            ? FontAwesomeIcons.arrowDownWideShort
-            : FontAwesomeIcons.arrowUpWideShort,
+            ? PhosphorIconsFill.arrowsDownUp
+            : PhosphorIconsFill.arrowsDownUp,
         size: 14.sp,
       ),
     );
@@ -988,8 +988,8 @@ class TripsTabState extends State<TripsTab> {
                                               SizedBox(height: 4.sp),
                                               Row(
                                                 children: [
-                                                  FaIcon(
-                                                    FontAwesomeIcons.calendarDays,
+                                                  PhosphorIcon(
+                                                    PhosphorIconsFill.calendar,
                                                     size: 12.sp,
                                                     color: colors.onPrimary
                                                         .withValues(alpha: 0.8),
@@ -1017,9 +1017,8 @@ class TripsTabState extends State<TripsTab> {
                                                   ),
                                                   child: Row(
                                                     children: [
-                                                      FaIcon(
-                                                        FontAwesomeIcons
-                                                            .locationDot,
+                                                      PhosphorIcon(
+                                                        PhosphorIconsFill.mapPin,
                                                         size: 12.sp,
                                                         color: colors.onPrimary
                                                             .withValues(
@@ -1049,9 +1048,8 @@ class TripsTabState extends State<TripsTab> {
                                                   ),
                                                   child: Row(
                                                     children: [
-                                                      FaIcon(
-                                                        FontAwesomeIcons
-                                                            .suitcase,
+                                                      PhosphorIcon(
+                                                        PhosphorIconsFill.suitcaseSimple,
                                                         size: 12.sp,
                                                         color: colors.onPrimary
                                                             .withValues(
@@ -1115,8 +1113,8 @@ class TripsTabState extends State<TripsTab> {
                                     ),
                                     child: Row(
                                       children: [
-                                        FaIcon(
-                                          FontAwesomeIcons.box,
+                                        PhosphorIcon(
+                                          PhosphorIconsFill.package,
                                           size: 15.sp,
                                           color: colors.textSecondary,
                                         ),
@@ -1130,8 +1128,8 @@ class TripsTabState extends State<TripsTab> {
                                         ),
                                         if (trip.activityType != null) ...[
                                           SizedBox(width: 16.sp),
-                                          FaIcon(
-                                            FontAwesomeIcons.tag,
+                                          PhosphorIcon(
+                                            PhosphorIconsFill.tag,
                                             size: 15.sp,
                                             color: colors.textSecondary,
                                           ),

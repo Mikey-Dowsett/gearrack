@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_colors.dart';
 import '../theme/ui_constants.dart';
@@ -156,11 +156,11 @@ class _TripDetailPageState extends State<TripDetailPage> {
         backgroundColor: colors.background,
         actions: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.pen, size: 16.sp),
+            icon: PhosphorIcon(PhosphorIconsFill.pen, size: 16.sp),
             onPressed: _editTrip,
           ),
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.trash, size: 16.sp),
+            icon: PhosphorIcon(PhosphorIconsFill.trash, size: 16.sp),
             onPressed: _deleteTrip,
           ),
         ],
@@ -192,33 +192,33 @@ class _TripDetailPageState extends State<TripDetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         InfoCard(
-                          icon: FontAwesomeIcons.calendarDays,
+                          icon: PhosphorIconsFill.calendar,
                           title: 'Date',
                           value: _formatDateRange(_trip!),
                         ),
                         if (_trip!.activityType != null)
                           InfoCard(
-                            icon: FontAwesomeIcons.tag,
+                            icon: PhosphorIconsFill.tag,
                             title: 'Activity',
                             value: _trip!.activityType!,
                           ),
                         if (_trip!.location != null &&
                             _trip!.location!.isNotEmpty)
                           InfoCard(
-                            icon: FontAwesomeIcons.locationDot,
+                            icon: PhosphorIconsFill.mapPin,
                             title: 'Location',
                             value: _trip!.location!,
                           ),
                         if (_trip!.conditions != null &&
                             _trip!.conditions!.isNotEmpty)
                           InfoCard(
-                            icon: FontAwesomeIcons.cloudSun,
+                            icon: PhosphorIconsFill.cloudSun,
                             title: 'Conditions',
                             value: _trip!.conditions!,
                           ),
                         if (_trip!.notes != null && _trip!.notes!.isNotEmpty)
                           InfoCard(
-                            icon: FontAwesomeIcons.solidNoteSticky,
+                            icon: PhosphorIconsFill.note,
                             title: 'Notes',
                             value: _trip!.notes!,
                           ),
@@ -281,8 +281,8 @@ class _TripDetailPageState extends State<TripDetailPage> {
                   ),
                 ),
                 alignment: Alignment.center,
-                child: FaIcon(
-                  FontAwesomeIcons.clipboardList,
+                child: PhosphorIcon(
+                  PhosphorIconsFill.clipboardText,
                   size: 15.sp,
                   color: colors.onPrimary,
                 ),
@@ -389,7 +389,7 @@ class _TripDetailPageState extends State<TripDetailPage> {
                     SizedBox(
                       width: 44.sp,
                       child: Center(
-                        child: FaIcon(
+                        child: PhosphorIcon(
                           IconRegistry.resolve(iconKey),
                           size: 20.sp,
                           color: catColor,

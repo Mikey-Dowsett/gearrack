@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import 'package:uuid/uuid.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_colors.dart';
@@ -394,12 +394,12 @@ class _PackPageState extends State<PackPage>
         backgroundColor: colors.background,
         actions: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.personHiking, size: 16.sp),
+            icon: PhosphorIcon(PhosphorIconsFill.backpack, size: 16.sp),
             onPressed: _logTripFromPack,
             tooltip: 'Log Trip from Pack',
           ),
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.trash, size: 16.sp),
+            icon: PhosphorIcon(PhosphorIconsFill.trash, size: 16.sp),
             onPressed: _deletePack,
             tooltip: 'Delete Pack',
           ),
@@ -432,8 +432,8 @@ class _PackPageState extends State<PackPage>
                               ),
                             ),
                             alignment: Alignment.center,
-                            child: FaIcon(
-                              FontAwesomeIcons.clipboardList,
+                            child: PhosphorIcon(
+                              PhosphorIconsFill.clipboardText,
                               size: 15.sp,
                               color: colors.onPrimary,
                             ),
@@ -594,7 +594,7 @@ class _PackPageState extends State<PackPage>
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: _showAddGearSheet,
-                icon: FaIcon(FontAwesomeIcons.plus, size: 16.sp),
+                icon: PhosphorIcon(PhosphorIconsFill.plus, size: 16.sp),
                 label: Text(
                   'Add Gear to Pack',
                   style: AppTextStyles.bodyLarge.copyWith(
@@ -891,7 +891,7 @@ class _PackPageState extends State<PackPage>
                     SizedBox(
                       width: 44.sp,
                       child: Center(
-                        child: FaIcon(
+                        child: PhosphorIcon(
                           IconRegistry.resolve(iconKey),
                           size: 20.sp,
                           color: _categoryColorById(bag.categoryId, colors.primary),
@@ -975,7 +975,7 @@ class _PackPageState extends State<PackPage>
                     SizedBox(
                       width: 44.sp,
                       child: Center(
-                        child: FaIcon(
+                        child: PhosphorIcon(
                           IconRegistry.resolve(iconKey),
                           size: 20.sp,
                           color: _categoryColorById(gear.categoryId, colors.primary),
@@ -1026,8 +1026,8 @@ class _PackPageState extends State<PackPage>
                     SizedBox(
                       width: 36.sp,
                       child: IconButton(
-                        icon: FaIcon(
-                          FontAwesomeIcons.xmark,
+                        icon: PhosphorIcon(
+                          PhosphorIconsFill.x,
                           size: 14.sp,
                           color: colors.textSecondary,
                         ),
@@ -1178,7 +1178,7 @@ class _AddGearBottomSheetState extends State<_AddGearBottomSheet> {
                 prefixIcon: SizedBox(
                   width: 40.sp,
                   child: Center(
-                    child: FaIcon(FontAwesomeIcons.magnifyingGlass, size: 14.sp),
+                    child: PhosphorIcon(PhosphorIconsFill.magnifyingGlass, size: 14.sp),
                   ),
                 ),
                 border: OutlineInputBorder(
@@ -1258,7 +1258,7 @@ class _AddGearBottomSheetState extends State<_AddGearBottomSheet> {
                       final iconKey = _getIconKey(gear.categoryId);
 
                       return ListTile(
-                        leading: FaIcon(
+                        leading: PhosphorIcon(
                           IconRegistry.resolve(iconKey),
                           size: 20.sp,
                           color: _categoryColorById(

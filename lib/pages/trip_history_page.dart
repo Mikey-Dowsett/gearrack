@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import 'package:gearrack/database/trip_dao.dart';
 import 'package:gearrack/database/pack_dao.dart';
 import 'package:gearrack/models/trip.dart';
@@ -243,9 +243,8 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                                                 SizedBox(height: 4.sp),
                                                 Row(
                                                   children: [
-                                                    FaIcon(
-                                                      FontAwesomeIcons
-                                                          .calendarDays,
+                                                    PhosphorIcon(
+                                                      PhosphorIconsFill.calendar,
                                                       size: 12.sp,
                                                       color: colors.onPrimary
                                                           .withValues(alpha: 0.8),
@@ -273,9 +272,8 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                                                     ),
                                                     child: Row(
                                                       children: [
-                                                        FaIcon(
-                                                          FontAwesomeIcons
-                                                              .locationDot,
+                                                        PhosphorIcon(
+                                                          PhosphorIconsFill.mapPin,
                                                           size: 12.sp,
                                                           color: colors.onPrimary
                                                               .withValues(
@@ -305,9 +303,8 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                                                     ),
                                                     child: Row(
                                                       children: [
-                                                        FaIcon(
-                                                          FontAwesomeIcons
-                                                              .suitcase,
+                                                        PhosphorIcon(
+                                                          PhosphorIconsFill.suitcaseSimple,
                                                           size: 12.sp,
                                                           color: colors.onPrimary
                                                               .withValues(
@@ -372,8 +369,8 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                                       ),
                                       child: Row(
                                         children: [
-                                          FaIcon(
-                                            FontAwesomeIcons.box,
+                                          PhosphorIcon(
+                                            PhosphorIconsFill.package,
                                             size: 15.sp,
                                             color: colors.textSecondary,
                                           ),
@@ -387,8 +384,8 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                                           ),
                                           if (trip.activityType != null) ...[
                                             SizedBox(width: 16.sp),
-                                            FaIcon(
-                                              FontAwesomeIcons.tag,
+                                            PhosphorIcon(
+                                              PhosphorIconsFill.tag,
                                               size: 15.sp,
                                               color: colors.textSecondary,
                                             ),

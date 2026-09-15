@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import 'package:uuid/uuid.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_colors.dart';
@@ -192,8 +192,8 @@ class _AddPackPageState extends State<AddPackPage> {
                           label: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              FaIcon(
-                                FontAwesomeIcons.suitcase,
+                              PhosphorIcon(
+                                PhosphorIconsFill.suitcase,
                                 size: 14.sp,
                                 color: selected
                                     ? colors.onPrimary
@@ -301,7 +301,7 @@ class _AddPackPageState extends State<AddPackPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             FormHero(
-              icon: FontAwesomeIcons.suitcase,
+              icon: PhosphorIconsFill.suitcase,
               label: isEditing ? 'Editing pack' : 'New pack',
               title: _nameController.text.isEmpty
                   ? 'Untitled pack'

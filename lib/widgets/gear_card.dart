@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_colors.dart';
 import '../pages/gear_page.dart';
@@ -61,104 +61,104 @@ class GearCard extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
-            side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
+            side: BorderSide(
+              color: colors.border,
+              width: UiConstants.borderWidth,
+            ),
           ),
           child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  height: 72.sp,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Condition side-strip — glanceable status at the rail
-                      Container(width: 5.sp, color: statusColor),
-                      SizedBox(
-                        width: 52.sp,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: colors.surfaceRaised,
-                                border: Border(
-                                  right: BorderSide(
-                                    color: colors.border,
-                                    width: UiConstants.borderWidth,
-                                  ),
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: 72.sp,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Condition side-strip — glanceable status at the rail
+                    Container(width: 10.sp, color: statusColor),
+                    Container(width: 2.sp, color: colors.borderStrong),
+                    SizedBox(
+                      width: 52.sp,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: categoryColor ?? colors.primary,
+                              border: Border(
+                                right: BorderSide(
+                                  color: colors.border,
+                                  width: UiConstants.borderWidth,
                                 ),
                               ),
                             ),
-                            FaIcon(
-                              icon,
-                              size: 22.sp,
-                              color: categoryColor ?? colors.primary,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            left: UiConstants.spacingS.sp,
-                            right: UiConstants.spacingS.sp,
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
+                          PhosphorIcon(icon, size: 22.sp, color: Colors.white),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          left: UiConstants.spacingS.sp,
+                          right: UiConstants.spacingS.sp,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              gear.name,
+                              style: AppTextStyles.titleLarge.copyWith(
+                                color: colors.onSurface,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            if (gear.brand != null)
                               Text(
-                                gear.name,
-                                style: AppTextStyles.titleLarge.copyWith(
-                                  color: colors.onSurface,
+                                gear.brand!,
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: colors.textSecondary,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              if (gear.brand != null)
-                                Text(
-                                  gear.brand!,
-                                  style: AppTextStyles.bodyMedium.copyWith(
-                                    color: colors.textSecondary,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 56.sp,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              _wp.value,
-                              style: AppTextStyles.specMedium.copyWith(
-                                color: colors.onSurface,
-                              ),
-                              textAlign: TextAlign.right,
-                            ),
-                            Text(
-                              _wp.unit,
-                              style: AppTextStyles.specSmall.copyWith(
-                                color: colors.textSecondary,
-                              ),
-                              textAlign: TextAlign.right,
-                            ),
                           ],
                         ),
                       ),
-                      SizedBox(width: 12.sp),
-                    ],
-                  ),
+                    ),
+                    SizedBox(
+                      width: 56.sp,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            _wp.value,
+                            style: AppTextStyles.specMedium.copyWith(
+                              color: colors.onSurface,
+                            ),
+                            textAlign: TextAlign.right,
+                          ),
+                          Text(
+                            _wp.unit,
+                            style: AppTextStyles.specSmall.copyWith(
+                              color: colors.textSecondary,
+                            ),
+                            textAlign: TextAlign.right,
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 12.sp),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-      );
+      ),
+    );
   }
 }

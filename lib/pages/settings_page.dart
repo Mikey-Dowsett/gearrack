@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import 'package:gearrack/database/app_settings_dao.dart';
 import 'package:gearrack/models/app_settings.dart';
 import 'package:gearrack/services/backup_service.dart';
@@ -124,7 +124,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildWeightUnitSelector(AppColorPalette colors) {
     return _settingCard(
       colors,
-      icon: FontAwesomeIcons.scaleBalanced,
+      icon: PhosphorIconsFill.scales,
       label: 'Show weight in lbs',
       trailing: Switch(
         value: _settings.showLbs,
@@ -169,7 +169,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     return _settingCard(
       colors,
-      icon: FontAwesomeIcons.coins,
+      icon: PhosphorIconsFill.coins,
       label: 'Currency',
       trailing: DropdownButton<String>(
         value: _settings.currency,
@@ -194,7 +194,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildProModeSection(AppColorPalette colors) {
     return _settingCard(
       colors,
-      icon: FontAwesomeIcons.crown,
+      icon: PhosphorIconsFill.crown,
       label: 'PRO Mode',
       trailing: Switch(
         value: _settings.proMode,
@@ -209,10 +209,10 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildManageCategoriesTile(AppColorPalette colors) {
     return _settingCard(
       colors,
-      icon: FontAwesomeIcons.tags,
+      icon: PhosphorIconsFill.tag,
       label: 'Manage Categories',
-      trailing: FaIcon(
-        FontAwesomeIcons.chevronRight,
+      trailing: PhosphorIcon(
+        PhosphorIconsFill.caretRight,
         size: 14.sp,
         color: colors.textSecondary,
       ),
@@ -231,7 +231,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final lastExport = _settings.lastExportAt;
     return _settingCard(
       colors,
-      icon: FontAwesomeIcons.fileExport,
+      icon: PhosphorIconsFill.export,
       label: 'Export Data',
       trailing: _isBusy
           ? SizedBox(
@@ -254,7 +254,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildImportTile(AppColorPalette colors) {
     return _settingCard(
       colors,
-      icon: FontAwesomeIcons.fileImport,
+      icon: PhosphorIconsFill.downloadSimple,
       label: 'Import Data',
       trailing: _isBusy
           ? SizedBox(
@@ -262,8 +262,8 @@ class _SettingsPageState extends State<SettingsPage> {
               height: 16.sp,
               child: const CircularProgressIndicator(strokeWidth: 2),
             )
-          : FaIcon(
-              FontAwesomeIcons.chevronRight,
+          : PhosphorIcon(
+              PhosphorIconsFill.caretRight,
               size: 14.sp,
               color: colors.textSecondary,
             ),
@@ -373,7 +373,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildAboutSection(AppColorPalette colors) {
     return _settingCard(
       colors,
-      icon: FontAwesomeIcons.circleInfo,
+      icon: PhosphorIconsFill.info,
       label: 'Version',
       trailing: Text(
         '1.0.0',
@@ -386,7 +386,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _settingCard(
     AppColorPalette colors, {
-    required FaIconData icon,
+    required IconData icon,
     required String label,
     required Widget trailing,
     VoidCallback? onTap,
@@ -421,7 +421,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   child: Row(
                     children: [
-                      FaIcon(icon, size: 16.sp, color: colors.primary),
+                      PhosphorIcon(icon, size: 16.sp, color: colors.primary),
                       SizedBox(width: 12.sp),
                       Text(
                         label,
