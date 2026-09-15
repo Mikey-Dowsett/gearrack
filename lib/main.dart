@@ -3,15 +3,11 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gearrack/pages/inventory_page.dart';
-import 'package:gearrack/pages/profile_page.dart';
 import 'package:gearrack/widgets/paper_texture.dart';
-import 'package:gearrack/theme/app_colors.dart';
 import 'package:gearrack/theme/app_theme.dart';
-import 'package:gearrack/theme/ui_constants.dart';
 import 'package:gearrack/database/database_helper.dart';
 import 'package:gearrack/database/app_settings_dao.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() async {
@@ -108,70 +104,8 @@ class MainNavigationScreen extends StatefulWidget {
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _selectedIndex = 0;
-
-  late final List<Widget> _pages;
-
-  @override
-  void initState() {
-    super.initState();
-    _pages = [
-      const InventoryPage(),
-      ProfilePage(onThemeChanged: widget.onThemeChanged),
-    ];
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final colors = AppColors.of(context);
-
-    return Scaffold(
-      body: SafeArea(
-        top: true,
-        bottom: false,
-        child: IndexedStack(index: _selectedIndex, children: _pages),
-      ),
-      bottomNavigationBar: SafeArea(
-        left: false,
-        right: false,
-        bottom: true,
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(
-                color: colors.borderStrong,
-                width: UiConstants.borderWidth,
-              ),
-            ),
-          ),
-          child: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: colors.surfaceRaised,
-            elevation: 0,
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.tent),
-                label: 'Gear',
-              ),
-              BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.solidUser),
-                label: 'Profile',
-              ),
-            ],
-            currentIndex: _selectedIndex,
-            selectedItemColor: colors.primary,
-            unselectedItemColor: colors.textSecondary,
-            showUnselectedLabels: true,
-            onTap: _onItemTapped,
-          ),
-        ),
-      ),
-    );
+    return InventoryPage(onThemeChanged: widget.onThemeChanged);
   }
 }

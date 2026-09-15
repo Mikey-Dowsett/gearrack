@@ -22,44 +22,41 @@ import 'package:gearrack/pages/add_pack.dart';
 import 'package:gearrack/pages/log_trip_page.dart';
 import 'package:gearrack/pages/trip_detail_page.dart';
 import 'package:gearrack/pages/pack_page.dart' as pack_detail;
+import 'package:gearrack/pages/settings_page.dart';
 import 'package:gearrack/utils/weight_formatter.dart';
 import 'package:gearrack/widgets/patch_chip.dart';
 import 'package:gearrack/widgets/section_header.dart';
 
 class InventoryPage extends StatefulWidget {
-  const InventoryPage({super.key});
+  final VoidCallback? onThemeChanged;
+
+  const InventoryPage({super.key, this.onThemeChanged});
 
   @override
   State<InventoryPage> createState() => _InventoryPageState();
 }
 
-class _InventoryPageState extends State<InventoryPage>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _InventoryPageState extends State<InventoryPage> {
+  int _selectedIndex = 0;
   final GlobalKey<GearTabState> _gearKey = GlobalKey<GearTabState>();
   final GlobalKey<PacksTabState> _packsKey = GlobalKey<PacksTabState>();
   final GlobalKey<TripsTabState> _tripsKey = GlobalKey<TripsTabState>();
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-    _tabController.addListener(_onTabChanged);
+  void _onTabTapped(int index) {
+    setState(() => _selectedIndex = index);
   }
 
-  void _onTabChanged() {
-    if (mounted) setState(() {});
-  }
-
-  @override
-  void dispose() {
-    _tabController.removeListener(_onTabChanged);
-    _tabController.dispose();
-    super.dispose();
+  void _openSettings() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SettingsPage(onThemeChanged: widget.onThemeChanged),
+      ),
+    );
   }
 
   void _handleFabPress() {
-    switch (_tabController.index) {
+    switch (_selectedIndex) {
       case 0:
         _navigateToAddGear();
         break;
@@ -109,16 +106,7 @@ class _InventoryPageState extends State<InventoryPage>
   }
 
   IconData _fabIcon() {
-    switch (_tabController.index) {
-      case 0:
-        return Icons.add;
-      case 1:
-        return Icons.add;
-      case 2:
-        return Icons.add;
-      default:
-        return Icons.add;
-    }
+    return Icons.add;
   }
 
   @override
@@ -127,39 +115,36 @@ class _InventoryPageState extends State<InventoryPage>
 
     return Scaffold(
       backgroundColor: colors.background,
+      appBar: AppBar(
+        backgroundColor: colors.background,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        title: Text(
+          switch (_selectedIndex) {
+            0 => 'Gear',
+            1 => 'Packs',
+            _ => 'Trips',
+          },
+          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: FaIcon(FontAwesomeIcons.gear, size: 18.sp, color: colors.primary),
+            onPressed: _openSettings,
+            tooltip: 'Settings',
+          ),
+        ],
+      ),
       body: SafeArea(
-        top: true,
+        top: false,
         bottom: false,
-        child: Column(
+        child: IndexedStack(
+          index: _selectedIndex,
           children: [
-            TabBar(
-              controller: _tabController,
-              indicatorColor: colors.primary,
-              indicatorSize: TabBarIndicatorSize.tab,
-              labelColor: colors.primary,
-              unselectedLabelColor: colors.textSecondary,
-              labelStyle: AppTextStyles.bodyMedium,
-              unselectedLabelStyle: AppTextStyles.bodyMedium,
-              labelPadding: EdgeInsets.symmetric(
-                vertical: 4.sp,
-                horizontal: 16.sp,
-              ),
-              tabs: const [
-                Tab(text: 'Gear'),
-                Tab(text: 'Packs'),
-                Tab(text: 'Trips'),
-              ],
-            ),
-            Expanded(
-              child: IndexedStack(
-                index: _tabController.index,
-                children: [
-                  GearTab(key: _gearKey),
-                  PacksTab(key: _packsKey),
-                  TripsTab(key: _tripsKey),
-                ],
-              ),
-            ),
+            GearTab(key: _gearKey),
+            PacksTab(key: _packsKey),
+            TripsTab(key: _tripsKey),
           ],
         ),
       ),
@@ -167,6 +152,45 @@ class _InventoryPageState extends State<InventoryPage>
         onPressed: _handleFabPress,
         icon: Icon(_fabIcon()),
         label: const Text('LOG'),
+      ),
+      bottomNavigationBar: SafeArea(
+        left: false,
+        right: false,
+        bottom: true,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                color: colors.borderStrong,
+                width: UiConstants.borderWidth,
+              ),
+            ),
+          ),
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: colors.surfaceRaised,
+            elevation: 0,
+            currentIndex: _selectedIndex,
+            selectedItemColor: colors.primary,
+            unselectedItemColor: colors.textSecondary,
+            showUnselectedLabels: true,
+            onTap: _onTabTapped,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: FaIcon(FontAwesomeIcons.tent),
+                label: 'Gear',
+              ),
+              BottomNavigationBarItem(
+                icon: FaIcon(FontAwesomeIcons.suitcase),
+                label: 'Packs',
+              ),
+              BottomNavigationBarItem(
+                icon: FaIcon(FontAwesomeIcons.route),
+                label: 'Trips',
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
