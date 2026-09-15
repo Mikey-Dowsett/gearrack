@@ -36,6 +36,11 @@ class _AddPackPageState extends State<AddPackPage> {
   @override
   void initState() {
     super.initState();
+    final pack = widget.pack;
+    if (pack != null) {
+      _nameController.text = pack.name;
+      _descriptionController.text = pack.description ?? '';
+    }
     _nameController.addListener(() => setState(() {}));
     _loadBags();
   }

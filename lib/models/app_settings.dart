@@ -17,7 +17,7 @@ class AppSettings {
     this.weightUnit = 'grams',
     this.showLbs = false,
     this.theme = 'light',
-    this.accentColor = '#385A41',
+    this.accentColor = '#BE6B50',
     this.currency = 'USD',
     this.lastExportAt,
     this.proMode = false,
@@ -61,7 +61,7 @@ class AppSettings {
         map['show_lbs'] == true ||
         (map['show_lbs'] == null && map['weight_unit'] == 'pounds'),
     theme: map['theme'] as String? ?? 'light',
-    accentColor: map['accent_color'] as String? ?? '#385A41',
+    accentColor: map['accent_color'] as String? ?? '#BE6B50',
     currency: map['currency'] as String? ?? 'USD',
     lastExportAt: map['last_export_at'] != null
         ? DateTime.parse(map['last_export_at'] as String)

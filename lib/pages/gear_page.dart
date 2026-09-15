@@ -154,9 +154,9 @@ class _GearPageState extends State<GearPage> {
       child: Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        centerTitle: true,
+        centerTitle: false,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, size: 22.5),
           onPressed: _handleBack,
         ),
         title: Text(
@@ -166,12 +166,12 @@ class _GearPageState extends State<GearPage> {
         backgroundColor: colors.background,
         actions: [
           IconButton(
-            icon: PhosphorIcon(PhosphorIconsFill.pen, size: 16.sp, color: colors.onBackground),
+            icon: PhosphorIcon(PhosphorIconsFill.pen, size: 20.sp, color: colors.onBackground),
             onPressed: _navigateToEdit,
             tooltip: 'Edit Gear',
           ),
           IconButton(
-            icon: PhosphorIcon(PhosphorIconsFill.trash, size: 16.sp, color: colors.onBackground),
+            icon: PhosphorIcon(PhosphorIconsFill.trash, size: 20.sp, color: colors.onBackground),
             onPressed: _deleteGear,
             tooltip: 'Delete Gear',
           ),

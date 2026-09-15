@@ -17,6 +17,7 @@ class PatchChip extends StatelessWidget {
   final int? count;
   final bool selected;
   final ValueChanged<bool> onSelected;
+  final Color? selectedColor;
 
   const PatchChip({
     super.key,
@@ -27,11 +28,13 @@ class PatchChip extends StatelessWidget {
     this.count,
     required this.selected,
     required this.onSelected,
+    this.selectedColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
+    final fill = selectedColor ?? colors.primary;
     final fg = selected ? colors.onPrimary : colors.onSurface;
     final resolvedIcon = iconData ??
         (iconKey != null ? IconRegistry.resolve(iconKey!) : null);
@@ -76,14 +79,14 @@ class PatchChip extends StatelessWidget {
       selected: selected,
       onSelected: onSelected,
       showCheckmark: false,
-      selectedColor: colors.primary,
+      selectedColor: fill,
       backgroundColor: colors.surface,
       // Dashed-stitch illusion: solid outer outline (theme) + tighter radius.
       // True dashed stroke lives on SectionHeader dividers to keep cost low.
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(UiConstants.buttonRadius.sp),
         side: BorderSide(
-          color: selected ? colors.primary : colors.border,
+          color: selected ? fill : colors.border,
           width: UiConstants.borderWidth,
         ),
       ),

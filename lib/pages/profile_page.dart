@@ -33,14 +33,14 @@ class ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         backgroundColor: colors.background,
         elevation: 0,
-        centerTitle: true,
+        centerTitle: false,
         title: Text(
           'Profile',
           style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
         ),
         actions: [
           IconButton(
-            icon: PhosphorIcon(PhosphorIconsFill.gear, size: 18.sp, color: colors.primary),
+            icon: PhosphorIcon(PhosphorIconsFill.gear, size: 22.5.sp, color: colors.primary),
             onPressed: _openSettings,
           ),
         ],

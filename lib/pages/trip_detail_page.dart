@@ -148,7 +148,7 @@ class _TripDetailPageState extends State<TripDetailPage> {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        centerTitle: true,
+        centerTitle: false,
         title: Text(
           _trip?.name ?? 'Trip Detail',
           style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
@@ -156,11 +156,11 @@ class _TripDetailPageState extends State<TripDetailPage> {
         backgroundColor: colors.background,
         actions: [
           IconButton(
-            icon: PhosphorIcon(PhosphorIconsFill.pen, size: 16.sp),
+            icon: PhosphorIcon(PhosphorIconsFill.pen, size: 20.sp),
             onPressed: _editTrip,
           ),
           IconButton(
-            icon: PhosphorIcon(PhosphorIconsFill.trash, size: 16.sp),
+            icon: PhosphorIcon(PhosphorIconsFill.trash, size: 20.sp),
             onPressed: _deleteTrip,
           ),
         ],

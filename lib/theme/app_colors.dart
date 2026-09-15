@@ -6,34 +6,43 @@ import 'package:flutter/material.dart';
 /// exposes a runtime accessor `AppColors.of(context)` which returns a
 /// small object with semantic colors appropriate for the current theme.
 class AppColors {
-  // Status Colors (Shared) — earthy, desaturated for analog feel
-  static const Color statusNew = Color(0xFF5C8F68);
-  static const Color statusGood = Color(0xFF85986A);
-  static const Color statusWorn = Color(0xFFB8915A);
-  static const Color statusRetired = Color(0xFF8A817A);
+  // Condition colors — dedicated traffic-light trio warmed to fit the
+  // analog palette. Deliberately NOT reused from categories/UI so condition
+  // is glanceable: green = Good, orange = Worn, red = Retired.
+  static const Color statusNew = Color(0xFF7C9D46);
+  static const Color statusGood = Color(0xFF7C9D46);
+  static const Color statusWorn = Color(0xFFE58A2F);
+  static const Color statusRetired = Color(0xFFCE5233);
 
-  // Accent — weathered-tool patina
-  static const Color terracotta = Color(0xFFB86B46);
+  // Accent — terracotta from palette
+  static const Color terracotta = Color(0xFFBE6B50);
 
-  // Light Mode (Vintage Paper)
-  static const Color lightBackground = Color(0xFFF0E8D8);
-  static const Color lightSurface = Color(0xFFFAF6EF);
-  static const Color lightSurfaceRaised = Color(0xFFE5DFD3);
-  static const Color lightSurfaceSunken = Color(0xFFDCD5C7);
-  static const Color lightTextPrimary = Color(0xFF2C271E);
-  static const Color lightTextSecondary = Color(0xFF5C564A);
-  static const Color lightTextDisabled = Color(0xFF867F73);
-  static const Color lightBorder = Color(0xFFD2CBBE);
-  static const Color lightBorderStrong = Color(0xFFBEB6A8);
-  static const Color lightPrimary = Color(0xFF385A41);
-  static const Color lightOnPrimary = Color(0xFFF2F9F3);
-  static const Color lightPrimaryContainer = Color(0xFFD0E7D4);
-  static const Color lightPrimaryMuted = Color(0xFF708F77);
-  static const Color lightAccent = Color(0xFF3A714B);
-  static const Color lightOnAccent = Color(0xFFFAF9F0);
-  static const Color lightSecondary = Color(0xFF72804F);
-  static const Color lightTertiary = Color(0xFFAE6739);
-  static const Color lightTertiaryContainer = Color(0xFFF5D8C1);
+  // Palette whites/blacks derived to fit #F7E4CD / #403639
+  static const Color paletteWhite = Color(0xFFFDF8EE);
+  static const Color paletteBlack = Color(0xFF231B1D);
+
+  // Light Mode (Warm Analog — built only from user palette)
+  // Palette: #954F4D #BE6B50 #EFB571 #D0A654 #8F853C #5D523C #403639
+  //          #3D515B #719193 #9DB3AC #F7E4CD #A68D8C #80696B #5C4850
+  // UI neutrals: background/surface/text/borders. Colorful rest → categories.
+  static const Color lightBackground = Color(0xFFF7E4CD);
+  static const Color lightSurface = Color(0xFFFDF8EE);
+  static const Color lightSurfaceRaised = Color(0xFFEADDC2);
+  static const Color lightSurfaceSunken = Color(0xFFDCC9A6);
+  static const Color lightTextPrimary = Color(0xFF403639);
+  static const Color lightTextSecondary = Color(0xFF5C4850);
+  static const Color lightTextDisabled = Color(0xFFA68D8C);
+  static const Color lightBorder = Color(0xFFA68D8C);
+  static const Color lightBorderStrong = Color(0xFF80696B);
+  static const Color lightPrimary = Color(0xFFBE6B50);
+  static const Color lightOnPrimary = Color(0xFFFDF8EE);
+  static const Color lightPrimaryContainer = Color(0xFFEFB571);
+  static const Color lightPrimaryMuted = Color(0xFF954F4D);
+  static const Color lightAccent = Color(0xFFBE6B50);
+  static const Color lightOnAccent = Color(0xFFFDF8EE);
+  static const Color lightSecondary = Color(0xFF5D523C);
+  static const Color lightTertiary = Color(0xFF3D515B);
+  static const Color lightTertiaryContainer = Color(0xFF9DB3AC);
 
   // Dark Mode (Night)
   static const Color darkBackground = Color(0xFF131914);
@@ -155,7 +164,7 @@ class AppColorPalette {
       tertiary: AppColors.lightTertiary,
       tertiaryContainer: AppColors.lightTertiaryContainer,
       terracotta: AppColors.terracotta,
-      error: Color(0xFFB00020),
+      error: Color(0xFF954F4D),
       statusNew: AppColors.statusNew,
       statusGood: AppColors.statusGood,
       statusWorn: AppColors.statusWorn,

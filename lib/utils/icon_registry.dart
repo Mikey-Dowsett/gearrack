@@ -26,7 +26,7 @@ class IconRegistry {
     'shield': PhosphorIconsFill.shield,
     'box': PhosphorIconsFill.package,
     'box-open': PhosphorIconsFill.package,
-    'check': PhosphorIconsFill.check,
+    'check': PhosphorIconsFill.checkFat,
     'rotate': PhosphorIconsFill.arrowsClockwise,
     'trash': PhosphorIconsFill.trash,
     'ellipsis': PhosphorIconsFill.dotsThree,

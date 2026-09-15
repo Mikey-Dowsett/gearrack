@@ -31,7 +31,7 @@ class _AddGearPageState extends State<AddGearPage> {
   final _uuid = const Uuid();
 
   Category? _selectedCategory;
-  Condition? _selectedCondition;
+  Condition? _selectedCondition = Condition.Good;
   List<Category> _categories = [];
   List<String> _allBrands = [];
   bool _isPack = false;
@@ -128,7 +128,7 @@ class _AddGearPageState extends State<AddGearPage> {
   }
 
   final Map<Condition, IconData> _conditionIcons = {
-    Condition.Good: PhosphorIconsFill.check,
+    Condition.Good: PhosphorIconsFill.checkFat,
     Condition.Worn: PhosphorIconsFill.arrowsClockwise,
     Condition.Retired: PhosphorIconsFill.trash,
   };
@@ -483,8 +483,8 @@ class _AddGearPageState extends State<AddGearPage> {
                   return PatchChip(
                     label: _prettyEnumName(c),
                     iconData: _conditionIcons[c],
-                    iconColor: statusColor,
                     selected: selected,
+                    selectedColor: statusColor,
                     onSelected: (s) {
                       field.didChange(s ? c : null);
                       setState(() {

@@ -174,7 +174,7 @@ class TripDao {
       SELECT COALESCE(gi.category_id, 'unknown') AS category_id,
              COALESCE(c.name, 'Other') AS category_name,
              COALESCE(c.icon, 'box') AS category_icon,
-             COALESCE(c.color, '#A0A0B0') AS category_color,
+              COALESCE(c.color, '#80696B') AS category_color,
              SUM(ti.weight_grams * ti.quantity) AS total_weight
       FROM trip_items ti
       LEFT JOIN gear_items gi ON ti.gear_item_id = gi.id

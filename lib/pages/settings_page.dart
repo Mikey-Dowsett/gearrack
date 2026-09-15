@@ -78,7 +78,7 @@ class _SettingsPageState extends State<SettingsPage> {
           'Settings',
           style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
         ),
-        centerTitle: true,
+        centerTitle: false,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

@@ -20,7 +20,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 8,
+      version: 10,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -34,6 +34,16 @@ class DatabaseHelper {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    // --- Migration: v9 -> v10 (orange is UI-only; move categories off it) ---
+    if (oldVersion < 10) {
+      await _migrateV9toV10(db);
+    }
+
+    // --- Migration: v8 -> v9 (remake light mode from warm analog palette) ---
+    if (oldVersion < 9) {
+      await _migrateV8toV9(db);
+    }
+
     // --- Migration: v7 -> v8 (add show_lbs to app_settings) ---
     if (oldVersion < 8) {
       await _migrateV7toV8(db);
@@ -70,6 +80,70 @@ class DatabaseHelper {
       await db.execute('DROP TABLE IF EXISTS app_settings');
       await _onCreate(db, newVersion);
     }
+  }
+
+  /// Orange (#BE6B50) is UI-only; move any categories off it.
+  Future<void> _migrateV9toV10(Database db) async {
+    final batch = db.batch();
+    batch.update(
+      'categories',
+      {'color': '#80696B'},
+      where: 'name = ?',
+      whereArgs: ['Clothing'],
+    );
+    batch.update(
+      'categories',
+      {'color': '#954F4D'},
+      where: 'name = ?',
+      whereArgs: ['Cooking'],
+    );
+    // Guard: any other category (custom or legacy) still on orange moves
+    // to brick red so no category uses the UI accent.
+    batch.update(
+      'categories',
+      {'color': '#954F4D'},
+      where: "color = '#BE6B50'",
+    );
+    await batch.commit(noResult: true);
+  }
+
+  /// Sync default category colors and icons with current seed data.
+  Future<void> _migrateV8toV9(Database db) async {
+    const colorUpdates = {
+      'Shelter': '#3D515B',
+      'Sleep System': '#719193',
+      'Clothing': '#80696B',
+      'Footwear': '#954F4D',
+      'Navigation': '#8F853C',
+      'Lighting': '#D0A654',
+      'Cooking': '#954F4D',
+      'Food & Water': '#8F853C',
+      'First Aid': '#954F4D',
+      'Tools & Repair': '#5D523C',
+      'Electronics': '#3D515B',
+      'Packs & Bags': '#5D523C',
+      'Climbing': '#D0A654',
+      'Snow Sports': '#719193',
+      'Water Sports': '#3D515B',
+      'Hygiene': '#9DB3AC',
+      'Safety': '#EFB571',
+      'Miscellaneous': '#80696B',
+    };
+    final batch = db.batch();
+    for (final entry in colorUpdates.entries) {
+      batch.update(
+        'categories',
+        {'color': entry.value},
+        where: 'name = ?',
+        whereArgs: [entry.key],
+      );
+    }
+    batch.update(
+      'app_settings',
+      {'accent_color': '#BE6B50'},
+      where: "accent_color IN ('#385A41', '#3D515B')",
+    );
+    await batch.commit(noResult: true);
   }
 
   /// Sync default category colors and icons with current seed data.

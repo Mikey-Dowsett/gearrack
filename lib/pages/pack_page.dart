@@ -19,6 +19,7 @@ import '../utils/weight_formatter.dart';
 import '../widgets/section_header.dart';
 import '../widgets/patch_chip.dart';
 import 'log_trip_page.dart';
+import 'add_pack.dart';
 
 class PackPage extends StatefulWidget {
   final Pack pack;
@@ -461,6 +462,26 @@ class _PackPageState extends State<PackPage>
     );
   }
 
+  Future<void> _navigateToEditPack() async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (context) => AddPackPage(pack: _pack)),
+    );
+    if (result == true && mounted) {
+      try {
+        final dao = await PackDao.create();
+        final updated = await dao.getById(_pack.id);
+        if (updated != null) {
+          setState(() => _pack = updated);
+        }
+      } catch (_) {
+        // Best-effort refresh; fall through to silent refresh.
+      }
+      await _refreshSilent();
+      if (mounted) setState(() {});
+    }
+  }
+
   Future<void> _deletePack() async {
     final colors = AppColors.of(context);
     final confirmed = await showDialog<bool>(
@@ -515,17 +536,22 @@ class _PackPageState extends State<PackPage>
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        centerTitle: true,
+        centerTitle: false,
         title: Text(_pack.name, style: AppTextStyles.bodyMedium),
         backgroundColor: colors.background,
         actions: [
           IconButton(
-            icon: PhosphorIcon(PhosphorIconsFill.backpack, size: 16.sp),
+            icon: PhosphorIcon(PhosphorIconsFill.backpack, size: 20.sp),
             onPressed: _logTripFromPack,
             tooltip: 'Log Trip from Pack',
           ),
           IconButton(
-            icon: PhosphorIcon(PhosphorIconsFill.trash, size: 16.sp),
+            icon: PhosphorIcon(PhosphorIconsFill.pen, size: 20.sp),
+            onPressed: _navigateToEditPack,
+            tooltip: 'Edit Pack',
+          ),
+          IconButton(
+            icon: PhosphorIcon(PhosphorIconsFill.trash, size: 20.sp),
             onPressed: _deletePack,
             tooltip: 'Delete Pack',
           ),
@@ -951,7 +977,7 @@ class _PackPageState extends State<PackPage>
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.compactCardRadius.sp),
           side: BorderSide(
-            color: checked ? Colors.green : colors.border,
+            color: checked ? AppColors.statusGood : colors.border,
             width: checked
                 ? UiConstants.borderWidth + 0.5
                 : UiConstants.borderWidth,
@@ -989,7 +1015,11 @@ class _PackPageState extends State<PackPage>
                   ],
                 ),
               ),
-              Checkbox(value: checked, onChanged: onChanged),
+              Checkbox(
+                value: checked,
+                onChanged: onChanged,
+                activeColor: AppColors.statusGood,
+              ),
               SizedBox(width: 8.sp),
             ],
           ),

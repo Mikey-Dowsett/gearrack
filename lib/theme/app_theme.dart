@@ -15,8 +15,8 @@ class AppTheme {
         onPrimary: AppColors.lightOnPrimary,
         secondary: AppColors.lightSecondary,
         onSecondary: AppColors.lightOnAccent,
-        error: const Color(0xFFB00020),
-        onError: const Color(0xFFFFFFFF),
+        error: const Color(0xFF954F4D),
+        onError: const Color(0xFFFDF8EE),
         background: AppColors.lightBackground,
         onBackground: AppColors.lightTextPrimary,
         surface: AppColors.lightSurface,
@@ -136,13 +136,13 @@ class AppTheme {
         backgroundColor: AppColors.lightBackground,
         foregroundColor: AppColors.lightTextPrimary,
         elevation: 0,
-        centerTitle: true,
-        toolbarHeight: 32,
+        centerTitle: false,
+        toolbarHeight: 48,
         titleTextStyle: AppTextStyles.specSmall.copyWith(
           color: AppColors.lightTextSecondary,
           letterSpacing: 1.4,
         ),
-        iconTheme: const IconThemeData(size: 18, color: AppColors.lightTextSecondary),
+        iconTheme: const IconThemeData(size: 22.5, color: AppColors.lightTextSecondary),
       ),
 
        bottomNavigationBarTheme: BottomNavigationBarThemeData(
@@ -295,7 +295,7 @@ class AppTheme {
         backgroundColor: AppColors.darkBackground,
         foregroundColor: AppColors.darkTextPrimary,
         elevation: 0,
-        centerTitle: true,
+        centerTitle: false,
         titleTextStyle: AppTextStyles.bodyMedium.copyWith(
           color: AppColors.darkTextPrimary,
         ),

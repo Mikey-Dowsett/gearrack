@@ -76,7 +76,10 @@ class GearCard extends StatelessWidget {
                   children: [
                     // Condition side-strip — glanceable status at the rail
                     Container(width: 10.sp, color: statusColor),
-                    Container(width: 2.sp, color: colors.borderStrong),
+                    Container(
+                      width: UiConstants.borderWidth,
+                      color: colors.border,
+                    ),
                     SizedBox(
                       width: 52.sp,
                       child: Stack(

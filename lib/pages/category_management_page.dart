@@ -123,12 +123,12 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
           'Categories',
           style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
         ),
-        centerTitle: true,
+        centerTitle: false,
       actions: [
         IconButton(
           icon: PhosphorIcon(
             PhosphorIconsFill.plus,
-            size: 18.sp,
+            size: 22.5.sp,
             color: colors.primary,
           ),
           onPressed: () => _showCategoryDialog(),
@@ -278,7 +278,7 @@ class _CategoryDialogState extends State<_CategoryDialog> {
     _nameCtrl = TextEditingController(text: widget.existing?.name ?? '');
     _formKey = GlobalKey<FormState>();
     _selectedIcon = widget.existing?.icon ?? 'box-open';
-    _selectedColor = widget.existing?.color ?? '#A0A0B0';
+    _selectedColor = widget.existing?.color ?? '#80696B';
   }
 
   @override
@@ -290,6 +290,7 @@ class _CategoryDialogState extends State<_CategoryDialog> {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
+    final isDefaultEditing = widget.existing?.isDefault ?? false;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -354,12 +355,16 @@ class _CategoryDialogState extends State<_CategoryDialog> {
               ),
               SizedBox(height: 16.sp),
 
-              // Name
+              // Name (locked for default categories — only color is editable)
               TextFormField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(
+                enabled: !isDefaultEditing,
+                decoration: InputDecoration(
                   labelText: 'Name',
                   hintText: 'e.g. Camp Kitchen',
+                  helperText: isDefaultEditing
+                      ? 'Default categories cannot be renamed.'
+                      : null,
                 ),
                 style: AppTextStyles.bodyLarge.copyWith(
                   color: colors.onSurface,
@@ -370,18 +375,45 @@ class _CategoryDialogState extends State<_CategoryDialog> {
               ),
               SizedBox(height: 16.sp),
 
-              // Icon picker
-              Text(
-                'Icon',
-                style: AppTextStyles.labelMedium.copyWith(
-                  color: colors.textSecondary,
+              // Icon picker (locked for default categories)
+              if (isDefaultEditing) ...[
+                Text(
+                  'Icon',
+                  style: AppTextStyles.labelMedium.copyWith(
+                    color: colors.textSecondary,
+                  ),
                 ),
-              ),
-              SizedBox(height: 8.sp),
-              _IconPicker(
-                selectedIcon: _selectedIcon,
-                onSelect: (icon) => setState(() => _selectedIcon = icon),
-              ),
+                SizedBox(height: 8.sp),
+                Opacity(
+                  opacity: 0.5,
+                  child: IgnorePointer(
+                    ignoring: true,
+                    child: _IconPicker(
+                      selectedIcon: _selectedIcon,
+                      onSelect: (_) {},
+                    ),
+                  ),
+                ),
+                SizedBox(height: 4.sp),
+                Text(
+                  'Default categories keep their icon.',
+                  style: AppTextStyles.labelSmall.copyWith(
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ] else ...[
+                Text(
+                  'Icon',
+                  style: AppTextStyles.labelMedium.copyWith(
+                    color: colors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: 8.sp),
+                _IconPicker(
+                  selectedIcon: _selectedIcon,
+                  onSelect: (icon) => setState(() => _selectedIcon = icon),
+                ),
+              ],
               SizedBox(height: 16.sp),
 
               // Color picker
@@ -409,10 +441,16 @@ class _CategoryDialogState extends State<_CategoryDialog> {
 
                     final dao = await CategoryDao.create();
                     if (widget.existing != null) {
+                      final isDefault = widget.existing!.isDefault;
                       await dao.update(
                         widget.existing!.copyWith(
-                          name: name,
-                          icon: _selectedIcon,
+                          // Default categories: only color is editable.
+                          name: isDefault
+                              ? widget.existing!.name
+                              : name,
+                          icon: isDefault
+                              ? widget.existing!.icon
+                              : _selectedIcon,
                           color: _selectedColor,
                         ),
                       );
@@ -549,27 +587,21 @@ class _ColorPicker extends StatelessWidget {
 
   const _ColorPicker({required this.selectedColor, required this.onSelect});
 
+  // Note: #BE6B50 (orange) is UI-only and intentionally excluded here.
   static const _swatches = [
-    '#385A41',
-    '#7DAF85',
-    '#7AA8C8',
-    '#D4A07A',
-    '#A8BA8A',
-    '#E0C080',
-    '#D48A7A',
-    '#D48A8A',
-    '#A8A898',
-    '#8AAAC8',
-    '#8ABA8A',
-    '#B8A078',
-    '#98BCC8',
-    '#78A8B8',
-    '#A0C8A0',
-    '#D4A878',
-    '#A0A0B0',
-    '#C85050',
-    '#5080C8',
-    '#C8A050',
+    '#3D515B',
+    '#719193',
+    '#9DB3AC',
+    '#954F4D',
+    '#EFB571',
+    '#D0A654',
+    '#8F853C',
+    '#5D523C',
+    '#403639',
+    '#5C4850',
+    '#A68D8C',
+    '#80696B',
+    '#F7E4CD',
   ];
 
   @override
@@ -594,7 +626,11 @@ class _ColorPicker extends StatelessWidget {
               ),
             ),
             child: isSelected
-                ? Icon(Icons.check, size: 18.sp, color: Colors.white)
+                ? PhosphorIcon(
+                    PhosphorIconsFill.checkFat,
+                    size: 18.sp,
+                    color: Colors.white,
+                  )
                 : null,
           ),
         );

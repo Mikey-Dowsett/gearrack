@@ -131,7 +131,7 @@ class _InventoryPageState extends State<InventoryPage> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: PhosphorIcon(PhosphorIconsFill.gear, size: 14.sp, color: colors.textSecondary),
+            icon: PhosphorIcon(PhosphorIconsFill.gear, size: 17.5.sp, color: colors.textSecondary),
             onPressed: _openSettings,
             tooltip: 'Settings',
             visualDensity: VisualDensity.compact,

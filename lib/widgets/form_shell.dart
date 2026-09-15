@@ -30,7 +30,7 @@ class FormShell extends StatelessWidget {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        centerTitle: true,
+        centerTitle: false,
         title: Text(
           title,
           style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
@@ -79,7 +79,7 @@ class FormShell extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             PhosphorIcon(
-                              PhosphorIconsFill.check,
+                              PhosphorIconsFill.checkFat,
                               color: colors.onPrimary,
                               size: 25.sp,
                             ),
