@@ -592,7 +592,7 @@ class _LogTripPageState extends State<LogTripPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             PhosphorIcon(
-                              PhosphorIconsFill.suitcase,
+                              PhosphorIconsFill.backpack,
                               size: 14.sp,
                               color: selected
                                   ? colors.onPrimary

@@ -220,6 +220,131 @@ class _PackPageState extends State<PackPage>
     _totalValue = itemsValue + bagV;
   }
 
+  Future<void> _updateQuantity(PackItemWithGear pwg, int qty) async {
+    final max = pwg.gearItem.quantity.clamp(1, 1 << 30);
+    final clamped = qty.clamp(1, max);
+    final idx = _packItems.indexWhere((p) => p.packItem.id == pwg.packItem.id);
+    if (idx < 0 || _packItems[idx].packItem.quantityInPack == clamped) return;
+    final old = _packItems[idx];
+    setState(() {
+      _packItems[idx] = PackItemWithGear(
+        packItem: old.packItem.copyWith(quantityInPack: clamped),
+        gearItem: old.gearItem,
+      );
+      _recalculateTotals();
+    });
+    try {
+      final dao = await PackItemDao.create();
+      await dao.update(_packItems[idx].packItem);
+      await _refreshSilent();
+      if (mounted) setState(() {});
+    } catch (e) {
+      if (mounted) {
+        setState(() => _packItems[idx] = old);
+        _recalculateTotals();
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to update: $e')));
+      }
+    }
+  }
+
+  Future<void> _showQuantitySheet(PackItemWithGear pwg) async {
+    final max = pwg.gearItem.quantity.clamp(1, 1 << 30);
+    if (max <= 1) return;
+    var selected = pwg.packItem.quantityInPack.clamp(1, max);
+    final colors = AppColors.of(context);
+    final result = await showModalBottomSheet<int>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => Container(
+          decoration: BoxDecoration(
+            color: colors.background,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16.sp)),
+          ),
+          padding: EdgeInsets.fromLTRB(16.sp, 8.sp, 16.sp, 24.sp),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40.sp,
+                height: 4.sp,
+                decoration: BoxDecoration(
+                  color: colors.borderStrong,
+                  borderRadius: BorderRadius.circular(2.sp),
+                ),
+              ),
+              SizedBox(height: 12.sp),
+              Text(pwg.gearItem.name, style: AppTextStyles.titleLarge),
+              Text(
+                'Owned: $max — how many to take?',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: colors.textSecondary,
+                ),
+              ),
+              SizedBox(height: 12.sp),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: PhosphorIcon(PhosphorIconsFill.caretUp, size: 24.sp),
+                    onPressed: selected >= max
+                        ? null
+                        : () => setSheetState(() => selected++),
+                    tooltip: 'Increase',
+                  ),
+                  Container(
+                    constraints: BoxConstraints(minWidth: 56.sp),
+                    alignment: Alignment.center,
+                    child: Text(
+                      '$selected',
+                      style: AppTextStyles.titleLarge.copyWith(fontSize: 24.sp),
+                    ),
+                  ),
+                  IconButton(
+                    icon: PhosphorIcon(PhosphorIconsFill.caretDown, size: 24.sp),
+                    onPressed: selected <= 1
+                        ? null
+                        : () => setSheetState(() => selected--),
+                    tooltip: 'Decrease',
+                  ),
+                ],
+              ),
+              SizedBox(height: 4.sp),
+              Text(
+                '×$selected · ${formatWeight(pwg.gearItem.weightGrams * selected)} total',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: colors.textSecondary,
+                ),
+              ),
+              SizedBox(height: 12.sp),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(ctx).pop(selected),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        UiConstants.buttonRadius.sp,
+                      ),
+                    ),
+                  ),
+                  child: Text('Save', style: AppTextStyles.bodyLarge.copyWith(
+                    color: colors.onPrimary,
+                  )),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (result != null) await _updateQuantity(pwg, result);
+  }
+
   Future<void> _removeGearItem(String packItemId) async {
     final removedIdx = _packItems.indexWhere((p) => p.packItem.id == packItemId);
     final removed = removedIdx >= 0 ? _packItems[removedIdx] : null;
@@ -257,11 +382,12 @@ class _PackPageState extends State<PackPage>
       final dao = await PackItemDao.create();
       final gearDao = await GearItemDao.create();
       final gear = await gearDao.getById(gearItemId);
+      final defaultQty = (gear?.quantity ?? 1).clamp(1, 1 << 30);
       final packItem = PackItem(
         id: const Uuid().v4(),
         packId: _pack.id,
         gearItemId: gearItemId,
-        quantityInPack: 1,
+        quantityInPack: defaultQty,
         sortOrder: _packItems.length,
       );
       await dao.insert(packItem);
@@ -671,9 +797,8 @@ class _PackPageState extends State<PackPage>
         widgets.add(
           _buildMinimalGearCard(
             colors,
-            pwg.gearItem,
+            pwg,
             _categoryIcon(pwg.gearItem.categoryId),
-            pwg.packItem.id,
           ),
         );
       }
@@ -773,6 +898,7 @@ class _PackPageState extends State<PackPage>
                   colors,
                   name: pwg.gearItem.name,
                   brand: pwg.gearItem.brand,
+                  quantity: pwg.packItem.quantityInPack,
                   checked: pwg.packItem.isChecked,
                   onChanged: (v) => _toggleCheck(pwg, v),
                 ),
@@ -812,6 +938,7 @@ class _PackPageState extends State<PackPage>
     AppColorPalette colors, {
     required String name,
     String? brand,
+    int quantity = 1,
     required bool checked,
     required ValueChanged<bool?> onChanged,
   }) {
@@ -850,9 +977,12 @@ class _PackPageState extends State<PackPage>
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (brand != null)
+                    if (brand != null || quantity > 1)
                       Text(
-                        brand,
+                        [
+                          if (brand case final b) b,
+                          if (quantity > 1) '×$quantity',
+                        ].join(' · '),
                         style: AppTextStyles.bodySmall,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -949,11 +1079,15 @@ class _PackPageState extends State<PackPage>
 
   Widget _buildMinimalGearCard(
     AppColorPalette colors,
-    GearItem gear,
+    PackItemWithGear pwg,
     String iconKey,
-    String packItemId,
   ) {
-    final _gwp = formatWeightParts(gear.weightGrams);
+    final gear = pwg.gearItem;
+    final qty = pwg.packItem.quantityInPack;
+    final maxQty = gear.quantity;
+    final adjustable = maxQty > 1;
+    // Total weight for the taken quantity.
+    final _gwp = formatWeightParts(gear.weightGrams * qty);
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 3.sp),
       child: Card.filled(
@@ -964,7 +1098,9 @@ class _PackPageState extends State<PackPage>
           borderRadius: BorderRadius.circular(UiConstants.compactCardRadius.sp),
           side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
         ),
-        child: Column(
+        child: InkWell(
+          onTap: adjustable ? () => _showQuantitySheet(pwg) : null,
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
@@ -993,15 +1129,28 @@ class _PackPageState extends State<PackPage>
                             style: AppTextStyles.titleLarge.copyWith(fontSize: 13.sp),
                             overflow: TextOverflow.ellipsis,
                           ),
-                          if (gear.brand != null)
-                            Text(
-                              gear.brand!,
-                              style: AppTextStyles.bodySmall,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                          Text(
+                            [
+                              if (gear.brand != null) gear.brand!,
+                              if (adjustable) '×$qty',
+                            ].join(' · '),
+                            style: AppTextStyles.bodySmall,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ],
                       ),
                     ),
+                    // Quantity (left of weight, tap card for popup stepper)
+                    if (adjustable)
+                      Padding(
+                        padding: EdgeInsets.only(right: 8.sp),
+                        child: Text(
+                          '×$qty',
+                          style: AppTextStyles.titleLarge.copyWith(
+                            fontSize: 13.sp,
+                          ),
+                        ),
+                      ),
                     // Weight
                     Padding(
                       padding: EdgeInsets.only(right: 8.sp),
@@ -1031,7 +1180,7 @@ class _PackPageState extends State<PackPage>
                           size: 14.sp,
                           color: colors.textSecondary,
                         ),
-                        onPressed: () => _removeGearItem(packItemId),
+                        onPressed: () => _removeGearItem(pwg.packItem.id),
                         padding: EdgeInsets.zero,
                         constraints: BoxConstraints(
                           minWidth: 36.sp,
@@ -1044,6 +1193,7 @@ class _PackPageState extends State<PackPage>
               ),
             ],
           ),
+        ),
       ),
     );
   }
@@ -1267,11 +1417,19 @@ class _AddGearBottomSheetState extends State<_AddGearBottomSheet> {
                           ),
                         ),
                         title: Text(gear.name, style: AppTextStyles.bodyLarge),
-                        subtitle: gear.brand != null
-                            ? Text(gear.brand!, style: AppTextStyles.bodySmall)
+                        subtitle: (gear.brand != null || gear.quantity > 1)
+                            ? Text(
+                                [
+                                  if (gear.brand case final b) b,
+                                  if (gear.quantity > 1) '×${gear.quantity}',
+                                ].join(' · '),
+                                style: AppTextStyles.bodySmall,
+                              )
                             : null,
                         trailing: Text(
-                          formatWeight(gear.weightGrams),
+                          formatWeight(
+                            gear.weightGrams * gear.quantity.clamp(1, 1 << 30),
+                          ),
                           style: AppTextStyles.bodyMedium,
                         ),
                         onTap: () => _handleTap(gear),

@@ -15,7 +15,7 @@ class IconRegistry {
     'first-aid': PhosphorIconsFill.firstAidKit,
     'wrench': PhosphorIconsFill.wrench,
     'plug': PhosphorIconsFill.plug,
-    'suitcase': PhosphorIconsFill.suitcaseSimple,
+    'suitcase': PhosphorIconsFill.backpack,
     'backpack': PhosphorIconsFill.backpack,
     'person-hiking': PhosphorIconsFill.backpack, // legacy alias
     'snowflake': PhosphorIconsFill.snowflake,

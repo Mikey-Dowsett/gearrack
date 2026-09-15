@@ -193,7 +193,7 @@ class _AddPackPageState extends State<AddPackPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               PhosphorIcon(
-                                PhosphorIconsFill.suitcase,
+                                PhosphorIconsFill.backpack,
                                 size: 14.sp,
                                 color: selected
                                     ? colors.onPrimary
@@ -301,7 +301,7 @@ class _AddPackPageState extends State<AddPackPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             FormHero(
-              icon: PhosphorIconsFill.suitcase,
+              icon: PhosphorIconsFill.backpack,
               label: isEditing ? 'Editing pack' : 'New pack',
               title: _nameController.text.isEmpty
                   ? 'Untitled pack'

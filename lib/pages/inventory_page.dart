@@ -152,10 +152,9 @@ class _InventoryPageState extends State<InventoryPage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
         onPressed: _handleFabPress,
-        icon: Icon(_fabIcon()),
-        label: const Text('LOG'),
+        child: Icon(_fabIcon()),
       ),
       bottomNavigationBar: SafeArea(
         left: false,
@@ -185,7 +184,7 @@ class _InventoryPageState extends State<InventoryPage> {
                 label: 'Gear',
               ),
               BottomNavigationBarItem(
-                icon: PhosphorIcon(PhosphorIconsFill.suitcase),
+                icon: PhosphorIcon(PhosphorIconsFill.backpack),
                 label: 'Packs',
               ),
               BottomNavigationBarItem(
@@ -1049,7 +1048,7 @@ class TripsTabState extends State<TripsTab> {
                                                   child: Row(
                                                     children: [
                                                       PhosphorIcon(
-                                                        PhosphorIconsFill.suitcaseSimple,
+                                                        PhosphorIconsFill.backpack,
                                                         size: 12.sp,
                                                         color: colors.onPrimary
                                                             .withValues(

@@ -304,7 +304,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                                                     child: Row(
                                                       children: [
                                                         PhosphorIcon(
-                                                          PhosphorIconsFill.suitcaseSimple,
+                                                          PhosphorIconsFill.backpack,
                                                           size: 12.sp,
                                                           color: colors.onPrimary
                                                               .withValues(
