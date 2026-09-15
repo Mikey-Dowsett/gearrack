@@ -141,18 +141,19 @@ class _AddGearPageState extends State<AddGearPage> {
     final colors = AppColors.of(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           label.toUpperCase(),
           style: AppTextStyles.specSmall.copyWith(color: colors.onBackground),
         ),
-        if (required) ...[
-          SizedBox(width: 4.sp),
-          Text(
-            '*',
-            style: AppTextStyles.labelMedium.copyWith(color: colors.error),
+        SizedBox(width: 4.sp),
+        Text(
+          '*',
+          style: AppTextStyles.labelMedium.copyWith(
+            color: required ? colors.error : Colors.transparent,
           ),
-        ],
+        ),
       ],
     );
   }
@@ -369,6 +370,7 @@ class _AddGearPageState extends State<AddGearPage> {
 
   Widget _rowOfTwoFields(BuildContext context, Widget left, Widget right) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(child: left),
         SizedBox(width: 8.sp),
@@ -503,34 +505,66 @@ class _AddGearPageState extends State<AddGearPage> {
   Widget _buildIsPackToggle(BuildContext context) {
     final colors = AppColors.of(context);
 
+    final decoration = InputDecoration(
+      filled: true,
+      fillColor: colors.surface,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+        borderSide: BorderSide(
+          color: colors.border,
+          width: UiConstants.borderWidth,
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+        borderSide: BorderSide(
+          color: colors.border,
+          width: UiConstants.borderWidth,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(UiConstants.borderRadius),
+        borderSide: BorderSide(
+          color: colors.primary,
+          width: UiConstants.borderWidth,
+        ),
+      ),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: 16.sp,
+        vertical: 14.sp,
+      ),
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _fieldLabel(context, 'Backpack'),
         SizedBox(height: 6.sp),
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 14.sp),
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(UiConstants.borderRadius),
-            border: Border(bottom: BorderSide(color: colors.border, width: 1)),
-          ),
+        InputDecorator(
+          decoration: decoration,
           child: Row(
             children: [
               Expanded(
                 child: Text(
                   'Backpack',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: colors.onBackground,
+                  style: AppTextStyles.bodyLarge.copyWith(
+                    color: colors.onSurface,
                   ),
                 ),
               ),
               SizedBox(width: 8.sp),
-              Switch(
-                value: _isPack,
-                onChanged: (val) => setState(() => _isPack = val),
-                activeColor: colors.primary,
+              SizedBox(
+                height: 24.sp,
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: Switch(
+                    value: _isPack,
+                    onChanged: (val) => setState(() => _isPack = val),
+                    activeColor: colors.primary,
+                    materialTapTargetSize:
+                        MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ),
               ),
             ],
           ),
