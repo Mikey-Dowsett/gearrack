@@ -107,8 +107,9 @@ class Schema {
     CREATE TABLE IF NOT EXISTS app_settings (
       id INTEGER PRIMARY KEY DEFAULT 1,
       weight_unit TEXT NOT NULL DEFAULT 'grams',
+      show_lbs INTEGER NOT NULL DEFAULT 0,
       theme TEXT NOT NULL DEFAULT 'light',
-      accent_color TEXT NOT NULL DEFAULT '#385A41',
+      accent_color TEXT NOT NULL DEFAULT '#BE6B50',
       currency TEXT NOT NULL DEFAULT 'USD',
       last_export_at TEXT,
       pro_mode INTEGER NOT NULL DEFAULT 0
@@ -219,24 +220,24 @@ class Schema {
     final uuid = Uuid();
 
     final defaultCategories = [
-      Category(id: uuid.v4(), name: 'Shelter', icon: 'tent', color: '#7DAF85', isDefault: true),
-      Category(id: uuid.v4(), name: 'Sleep System', icon: 'bed', color: '#7AA8C8', isDefault: true),
-      Category(id: uuid.v4(), name: 'Clothing', icon: 'shirt', color: '#D4A07A', isDefault: true),
-      Category(id: uuid.v4(), name: 'Footwear', icon: 'shoe-prints', color: '#B89878'),
-      Category(id: uuid.v4(), name: 'Navigation', icon: 'compass', color: '#A8BA8A'),
-      Category(id: uuid.v4(), name: 'Lighting', icon: 'lightbulb', color: '#E0C080'),
-      Category(id: uuid.v4(), name: 'Cooking', icon: 'fire', color: '#D48A7A'),
-      Category(id: uuid.v4(), name: 'Food & Water', icon: 'utensils', color: '#7AAD85', isDefault: true),
-      Category(id: uuid.v4(), name: 'First Aid', icon: 'first-aid', color: '#D48A8A', isDefault: true),
-      Category(id: uuid.v4(), name: 'Tools & Repair', icon: 'wrench', color: '#A8A898'),
-      Category(id: uuid.v4(), name: 'Electronics', icon: 'plug', color: '#8AAAC8'),
-      Category(id: uuid.v4(), name: 'Packs & Bags', icon: 'person-hiking', color: '#8ABA8A'),
-      Category(id: uuid.v4(), name: 'Climbing', icon: 'mountain', color: '#B8A078'),
-      Category(id: uuid.v4(), name: 'Snow Sports', icon: 'snowflake', color: '#98BCC8'),
-      Category(id: uuid.v4(), name: 'Water Sports', icon: 'water', color: '#78A8B8'),
-      Category(id: uuid.v4(), name: 'Hygiene', icon: 'soap', color: '#A0C8A0'),
-      Category(id: uuid.v4(), name: 'Safety', icon: 'shield', color: '#D4A878'),
-      Category(id: uuid.v4(), name: 'Miscellaneous', icon: 'ellipsis', color: '#A0A0B0'),
+      Category(id: uuid.v4(), name: 'Shelter', icon: 'tent', color: '#3D515B', isDefault: true),
+      Category(id: uuid.v4(), name: 'Sleep System', icon: 'bed', color: '#719193', isDefault: true),
+      Category(id: uuid.v4(), name: 'Clothing', icon: 'shirt', color: '#80696B', isDefault: true),
+      Category(id: uuid.v4(), name: 'Footwear', icon: 'shoe-prints', color: '#954F4D'),
+      Category(id: uuid.v4(), name: 'Navigation', icon: 'compass', color: '#8F853C'),
+      Category(id: uuid.v4(), name: 'Lighting', icon: 'lightbulb', color: '#D0A654'),
+      Category(id: uuid.v4(), name: 'Cooking', icon: 'fire', color: '#954F4D'),
+      Category(id: uuid.v4(), name: 'Food & Water', icon: 'utensils', color: '#8F853C', isDefault: true),
+      Category(id: uuid.v4(), name: 'First Aid', icon: 'first-aid', color: '#954F4D', isDefault: true),
+      Category(id: uuid.v4(), name: 'Tools & Repair', icon: 'wrench', color: '#5D523C'),
+      Category(id: uuid.v4(), name: 'Electronics', icon: 'plug', color: '#3D515B'),
+      Category(id: uuid.v4(), name: 'Packs & Bags', icon: 'backpack', color: '#5D523C'),
+      Category(id: uuid.v4(), name: 'Climbing', icon: 'mountain', color: '#D0A654'),
+      Category(id: uuid.v4(), name: 'Snow Sports', icon: 'snowflake', color: '#719193'),
+      Category(id: uuid.v4(), name: 'Water Sports', icon: 'water', color: '#3D515B'),
+      Category(id: uuid.v4(), name: 'Hygiene', icon: 'soap', color: '#9DB3AC'),
+      Category(id: uuid.v4(), name: 'Safety', icon: 'shield', color: '#EFB571'),
+      Category(id: uuid.v4(), name: 'Miscellaneous', icon: 'ellipsis', color: '#80696B'),
     ];
 
     final batch = db.batch();
@@ -251,8 +252,9 @@ class Schema {
     await db.insert('app_settings', {
       'id': 1,
       'weight_unit': 'grams',
+      'show_lbs': 0,
       'theme': 'light',
-      'accent_color': '#385A41',
+      'accent_color': '#BE6B50',
       'currency': 'USD',
       'last_export_at': null,
     });

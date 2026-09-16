@@ -1,8 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import 'package:gearrack/database/app_settings_dao.dart';
 import 'package:gearrack/models/app_settings.dart';
+import 'package:gearrack/services/backup_service.dart';
 import 'package:gearrack/theme/app_colors.dart';
 import 'package:gearrack/theme/app_text_styles.dart';
 import 'package:gearrack/theme/ui_constants.dart';
@@ -10,16 +15,18 @@ import 'package:gearrack/pages/category_management_page.dart';
 
 class SettingsPage extends StatefulWidget {
   final VoidCallback? onThemeChanged;
+  final Future<void> Function()? onImport;
 
-  const SettingsPage({super.key, this.onThemeChanged});
+  const SettingsPage({super.key, this.onThemeChanged, this.onImport});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  AppSettings _settings = const AppSettings();
+  AppSettings _settings = AppSettings();
   bool _isLoading = true;
+  bool _isBusy = false;
 
   @override
   void initState() {
@@ -67,12 +74,12 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        backgroundColor: colors.surfaceRaised,
+        backgroundColor: colors.background,
         title: Text(
           'Settings',
-          style: AppTextStyles.titleMedium.copyWith(color: colors.onSurface),
+          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
         ),
-        centerTitle: true,
+        centerTitle: false,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -81,7 +88,6 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 _sectionHeader(colors, 'PREFERENCES'),
                 SizedBox(height: 8.sp),
-                _buildThemeSelector(colors),
                 _buildWeightUnitSelector(colors),
                 _buildCurrencySelector(colors),
                 SizedBox(height: 24.sp),
@@ -92,6 +98,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 _sectionHeader(colors, 'DATA'),
                 SizedBox(height: 8.sp),
                 _buildManageCategoriesTile(colors),
+                _buildExportTile(colors),
+                _buildImportTile(colors),
                 SizedBox(height: 24.sp),
                 _sectionHeader(colors, 'ABOUT'),
                 SizedBox(height: 8.sp),
@@ -114,81 +122,17 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildThemeSelector(AppColorPalette colors) {
-    final themeOptions = ['light', 'dark', 'system'];
-    final labels = ['Light', 'Dark', 'System'];
-    final icons = [
-      FontAwesomeIcons.sun,
-      FontAwesomeIcons.moon,
-      FontAwesomeIcons.display,
-    ];
-    final currentIndex = themeOptions.indexOf(_settings.theme).clamp(0, 2);
-
-    return _settingCard(
-      colors,
-      icon: FontAwesomeIcons.palette,
-      label: 'Theme',
-      trailing: DropdownButton<int>(
-        value: currentIndex,
-        underline: const SizedBox(),
-        dropdownColor: colors.surfaceRaised,
-        style: AppTextStyles.bodyMedium.copyWith(color: colors.onSurface),
-        items: List.generate(themeOptions.length, (i) {
-          return DropdownMenuItem(
-            value: i,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FaIcon(icons[i], size: 14.sp, color: colors.onSurface),
-                SizedBox(width: 6.sp),
-                Text(labels[i]),
-              ],
-            ),
-          );
-        }),
-        onChanged: (value) {
-          if (value != null) {
-            _updateSettings(_settings.copyWith(theme: themeOptions[value]));
-          }
-        },
-      ),
-    );
-  }
-
   Widget _buildWeightUnitSelector(AppColorPalette colors) {
-    final isGrams = _settings.weightUnit == 'grams';
-
     return _settingCard(
       colors,
-      icon: FontAwesomeIcons.scaleBalanced,
-      label: 'Weight Unit',
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'g',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: isGrams ? colors.primary : colors.textSecondary,
-              fontWeight: isGrams ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-          SizedBox(width: 6.sp),
-          Switch(
-            value: isGrams,
-            activeColor: colors.primary,
-            onChanged: (val) {
-              _updateSettings(_settings.copyWith(weightUnit: val ? 'grams' : 'pounds'));
-            },
-          ),
-          SizedBox(width: 6.sp),
-          Text(
-            'lb',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: !isGrams ? colors.primary : colors.textSecondary,
-              fontWeight: !isGrams ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-        ],
+      icon: PhosphorIconsFill.scales,
+      label: 'Show weight in lbs',
+      trailing: Switch(
+        value: _settings.showLbs,
+        activeColor: colors.primary,
+        onChanged: (val) {
+          _updateSettings(_settings.copyWith(showLbs: val));
+        },
       ),
     );
   }
@@ -226,7 +170,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     return _settingCard(
       colors,
-      icon: FontAwesomeIcons.coins,
+      icon: PhosphorIconsFill.coins,
       label: 'Currency',
       trailing: DropdownButton<String>(
         value: _settings.currency,
@@ -251,7 +195,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildProModeSection(AppColorPalette colors) {
     return _settingCard(
       colors,
-      icon: FontAwesomeIcons.crown,
+      icon: PhosphorIconsFill.crown,
       label: 'PRO Mode',
       trailing: Switch(
         value: _settings.proMode,
@@ -266,10 +210,10 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildManageCategoriesTile(AppColorPalette colors) {
     return _settingCard(
       colors,
-      icon: FontAwesomeIcons.tags,
+      icon: PhosphorIconsFill.tag,
       label: 'Manage Categories',
-      trailing: FaIcon(
-        FontAwesomeIcons.chevronRight,
+      trailing: PhosphorIcon(
+        PhosphorIconsFill.caretRight,
         size: 14.sp,
         color: colors.textSecondary,
       ),
@@ -284,10 +228,154 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  Widget _buildExportTile(AppColorPalette colors) {
+    final lastExport = _settings.lastExportAt;
+    return _settingCard(
+      colors,
+      icon: PhosphorIconsFill.export,
+      label: 'Export Data',
+      trailing: _isBusy
+          ? SizedBox(
+              width: 16.sp,
+              height: 16.sp,
+              child: const CircularProgressIndicator(strokeWidth: 2),
+            )
+          : Text(
+              lastExport != null
+                  ? '${lastExport.month}/${lastExport.day}/${lastExport.year}'
+                  : 'Backup',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: colors.textSecondary,
+              ),
+            ),
+      onTap: _isBusy ? null : _exportData,
+    );
+  }
+
+  Widget _buildImportTile(AppColorPalette colors) {
+    return _settingCard(
+      colors,
+      icon: PhosphorIconsFill.downloadSimple,
+      label: 'Import Data',
+      trailing: _isBusy
+          ? SizedBox(
+              width: 16.sp,
+              height: 16.sp,
+              child: const CircularProgressIndicator(strokeWidth: 2),
+            )
+          : PhosphorIcon(
+              PhosphorIconsFill.caretRight,
+              size: 14.sp,
+              color: colors.textSecondary,
+            ),
+      onTap: _isBusy ? null : _importData,
+    );
+  }
+
+  Future<void> _exportData() async {
+    setState(() => _isBusy = true);
+    try {
+      final backup = await BackupService.exportAll();
+      final json = BackupService.encode(backup);
+      final fileName =
+          'gearrack-backup-${DateTime.now().toIso8601String().split('T').first}.json';
+
+      final saved = await FilePicker.saveFile(
+        dialogTitle: 'Save GearRack backup',
+        fileName: fileName,
+        bytes: utf8.encode(json),
+        mimeType: 'application/json',
+      );
+      // Null means the user cancelled the dialog.
+      if (saved == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Export cancelled')),
+          );
+        }
+        return;
+      }
+      await BackupService.stampExport();
+      await _loadSettings();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Backup saved to $saved')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
+  Future<void> _importData() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Import Data', style: AppTextStyles.titleMedium),
+        content: Text(
+          'Importing a backup replaces all current data. This cannot be undone. Continue?',
+          style: AppTextStyles.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text('Cancel', style: AppTextStyles.bodyMedium),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text('Import', style: AppTextStyles.bodyMedium),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    setState(() => _isBusy = true);
+    try {
+      final picked = await FilePicker.pickFile(
+        dialogTitle: 'Choose GearRack backup',
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+      if (picked == null) return;
+
+      final String json;
+      if (picked.path != null) {
+        json = await File(picked.path!).readAsString();
+      } else {
+        json = utf8.decode(await picked.readAsBytes());
+      }
+
+      await BackupService.importAll(BackupService.decode(json));
+      await _loadSettings();
+      widget.onThemeChanged?.call();
+      if (widget.onImport != null) await widget.onImport!.call();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Backup imported')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Import failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
   Widget _buildAboutSection(AppColorPalette colors) {
     return _settingCard(
       colors,
-      icon: FontAwesomeIcons.circleInfo,
+      icon: PhosphorIconsFill.info,
       label: 'Version',
       trailing: Text(
         '1.0.0',
@@ -300,7 +388,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _settingCard(
     AppColorPalette colors, {
-    required FaIconData icon,
+    required IconData icon,
     required String label,
     required Widget trailing,
     VoidCallback? onTap,
@@ -312,32 +400,44 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       child: Card.filled(
         color: colors.surface,
+        clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
-          side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
         ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
-          onTap: onTap,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: UiConstants.spacingM.sp,
-              vertical: 14.sp,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: colors.border, width: 1),
             ),
-            child: Row(
-              children: [
-                FaIcon(icon, size: 16.sp, color: colors.primary),
-                SizedBox(width: 12.sp),
-                Text(
-                  label,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: colors.onSurface,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              InkWell(
+                borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
+                onTap: onTap,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: UiConstants.spacingM.sp,
+                    vertical: 14.sp,
+                  ),
+                  child: Row(
+                    children: [
+                      PhosphorIcon(icon, size: 16.sp, color: colors.primary),
+                      SizedBox(width: 12.sp),
+                      Text(
+                        label,
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: colors.onSurface,
+                        ),
+                      ),
+                      const Spacer(),
+                      trailing,
+                    ],
                   ),
                 ),
-                const Spacer(),
-                trailing,
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

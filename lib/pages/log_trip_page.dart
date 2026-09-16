@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import 'package:uuid/uuid.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_colors.dart';
@@ -17,8 +17,9 @@ import '../database/category_dao.dart';
 import '../models/category.dart';
 import '../utils/icon_registry.dart';
 import '../utils/weight_formatter.dart';
-import 'package:gearrack/database/app_settings_dao.dart';
-import 'package:gearrack/pages/profile_page.dart';
+import '../widgets/form_shell.dart';
+import '../widgets/section_header.dart';
+
 
 /// A "trip item candidate" used while the user is composing their trip.
 /// Wraps a gear item reference (nullable) with user-facing fields the
@@ -74,7 +75,6 @@ class _LogTripPageState extends State<LogTripPage> {
   bool _isMultiDay = false;
   bool _isLoading = true;
   bool _isSaving = false;
-  bool _proMode = false;
 
   // For "log from pack" mode
   Pack? _selectedPack;
@@ -93,21 +93,13 @@ class _LogTripPageState extends State<LogTripPage> {
   @override
   void initState() {
     super.initState();
+    _nameController.addListener(() => setState(() {}));
     _loadData();
   }
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final settingsDao = await AppSettingsDao.create();
-      final settings = await settingsDao.get();
-      _proMode = settings.proMode;
-
-      if (!_proMode) {
-        setState(() => _isLoading = false);
-        return;
-      }
-
       final packDao = await PackDao.create();
       final gearDao = await GearItemDao.create();
       final categoryDao = await CategoryDao.create();
@@ -365,8 +357,8 @@ class _LogTripPageState extends State<LogTripPage> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          label,
-          style: AppTextStyles.labelMedium.copyWith(color: colors.onBackground),
+          label.toUpperCase(),
+          style: AppTextStyles.specSmall.copyWith(color: colors.onBackground),
         ),
         if (required) ...[
           SizedBox(width: 4.sp),
@@ -449,174 +441,91 @@ class _LogTripPageState extends State<LogTripPage> {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
-    final double buttonHeight = 56.sp;
+    final packName = _selectedPack?.name ?? widget.pack?.name;
+    final dateSpec = _endDate != null
+        ? '${_formatDate(_startDate)} – ${_formatDate(_endDate!)}'
+        : _formatDate(_startDate);
 
-    if (!_isLoading && !_proMode) {
-      return _buildProGate(colors);
-    }
-
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        title: Text(
-          _isEditing
-              ? 'Edit Trip'
-              : (_isFromPack ? 'Log Trip from Pack' : 'Log Trip'),
-          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
-        ),
-        backgroundColor: colors.background,
-        elevation: 0,
-      ),
-      body: _isLoading
+    return FormShell(
+      title: _isEditing
+          ? 'Edit Trip'
+          : (_isFromPack ? 'Log Trip from Pack' : 'Log Trip'),
+      saveLabel: _isEditing ? 'Update Trip' : 'Log Trip',
+      onSave: _saveTrip,
+      isSaving: _isSaving,
+      child: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: EdgeInsets.all(8.sp),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Pack selector (if not pre-selected)
-                    if (widget.pack == null) _buildPackSelector(colors),
+          : Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  FormHero(
+                    icon: PhosphorIconsFill.backpack,
+                    label: _isEditing
+                        ? 'Editing trip'
+                        : (_isFromPack ? 'Logging from pack' : 'New trip'),
+                    title: _nameController.text.isEmpty
+                        ? 'Untitled trip'
+                        : _nameController.text,
+                    spec:
+                        '${packName ?? 'No pack'} · $dateSpec'.toUpperCase(),
+                  ),
+                  SizedBox(height: 12.sp),
+                  const SectionHeader(title: 'Trip'),
+                  SizedBox(height: 8.sp),
+                  // Pack selector (if not pre-selected)
+                  if (widget.pack == null) _buildPackSelector(colors),
 
-                    // Trip name
-                    _buildTextField(
-                      label: 'Trip Name',
-                      hint: 'e.g. Red Rock weekend',
-                      requiredField: true,
-                      controller: _nameController,
-                    ),
+                  // Trip name
+                  _buildTextField(
+                    label: 'Trip Name',
+                    hint: 'e.g. Red Rock weekend',
+                    requiredField: true,
+                    controller: _nameController,
+                  ),
 
-                    // Activity type
-                    _buildActivityField(colors),
+                  // Activity type
+                  _buildActivityField(colors),
 
-                    // Date pickers
-                    _buildDateSection(colors),
+                  // Date pickers
+                  _buildDateSection(colors),
 
-                    // Location
-                    _buildTextField(
-                      label: 'Location',
-                      hint: 'e.g. Yosemite NP',
-                      controller: _locationController,
-                    ),
+                  SizedBox(height: 4.sp),
+                  const SectionHeader(title: 'Details'),
+                  SizedBox(height: 8.sp),
+                  // Location
+                  _buildTextField(
+                    label: 'Location',
+                    hint: 'e.g. Yosemite NP',
+                    controller: _locationController,
+                  ),
 
-                    // Conditions
-                    _buildTextField(
-                      label: 'Conditions',
-                      hint: 'e.g. Sunny, 75°F',
-                      controller: _conditionsController,
-                    ),
+                  // Conditions
+                  _buildTextField(
+                    label: 'Conditions',
+                    hint: 'e.g. Sunny, 75°F',
+                    controller: _conditionsController,
+                  ),
 
-                    // Notes
-                    _buildTextField(
-                      label: 'Notes',
-                      hint: 'Trip highlights, lessons learned...',
-                      controller: _notesController,
-                      keyboardType: TextInputType.multiline,
-                      minLines: 1,
-                      maxLines: 3,
-                    ),
+                  // Notes
+                  _buildTextField(
+                    label: 'Notes',
+                    hint: 'Highlights, lessons…',
+                    controller: _notesController,
+                    keyboardType: TextInputType.multiline,
+                    minLines: 1,
+                    maxLines: 3,
+                  ),
 
-                    // Divider
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.sp),
-                      child: Divider(color: colors.border),
-                    ),
+                  SizedBox(height: 4.sp),
+                  const SectionHeader(title: 'Items'),
+                  SizedBox(height: 8.sp),
+                  // Items section
+                  _buildItemsSection(colors),
 
-                    // Items section
-                    _buildItemsSection(colors),
-
-                    SizedBox(height: 100.sp),
-                  ],
-                ),
-              ),
-            ),
-      bottomSheet: _isLoading
-          ? null
-          : SafeArea(
-              left: false,
-              right: false,
-              bottom: true,
-              child: Container(
-                margin: EdgeInsets.zero,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 32.sp,
-                  vertical: 8.sp,
-                ),
-                color: colors.background,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(
-                            color: colors.border,
-                            width: UiConstants.borderWidth,
-                          ),
-                          backgroundColor: colors.surface,
-                          foregroundColor: colors.onSurface,
-                          minimumSize: Size.fromHeight(buttonHeight),
-                          padding: EdgeInsets.symmetric(vertical: 0.sp),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              UiConstants.buttonRadius.sp,
-                            ),
-                          ),
-                        ),
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: FaIcon(
-                          size: 25.sp,
-                          FontAwesomeIcons.xmark,
-                          color: colors.onSurface,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 8.sp),
-                    Expanded(
-                      flex: 5,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: colors.primary,
-                          foregroundColor: colors.onPrimary,
-                          minimumSize: Size.fromHeight(buttonHeight),
-                          padding: EdgeInsets.symmetric(vertical: 0.sp),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              UiConstants.buttonRadius.sp,
-                            ),
-                          ),
-                        ),
-                        onPressed: _isSaving ? null : _saveTrip,
-                        child: _isSaving
-                            ? SizedBox(
-                                height: 24.sp,
-                                width: 24.sp,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.sp,
-                                  color: colors.onPrimary,
-                                ),
-                              )
-                            : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  FaIcon(
-                                    FontAwesomeIcons.check,
-                                    color: colors.onPrimary,
-                                    size: 25.sp,
-                                  ),
-                                  SizedBox(width: 8.sp),
-                                  Text(
-                                    _isEditing ? 'Update Trip' : 'Log Trip',
-                                    style: AppTextStyles.bodyLarge.copyWith(
-                                      color: colors.onPrimary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                      ),
-                    ),
-                  ],
-                ),
+                  SizedBox(height: 100.sp),
+                ],
               ),
             ),
     );
@@ -634,10 +543,7 @@ class _LogTripPageState extends State<LogTripPage> {
           decoration: BoxDecoration(
             color: colors.surface,
             borderRadius: BorderRadius.circular(UiConstants.borderRadius),
-            border: Border.all(
-              color: colors.border,
-              width: UiConstants.borderWidth,
-            ),
+            border: Border(bottom: BorderSide(color: colors.border, width: 1)),
           ),
           child: _availablePacks.isEmpty
               ? Padding(
@@ -672,12 +578,6 @@ class _LogTripPageState extends State<LogTripPage> {
                         borderRadius: BorderRadius.circular(
                           UiConstants.chipRadius.sp,
                         ),
-                        side: BorderSide(
-                          color: _selectedPack == null
-                              ? colors.primary
-                              : colors.border,
-                          width: UiConstants.borderWidth,
-                        ),
                       ),
                       padding: EdgeInsets.symmetric(
                         horizontal: 12.sp,
@@ -691,8 +591,8 @@ class _LogTripPageState extends State<LogTripPage> {
                         label: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            FaIcon(
-                              FontAwesomeIcons.suitcase,
+                            PhosphorIcon(
+                              PhosphorIconsFill.backpack,
                               size: 14.sp,
                               color: selected
                                   ? colors.onPrimary
@@ -716,10 +616,6 @@ class _LogTripPageState extends State<LogTripPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
                             UiConstants.chipRadius.sp,
-                          ),
-                          side: BorderSide(
-                            color: selected ? colors.primary : colors.border,
-                            width: UiConstants.borderWidth,
                           ),
                         ),
                         padding: EdgeInsets.symmetric(
@@ -774,10 +670,6 @@ class _LogTripPageState extends State<LogTripPage> {
               backgroundColor: colors.surface,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(UiConstants.chipRadius.sp),
-                side: BorderSide(
-                  color: selected ? colors.primary : colors.border,
-                  width: UiConstants.borderWidth,
-                ),
               ),
               padding: EdgeInsets.symmetric(horizontal: 12.sp, vertical: 8.sp),
             );
@@ -810,15 +702,12 @@ class _LogTripPageState extends State<LogTripPage> {
                     borderRadius: BorderRadius.circular(
                       UiConstants.borderRadius,
                     ),
-                    border: Border.all(
-                      color: colors.border,
-                      width: UiConstants.borderWidth,
-                    ),
+                    border: Border(bottom: BorderSide(color: colors.border, width: 1)),
                   ),
                   child: Row(
                     children: [
-                      FaIcon(
-                        FontAwesomeIcons.calendarDays,
+                      PhosphorIcon(
+                        PhosphorIconsFill.calendar,
                         size: 16.sp,
                         color: colors.textSecondary,
                       ),
@@ -849,15 +738,12 @@ class _LogTripPageState extends State<LogTripPage> {
                       borderRadius: BorderRadius.circular(
                         UiConstants.borderRadius,
                       ),
-                      border: Border.all(
-                        color: colors.border,
-                        width: UiConstants.borderWidth,
-                      ),
+                      border: Border(bottom: BorderSide(color: colors.border, width: 1)),
                     ),
                     child: Row(
                       children: [
-                        FaIcon(
-                          FontAwesomeIcons.calendarDays,
+                        PhosphorIcon(
+                          PhosphorIconsFill.calendar,
                           size: 16.sp,
                           color: colors.textSecondary,
                         ),
@@ -879,8 +765,8 @@ class _LogTripPageState extends State<LogTripPage> {
             SizedBox(width: 8.sp),
             // Multi-day toggle
             ChoiceChip(
-              label: FaIcon(
-                FontAwesomeIcons.arrowsLeftRight,
+              label: PhosphorIcon(
+                PhosphorIconsFill.arrowsLeftRight,
                 size: 14.sp,
                 color: _isMultiDay ? colors.onPrimary : colors.onSurface,
               ),
@@ -895,10 +781,6 @@ class _LogTripPageState extends State<LogTripPage> {
               backgroundColor: colors.surface,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(UiConstants.chipRadius.sp),
-                side: BorderSide(
-                  color: _isMultiDay ? colors.primary : colors.border,
-                  width: UiConstants.borderWidth,
-                ),
               ),
               padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 8.sp),
               showCheckmark: false,
@@ -933,7 +815,7 @@ class _LogTripPageState extends State<LogTripPage> {
             const Spacer(),
             TextButton.icon(
               onPressed: _addManualItem,
-              icon: FaIcon(FontAwesomeIcons.plus, size: 14.sp),
+              icon: PhosphorIcon(PhosphorIconsFill.plus, size: 14.sp),
               label: Text('Add Item', style: AppTextStyles.bodySmall),
             ),
           ],
@@ -963,14 +845,11 @@ class _LogTripPageState extends State<LogTripPage> {
               padding: EdgeInsets.symmetric(vertical: 3.sp),
               child: Card.filled(
                 color: c.isSelected ? colors.surface : colors.surfaceSunken,
-                elevation: 1,
+                elevation: UiConstants.cardElevation,
+                clipBehavior: Clip.antiAlias,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(
                     UiConstants.compactCardRadius.sp,
-                  ),
-                  side: BorderSide(
-                    color: c.isSelected ? colors.border : colors.borderStrong,
-                    width: UiConstants.borderWidth,
                   ),
                 ),
                 child: Padding(
@@ -1020,8 +899,8 @@ class _LogTripPageState extends State<LogTripPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: FaIcon(
-                              FontAwesomeIcons.minus,
+                            icon: PhosphorIcon(
+                              PhosphorIconsFill.minus,
                               size: 12.sp,
                               color: colors.textSecondary,
                             ),
@@ -1041,8 +920,8 @@ class _LogTripPageState extends State<LogTripPage> {
                             style: AppTextStyles.bodyMedium,
                           ),
                           IconButton(
-                            icon: FaIcon(
-                              FontAwesomeIcons.plus,
+                            icon: PhosphorIcon(
+                              PhosphorIconsFill.plus,
                               size: 12.sp,
                               color: colors.textSecondary,
                             ),
@@ -1067,76 +946,7 @@ class _LogTripPageState extends State<LogTripPage> {
     );
   }
 
-  Widget _buildProGate(AppColorPalette colors) {
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        title: Text(
-          _isEditing ? 'Edit Trip' : 'Log Trip',
-          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
-        ),
-        backgroundColor: colors.background,
-        elevation: 0,
-      ),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: UiConstants.spacingXL.sp),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              FaIcon(FontAwesomeIcons.crown, size: 48.sp, color: colors.tertiary),
-              SizedBox(height: 20.sp),
-              Text(
-                'PRO Feature',
-                style: AppTextStyles.titleLarge.copyWith(
-                  color: colors.onSurface,
-                ),
-              ),
-              SizedBox(height: 12.sp),
-              Text(
-                'Logging trips requires PRO mode. Enable it in your profile settings.',
-                textAlign: TextAlign.center,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: colors.textSecondary,
-                ),
-              ),
-              SizedBox(height: 24.sp),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const ProfilePage(),
-                      ),
-                    );
-                  },
-                  icon: FaIcon(FontAwesomeIcons.crown, size: 16.sp, color: colors.onPrimary),
-                  label: Text(
-                    'Go to PRO Settings',
-                    style: AppTextStyles.bodyMedium.copyWith(color: colors.onPrimary),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.primary,
-                    foregroundColor: colors.onPrimary,
-                    padding: EdgeInsets.symmetric(horizontal: 20.sp, vertical: 12.sp),
-                    minimumSize: Size(0, 44.sp),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        UiConstants.buttonRadius.sp,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
-}
 
 // ---------------------------------------------------------------------------
 // Bottom sheet to pick a gear item and quantity for manual addition
@@ -1196,13 +1006,12 @@ class _AddGearToTripSheetState extends State<_AddGearToTripSheet> {
     final colors = AppColors.of(context);
     final height = MediaQuery.of(context).size.height * 0.7;
 
-    return Container(
-      height: height,
-      decoration: BoxDecoration(
-        color: colors.background,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.sp)),
-      ),
-      child: Column(
+    return Material(
+      color: colors.background,
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16.sp)),
+      child: SizedBox(
+        height: height,
+        child: Column(
         children: [
           Padding(
             padding: EdgeInsets.all(12.sp),
@@ -1212,17 +1021,15 @@ class _AddGearToTripSheetState extends State<_AddGearToTripSheet> {
                 prefixIcon: SizedBox(
                   width: 40.sp,
                   child: Center(
-                    child: FaIcon(
-                      FontAwesomeIcons.magnifyingGlass,
+                    child: PhosphorIcon(
+                      PhosphorIconsFill.magnifyingGlass,
                       size: 16.sp,
                     ),
                   ),
                 ),
                 filled: true,
                 fillColor: colors.surface,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.sp),
-                ),
+                border: UnderlineInputBorder(),
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: 16.sp,
                   vertical: 12.sp,
@@ -1258,7 +1065,7 @@ class _AddGearToTripSheetState extends State<_AddGearToTripSheet> {
                         child: ListTile(
                           leading: CircleAvatar(
                             backgroundColor: colors.surfaceRaised,
-                            child: FaIcon(
+                            child: PhosphorIcon(
                               IconRegistry.resolve(iconKey),
                               size: 18.sp,
                               color: catColor ?? colors.primary,
@@ -1286,6 +1093,7 @@ class _AddGearToTripSheetState extends State<_AddGearToTripSheet> {
                   ),
           ),
         ],
+        ),
       ),
     );
   }

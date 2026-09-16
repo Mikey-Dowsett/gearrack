@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import 'package:gearrack/database/category_dao.dart';
 import 'package:gearrack/database/gear_item_dao.dart';
 import 'package:gearrack/models/category.dart';
@@ -118,22 +118,22 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        backgroundColor: colors.surfaceRaised,
+        backgroundColor: colors.background,
         title: Text(
           'Categories',
-          style: AppTextStyles.titleMedium.copyWith(color: colors.onSurface),
+          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
         ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: FaIcon(
-              FontAwesomeIcons.plus,
-              size: 18.sp,
-              color: colors.onSurface,
-            ),
-            onPressed: () => _showCategoryDialog(),
+        centerTitle: false,
+      actions: [
+        IconButton(
+          icon: PhosphorIcon(
+            PhosphorIconsFill.plus,
+            size: 22.5.sp,
+            color: colors.primary,
           ),
-        ],
+          onPressed: () => _showCategoryDialog(),
+        ),
+      ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -168,86 +168,90 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
       padding: EdgeInsets.only(bottom: 8.sp),
       child: Card.filled(
         color: colors.surface,
+        clipBehavior: Clip.antiAlias,
+        elevation: UiConstants.cardElevation,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
-          side: BorderSide(
-            color: colors.border,
-            width: UiConstants.borderWidth,
-          ),
+          side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
         ),
-        child: ListTile(
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: UiConstants.spacingM.sp,
-            vertical: 2.sp,
-          ),
-          leading: Container(
-            width: 40.sp,
-            height: 40.sp,
-            decoration: BoxDecoration(
-              color: catColor.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(10.sp),
-            ),
-            child: Center(
-              child: FaIcon(
-                IconRegistry.resolve(cat.icon),
-                size: 18.sp,
-                color: catColor,
-              ),
-            ),
-          ),
-          title: Row(
+        child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                cat.name,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: colors.onSurface,
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: UiConstants.spacingM.sp,
+                  vertical: 2.sp,
                 ),
-              ),
-              if (cat.isDefault) ...[
-                SizedBox(width: 6.sp),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 6.sp,
-                    vertical: 2.sp,
-                  ),
+                leading: Container(
+                  width: 40.sp,
+                  height: 40.sp,
                   decoration: BoxDecoration(
-                    color: colors.primary.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(4.sp),
+                    color: catColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10.sp),
                   ),
-                  child: Text(
-                    'DEFAULT',
-                    style: AppTextStyles.labelSmall.copyWith(
-                      color: colors.primary,
-                      fontSize: 8.sp,
+                  child: Center(
+                    child: PhosphorIcon(
+                      IconRegistry.resolve(cat.icon),
+                      size: 18.sp,
+                      color: catColor,
                     ),
                   ),
                 ),
-              ],
-            ],
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (!cat.isDefault)
-                IconButton(
-                  icon: FaIcon(
-                    FontAwesomeIcons.trash,
-                    size: 14.sp,
-                    color: colors.textSecondary,
-                  ),
-                  onPressed: () => _deleteCategory(cat),
+                title: Row(
+                  children: [
+                    Text(
+                      cat.name,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: colors.onSurface,
+                      ),
+                    ),
+                    if (cat.isDefault) ...[
+                      SizedBox(width: 6.sp),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6.sp,
+                          vertical: 2.sp,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colors.primary.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(4.sp),
+                        ),
+                        child: Text(
+                          'DEFAULT',
+                          style: AppTextStyles.labelSmall.copyWith(
+                            color: colors.primary,
+                            fontSize: 8.sp,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-              FaIcon(
-                FontAwesomeIcons.penToSquare,
-                size: 14.sp,
-                color: colors.textSecondary,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (!cat.isDefault)
+                      IconButton(
+                        icon: PhosphorIcon(
+                          PhosphorIconsFill.trash,
+                          size: 14.sp,
+                          color: colors.textSecondary,
+                        ),
+                        onPressed: () => _deleteCategory(cat),
+                      ),
+                    PhosphorIcon(
+                      PhosphorIconsFill.pencilSimple,
+                      size: 14.sp,
+                      color: colors.textSecondary,
+                    ),
+                  ],
+                ),
+                onTap: () => _showCategoryDialog(existing: cat),
               ),
             ],
           ),
-          onTap: () => _showCategoryDialog(existing: cat),
         ),
-      ),
-    );
+      );
   }
 }
 
@@ -274,7 +278,7 @@ class _CategoryDialogState extends State<_CategoryDialog> {
     _nameCtrl = TextEditingController(text: widget.existing?.name ?? '');
     _formKey = GlobalKey<FormState>();
     _selectedIcon = widget.existing?.icon ?? 'box-open';
-    _selectedColor = widget.existing?.color ?? '#A0A0B0';
+    _selectedColor = widget.existing?.color ?? '#80696B';
   }
 
   @override
@@ -286,6 +290,7 @@ class _CategoryDialogState extends State<_CategoryDialog> {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
+    final isDefaultEditing = widget.existing?.isDefault ?? false;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -332,7 +337,7 @@ class _CategoryDialogState extends State<_CategoryDialog> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      FaIcon(
+                      PhosphorIcon(
                         IconRegistry.resolve(_selectedIcon),
                         size: 20.sp,
                         color: AppColors.parseHex(_selectedColor),
@@ -350,12 +355,16 @@ class _CategoryDialogState extends State<_CategoryDialog> {
               ),
               SizedBox(height: 16.sp),
 
-              // Name
+              // Name (locked for default categories — only color is editable)
               TextFormField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(
+                enabled: !isDefaultEditing,
+                decoration: InputDecoration(
                   labelText: 'Name',
                   hintText: 'e.g. Camp Kitchen',
+                  helperText: isDefaultEditing
+                      ? 'Default categories cannot be renamed.'
+                      : null,
                 ),
                 style: AppTextStyles.bodyLarge.copyWith(
                   color: colors.onSurface,
@@ -366,18 +375,45 @@ class _CategoryDialogState extends State<_CategoryDialog> {
               ),
               SizedBox(height: 16.sp),
 
-              // Icon picker
-              Text(
-                'Icon',
-                style: AppTextStyles.labelMedium.copyWith(
-                  color: colors.textSecondary,
+              // Icon picker (locked for default categories)
+              if (isDefaultEditing) ...[
+                Text(
+                  'Icon',
+                  style: AppTextStyles.labelMedium.copyWith(
+                    color: colors.textSecondary,
+                  ),
                 ),
-              ),
-              SizedBox(height: 8.sp),
-              _IconPicker(
-                selectedIcon: _selectedIcon,
-                onSelect: (icon) => setState(() => _selectedIcon = icon),
-              ),
+                SizedBox(height: 8.sp),
+                Opacity(
+                  opacity: 0.5,
+                  child: IgnorePointer(
+                    ignoring: true,
+                    child: _IconPicker(
+                      selectedIcon: _selectedIcon,
+                      onSelect: (_) {},
+                    ),
+                  ),
+                ),
+                SizedBox(height: 4.sp),
+                Text(
+                  'Default categories keep their icon.',
+                  style: AppTextStyles.labelSmall.copyWith(
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ] else ...[
+                Text(
+                  'Icon',
+                  style: AppTextStyles.labelMedium.copyWith(
+                    color: colors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: 8.sp),
+                _IconPicker(
+                  selectedIcon: _selectedIcon,
+                  onSelect: (icon) => setState(() => _selectedIcon = icon),
+                ),
+              ],
               SizedBox(height: 16.sp),
 
               // Color picker
@@ -405,10 +441,16 @@ class _CategoryDialogState extends State<_CategoryDialog> {
 
                     final dao = await CategoryDao.create();
                     if (widget.existing != null) {
+                      final isDefault = widget.existing!.isDefault;
                       await dao.update(
                         widget.existing!.copyWith(
-                          name: name,
-                          icon: _selectedIcon,
+                          // Default categories: only color is editable.
+                          name: isDefault
+                              ? widget.existing!.name
+                              : name,
+                          icon: isDefault
+                              ? widget.existing!.icon
+                              : _selectedIcon,
                           color: _selectedColor,
                         ),
                       );
@@ -481,8 +523,8 @@ class _IconPickerState extends State<_IconPicker> {
             prefixIcon: SizedBox(
               width: 40.sp,
               child: Center(
-                child: FaIcon(
-                  FontAwesomeIcons.magnifyingGlass,
+                child: PhosphorIcon(
+                  PhosphorIconsFill.magnifyingGlass,
                   size: 14.sp,
                   color: colors.textSecondary,
                 ),
@@ -519,7 +561,7 @@ class _IconPickerState extends State<_IconPicker> {
                       ),
                     ),
                     child: Center(
-                      child: FaIcon(
+                      child: PhosphorIcon(
                         entry.icon,
                         size: 20.sp,
                         color: isSelected ? colors.primary : colors.onSurface,
@@ -545,27 +587,21 @@ class _ColorPicker extends StatelessWidget {
 
   const _ColorPicker({required this.selectedColor, required this.onSelect});
 
+  // Note: #BE6B50 (orange) is UI-only and intentionally excluded here.
   static const _swatches = [
-    '#385A41',
-    '#7DAF85',
-    '#7AA8C8',
-    '#D4A07A',
-    '#A8BA8A',
-    '#E0C080',
-    '#D48A7A',
-    '#D48A8A',
-    '#A8A898',
-    '#8AAAC8',
-    '#8ABA8A',
-    '#B8A078',
-    '#98BCC8',
-    '#78A8B8',
-    '#A0C8A0',
-    '#D4A878',
-    '#A0A0B0',
-    '#C85050',
-    '#5080C8',
-    '#C8A050',
+    '#3D515B',
+    '#719193',
+    '#9DB3AC',
+    '#954F4D',
+    '#EFB571',
+    '#D0A654',
+    '#8F853C',
+    '#5D523C',
+    '#403639',
+    '#5C4850',
+    '#A68D8C',
+    '#80696B',
+    '#F7E4CD',
   ];
 
   @override
@@ -590,7 +626,11 @@ class _ColorPicker extends StatelessWidget {
               ),
             ),
             child: isSelected
-                ? Icon(Icons.check, size: 18.sp, color: Colors.white)
+                ? PhosphorIcon(
+                    PhosphorIconsFill.checkFat,
+                    size: 18.sp,
+                    color: Colors.white,
+                  )
                 : null,
           ),
         );

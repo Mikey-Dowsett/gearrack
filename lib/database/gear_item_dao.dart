@@ -67,6 +67,13 @@ class GearItemDao {
     await db.delete('gear_items', where: 'id = ?', whereArgs: [id]);
   }
 
+  Future<List<String>> getDistinctBrands() async {
+    final result = await db.rawQuery(
+      'SELECT DISTINCT brand FROM gear_items WHERE brand IS NOT NULL AND TRIM(brand) != \'\' ORDER BY brand COLLATE NOCASE ASC',
+    );
+    return result.map((r) => r['brand'] as String).toList();
+  }
+
   Future<int> count() async {
     final result = await db.rawQuery(
       'SELECT COUNT(*) AS count FROM gear_items',

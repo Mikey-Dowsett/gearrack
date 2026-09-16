@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_colors.dart';
 import '../theme/ui_constants.dart';
@@ -44,6 +44,7 @@ class PackCard extends StatelessWidget {
         child: Card.filled(
           color: colors.surface,
           elevation: UiConstants.cardElevation,
+          clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(UiConstants.cardRadius.sp),
             side: BorderSide(
@@ -62,10 +63,12 @@ class PackCard extends StatelessWidget {
                     topLeft: Radius.circular(UiConstants.cardRadius.sp),
                     topRight: Radius.circular(UiConstants.cardRadius.sp),
                   ),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [colors.primary, colors.accent],
+                  color: colors.primary,
+                  border: Border(
+                    bottom: BorderSide(
+                      color: colors.border,
+                      width: UiConstants.borderWidth,
+                    ),
                   ),
                 ),
                 padding: EdgeInsets.all(12.sp),
@@ -96,6 +99,8 @@ class PackCard extends StatelessWidget {
                                     alpha: 0.85,
                                   ),
                                 ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           if (bagName != null && bagName!.isNotEmpty)
@@ -103,25 +108,15 @@ class PackCard extends StatelessWidget {
                               padding: EdgeInsets.only(
                                 top: UiConstants.spacingXS.sp,
                               ),
-                              child: Row(
-                                children: [
-                                  FaIcon(
-                                    FontAwesomeIcons.suitcase,
-                                    size: 14.sp,
-                                    color: colors.onPrimary.withValues(
-                                      alpha: 0.8,
-                                    ),
+                              child: Text(
+                                bagName!,
+                                style: AppTextStyles.labelMedium.copyWith(
+                                  color: colors.onPrimary.withValues(
+                                    alpha: 0.8,
                                   ),
-                                  SizedBox(width: 4.sp),
-                                  Text(
-                                    bagName!,
-                                    style: AppTextStyles.labelMedium.copyWith(
-                                      color: colors.onPrimary.withValues(
-                                        alpha: 0.8,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                         ],
@@ -165,8 +160,8 @@ class PackCard extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    FaIcon(
-                      FontAwesomeIcons.box,
+                    PhosphorIcon(
+                      PhosphorIconsFill.listChecks,
                       size: 15.sp,
                       color: colors.textSecondary,
                     ),
@@ -178,8 +173,8 @@ class PackCard extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 16.sp),
-                    FaIcon(
-                      FontAwesomeIcons.boxOpen,
+                    PhosphorIcon(
+                      PhosphorIconsFill.backpack,
                       size: 15.sp,
                       color: colors.textSecondary,
                     ),

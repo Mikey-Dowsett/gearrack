@@ -49,13 +49,17 @@ class _PacksPageState extends State<PacksPage> {
       final Map<String, String> bagNames = {};
 
       for (final pack in packs) {
-        weights[pack.id] = await packItemDao.getTotalWeightByPack(pack.id);
-        counts[pack.id] = await packItemDao.getItemCountByPack(pack.id);
+        final itemsWeight = await packItemDao.getTotalWeightByPack(pack.id);
+        final itemsCount = await packItemDao.getItemQuantitySumByPack(pack.id);
 
+        GearItem? bag;
         if (pack.bagId != null) {
-          final bag = bags.where((b) => b.id == pack.bagId).firstOrNull;
+          bag = bags.where((b) => b.id == pack.bagId).firstOrNull;
           bagNames[pack.id] = bag?.name ?? '';
         }
+        // Match pack detail semantics: totals include the backpack itself.
+        weights[pack.id] = itemsWeight + (bag?.weightGrams ?? 0);
+        counts[pack.id] = itemsCount + (bag != null ? 1 : 0);
       }
 
       setState(() {

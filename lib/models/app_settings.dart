@@ -5,17 +5,19 @@
 class AppSettings {
   final int id;
   final String weightUnit;
+  final bool showLbs;
   final String theme;
   final String accentColor;
   final String currency;
   final DateTime? lastExportAt;
   final bool proMode;
 
-  const AppSettings({
+  AppSettings({
     this.id = 1,
     this.weightUnit = 'grams',
+    this.showLbs = false,
     this.theme = 'light',
-    this.accentColor = '#385A41',
+    this.accentColor = '#BE6B50',
     this.currency = 'USD',
     this.lastExportAt,
     this.proMode = false,
@@ -24,6 +26,7 @@ class AppSettings {
   AppSettings copyWith({
     int? id,
     String? weightUnit,
+    bool? showLbs,
     String? theme,
     String? accentColor,
     String? currency,
@@ -32,6 +35,7 @@ class AppSettings {
   }) => AppSettings(
     id: id ?? this.id,
     weightUnit: weightUnit ?? this.weightUnit,
+    showLbs: showLbs ?? this.showLbs,
     theme: theme ?? this.theme,
     accentColor: accentColor ?? this.accentColor,
     currency: currency ?? this.currency,
@@ -42,6 +46,7 @@ class AppSettings {
   Map<String, dynamic> toMap() => {
     'id': id,
     'weight_unit': weightUnit,
+    'show_lbs': showLbs ? 1 : 0,
     'theme': theme,
     'accent_color': accentColor,
     'currency': currency,
@@ -52,8 +57,11 @@ class AppSettings {
   factory AppSettings.fromMap(Map<String, dynamic> map) => AppSettings(
     id: map['id'] as int? ?? 1,
     weightUnit: map['weight_unit'] as String? ?? 'grams',
+    showLbs: map['show_lbs'] == 1 ||
+        map['show_lbs'] == true ||
+        (map['show_lbs'] == null && map['weight_unit'] == 'pounds'),
     theme: map['theme'] as String? ?? 'light',
-    accentColor: map['accent_color'] as String? ?? '#385A41',
+    accentColor: map['accent_color'] as String? ?? '#BE6B50',
     currency: map['currency'] as String? ?? 'USD',
     lastExportAt: map['last_export_at'] != null
         ? DateTime.parse(map['last_export_at'] as String)
@@ -62,5 +70,5 @@ class AppSettings {
   );
 
   @override
-  String toString() => 'AppSettings(weightUnit: $weightUnit, theme: $theme)';
+  String toString() => 'AppSettings(showLbs: $showLbs, theme: $theme)';
 }

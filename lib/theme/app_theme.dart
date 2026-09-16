@@ -15,8 +15,8 @@ class AppTheme {
         onPrimary: AppColors.lightOnPrimary,
         secondary: AppColors.lightSecondary,
         onSecondary: AppColors.lightOnAccent,
-        error: const Color(0xFFB00020),
-        onError: const Color(0xFFFFFFFF),
+        error: const Color(0xFF954F4D),
+        onError: const Color(0xFFFDF8EE),
         background: AppColors.lightBackground,
         onBackground: AppColors.lightTextPrimary,
         surface: AppColors.lightSurface,
@@ -35,7 +35,6 @@ class AppTheme {
       ),
     );
 
-    // Compose a set of common component themes that rely on the color palette
     final colors = base.colorScheme;
 
     return base.copyWith(
@@ -78,6 +77,10 @@ class AppTheme {
           foregroundColor: colors.onPrimary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(UiConstants.buttonRadius),
+            side: BorderSide(
+              color: AppColors.lightBorder,
+              width: UiConstants.borderWidth,
+            ),
           ),
           textStyle: AppTextStyles.bodyMedium,
           elevation: 0,
@@ -88,12 +91,12 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: colors.onSurface,
-          side: BorderSide(
-            color: AppColors.lightBorder,
-            width: UiConstants.borderWidth,
-          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(UiConstants.buttonRadius),
+            side: BorderSide(
+              color: AppColors.lightBorder,
+              width: UiConstants.borderWidth,
+            ),
           ),
           textStyle: AppTextStyles.bodyMedium,
           padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
@@ -120,29 +123,40 @@ class AppTheme {
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.chipRadius),
+          side: BorderSide(
+            color: AppColors.lightBorder,
+            width: UiConstants.borderWidth,
+          ),
         ),
       ),
 
-      // Card color is set here; shape/margins should be used on Card widgets
-      // or added to `Card` when a custom shape is required.
       cardColor: AppColors.lightSurface,
 
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.lightSurfaceRaised,
+        backgroundColor: AppColors.lightBackground,
         foregroundColor: AppColors.lightTextPrimary,
         elevation: 0,
-        centerTitle: true,
-        titleTextStyle: AppTextStyles.titleMedium.copyWith(
-          color: AppColors.lightTextPrimary,
+        centerTitle: false,
+        toolbarHeight: 48,
+        titleTextStyle: AppTextStyles.specSmall.copyWith(
+          color: AppColors.lightTextSecondary,
+          letterSpacing: 1.4,
         ),
-        iconTheme: const IconThemeData(color: AppColors.lightTextPrimary),
+        iconTheme: const IconThemeData(size: 22.5, color: AppColors.lightTextSecondary),
       ),
 
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: AppColors.lightSurfaceRaised,
+       bottomNavigationBarTheme: BottomNavigationBarThemeData(
+         backgroundColor: AppColors.lightSurface,
         selectedItemColor: colors.primary,
         unselectedItemColor: AppColors.lightTextSecondary,
         showUnselectedLabels: true,
+        elevation: 0,
+        selectedLabelStyle: AppTextStyles.bodyMedium.copyWith(
+          color: colors.primary,
+        ),
+        unselectedLabelStyle: AppTextStyles.bodyMedium.copyWith(
+          color: AppColors.lightTextSecondary,
+        ),
       ),
 
       iconTheme: const IconThemeData(color: AppColors.lightTextPrimary),
@@ -222,6 +236,10 @@ class AppTheme {
           foregroundColor: colors.onPrimary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(UiConstants.buttonRadius),
+            side: BorderSide(
+              color: AppColors.darkBorder,
+              width: UiConstants.borderWidth,
+            ),
           ),
           textStyle: AppTextStyles.bodyMedium.copyWith(color: colors.onPrimary),
           elevation: 0,
@@ -232,12 +250,12 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: colors.onSurface,
-          side: BorderSide(
-            color: AppColors.darkBorder,
-            width: UiConstants.borderWidth,
-          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(UiConstants.buttonRadius),
+            side: BorderSide(
+              color: AppColors.darkBorder,
+              width: UiConstants.borderWidth,
+            ),
           ),
           textStyle: AppTextStyles.bodyMedium.copyWith(color: colors.onSurface),
           padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
@@ -264,19 +282,21 @@ class AppTheme {
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.chipRadius),
+          side: BorderSide(
+            color: AppColors.darkBorder,
+            width: UiConstants.borderWidth,
+          ),
         ),
       ),
 
-      // Card color is set here; shape/margins should be used on Card widgets
-      // or added to `Card` when a custom shape is required.
       cardColor: AppColors.darkSurface,
 
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.darkSurfaceRaised,
+        backgroundColor: AppColors.darkBackground,
         foregroundColor: AppColors.darkTextPrimary,
         elevation: 0,
-        centerTitle: true,
-        titleTextStyle: AppTextStyles.titleMedium.copyWith(
+        centerTitle: false,
+        titleTextStyle: AppTextStyles.bodyMedium.copyWith(
           color: AppColors.darkTextPrimary,
         ),
         iconTheme: const IconThemeData(color: AppColors.darkTextPrimary),
@@ -287,6 +307,13 @@ class AppTheme {
         selectedItemColor: colors.primary,
         unselectedItemColor: AppColors.darkTextSecondary,
         showUnselectedLabels: true,
+        elevation: 0,
+        selectedLabelStyle: AppTextStyles.bodyMedium.copyWith(
+          color: colors.primary,
+        ),
+        unselectedLabelStyle: AppTextStyles.bodyMedium.copyWith(
+          color: AppColors.darkTextSecondary,
+        ),
       ),
 
       iconTheme: const IconThemeData(color: AppColors.darkTextPrimary),

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import 'package:gearrack/database/trip_dao.dart';
 import 'package:gearrack/database/pack_dao.dart';
-import 'package:gearrack/database/app_settings_dao.dart';
 import 'package:gearrack/models/trip.dart';
 import 'package:gearrack/theme/app_colors.dart';
 import 'package:gearrack/theme/app_text_styles.dart';
@@ -11,7 +10,6 @@ import 'package:gearrack/theme/ui_constants.dart';
 import 'package:gearrack/utils/weight_formatter.dart';
 import 'package:gearrack/pages/log_trip_page.dart';
 import 'package:gearrack/pages/trip_detail_page.dart';
-import 'package:gearrack/pages/profile_page.dart';
 
 class TripHistoryPage extends StatefulWidget {
   const TripHistoryPage({super.key});
@@ -26,7 +24,6 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
   Map<String, int> _itemCounts = {};
   Map<String, String> _packNames = {};
   bool _isLoading = true;
-  bool _proMode = false;
 
   @override
   void initState() {
@@ -37,15 +34,6 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
   Future<void> _load() async {
     setState(() => _isLoading = true);
     try {
-      final settingsDao = await AppSettingsDao.create();
-      final settings = await settingsDao.get();
-      _proMode = settings.proMode;
-
-      if (!_proMode) {
-        setState(() => _isLoading = false);
-        return;
-      }
-
       final dao = await TripDao.create();
       final packDao = await PackDao.create();
       final trips = await dao.getAll();
@@ -123,10 +111,6 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
 
-    if (!_isLoading && !_proMode) {
-      return _buildProGate(colors);
-    }
-
     return Scaffold(
       backgroundColor: colors.background,
       body: Column(
@@ -146,7 +130,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '• ${_trips.length} trip${_trips.length != 1 ? 's' : ''}',
+                    '\u2022 ${_trips.length} trip${_trips.length != 1 ? 's' : ''}',
                     style: AppTextStyles.bodyMedium.copyWith(
                       color: colors.onBackground,
                     ),
@@ -204,225 +188,226 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                             onTap: () => _navigateToTripDetail(trip),
                             child: Card.filled(
                               color: colors.surface,
-                              elevation: 2,
+                              elevation: UiConstants.cardElevation,
+                              clipBehavior: Clip.antiAlias,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(
                                   UiConstants.cardRadius.sp,
                                 ),
-                                side: BorderSide(
-                                  color: colors.border,
-                                  width: UiConstants.borderWidth,
-                                ),
                               ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // Gradient header
-                                  Container(
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(
-                                          UiConstants.cardRadius.sp,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(color: colors.border, width: 1),
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // Gradient header
+                                    Container(
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(
+                                            UiConstants.cardRadius.sp,
+                                          ),
+                                          topRight: Radius.circular(
+                                            UiConstants.cardRadius.sp,
+                                          ),
                                         ),
-                                        topRight: Radius.circular(
-                                          UiConstants.cardRadius.sp,
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [colors.primary, colors.accent],
                                         ),
                                       ),
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [colors.primary, colors.accent],
-                                      ),
-                                    ),
-                                    padding: EdgeInsets.all(12.sp),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                trip.name,
-                                                style: AppTextStyles.titleLarge
-                                                    .copyWith(
-                                                      color: colors.onPrimary,
+                                      padding: EdgeInsets.all(12.sp),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  trip.name,
+                                                  style: AppTextStyles.titleLarge
+                                                      .copyWith(
+                                                        color: colors.onPrimary,
+                                                      ),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                                SizedBox(height: 4.sp),
+                                                Row(
+                                                  children: [
+                                                    PhosphorIcon(
+                                                      PhosphorIconsFill.calendar,
+                                                      size: 12.sp,
+                                                      color: colors.onPrimary
+                                                          .withValues(alpha: 0.8),
                                                     ),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              SizedBox(height: 4.sp),
-                                              Row(
-                                                children: [
-                                                  FaIcon(
-                                                    FontAwesomeIcons
-                                                        .calendarDays,
-                                                    size: 12.sp,
-                                                    color: colors.onPrimary
-                                                        .withValues(alpha: 0.8),
-                                                  ),
-                                                  SizedBox(width: 4.sp),
-                                                  Text(
-                                                    _formatDateRange(trip),
-                                                    style: AppTextStyles
-                                                        .labelMedium
-                                                        .copyWith(
-                                                          color: colors
-                                                              .onPrimary
+                                                    SizedBox(width: 4.sp),
+                                                    Text(
+                                                      _formatDateRange(trip),
+                                                      style: AppTextStyles
+                                                          .labelMedium
+                                                          .copyWith(
+                                                            color: colors
+                                                                .onPrimary
+                                                                .withValues(
+                                                                  alpha: 0.8,
+                                                                ),
+                                                          ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                if (trip.location != null &&
+                                                    trip.location!.isNotEmpty)
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                      top: 2.sp,
+                                                    ),
+                                                    child: Row(
+                                                      children: [
+                                                        PhosphorIcon(
+                                                          PhosphorIconsFill.mapPin,
+                                                          size: 12.sp,
+                                                          color: colors.onPrimary
                                                               .withValues(
                                                                 alpha: 0.8,
                                                               ),
                                                         ),
+                                                        SizedBox(width: 4.sp),
+                                                        Text(
+                                                          trip.location!,
+                                                          style: AppTextStyles
+                                                              .labelMedium
+                                                              .copyWith(
+                                                                color: colors
+                                                                    .onPrimary
+                                                                    .withValues(
+                                                                      alpha: 0.8,
+                                                                    ),
+                                                              ),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
-                                                ],
+                                                if (packName != null)
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                      top: 2.sp,
+                                                    ),
+                                                    child: Row(
+                                                      children: [
+                                                        PhosphorIcon(
+                                                          PhosphorIconsFill.backpack,
+                                                          size: 12.sp,
+                                                          color: colors.onPrimary
+                                                              .withValues(
+                                                                alpha: 0.8,
+                                                              ),
+                                                        ),
+                                                        SizedBox(width: 4.sp),
+                                                        Text(
+                                                          packName,
+                                                          style: AppTextStyles
+                                                              .labelMedium
+                                                              .copyWith(
+                                                                color: colors
+                                                                    .onPrimary
+                                                                    .withValues(
+                                                                      alpha: 0.8,
+                                                                    ),
+                                                              ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(width: 8.sp),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                wp.value +
+                                                    (wp.unit == 'kg'
+                                                        ? ' ${wp.unit}'
+                                                        : ''),
+                                                style: AppTextStyles.titleLarge
+                                                    .copyWith(
+                                                      color: colors.onPrimary,
+                                                    ),
                                               ),
-                                              if (trip.location != null &&
-                                                  trip.location!.isNotEmpty)
-                                                Padding(
-                                                  padding: EdgeInsets.only(
-                                                    top: 2.sp,
-                                                  ),
-                                                  child: Row(
-                                                    children: [
-                                                      FaIcon(
-                                                        FontAwesomeIcons
-                                                            .locationDot,
-                                                        size: 12.sp,
+                                              if (wp.unit == 'g')
+                                                Text(
+                                                  wp.unit,
+                                                  style: AppTextStyles.labelMedium
+                                                      .copyWith(
                                                         color: colors.onPrimary
                                                             .withValues(
                                                               alpha: 0.8,
                                                             ),
                                                       ),
-                                                      SizedBox(width: 4.sp),
-                                                      Text(
-                                                        trip.location!,
-                                                        style: AppTextStyles
-                                                            .labelMedium
-                                                            .copyWith(
-                                                              color: colors
-                                                                  .onPrimary
-                                                                  .withValues(
-                                                                    alpha: 0.8,
-                                                                  ),
-                                                            ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              if (packName != null)
-                                                Padding(
-                                                  padding: EdgeInsets.only(
-                                                    top: 2.sp,
-                                                  ),
-                                                  child: Row(
-                                                    children: [
-                                                      FaIcon(
-                                                        FontAwesomeIcons
-                                                            .suitcase,
-                                                        size: 12.sp,
-                                                        color: colors.onPrimary
-                                                            .withValues(
-                                                              alpha: 0.8,
-                                                            ),
-                                                      ),
-                                                      SizedBox(width: 4.sp),
-                                                      Text(
-                                                        packName,
-                                                        style: AppTextStyles
-                                                            .labelMedium
-                                                            .copyWith(
-                                                              color: colors
-                                                                  .onPrimary
-                                                                  .withValues(
-                                                                    alpha: 0.8,
-                                                                  ),
-                                                            ),
-                                                      ),
-                                                    ],
-                                                  ),
                                                 ),
                                             ],
                                           ),
-                                        ),
-                                        SizedBox(width: 8.sp),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              wp.value +
-                                                  (wp.unit == 'kg'
-                                                      ? ' ${wp.unit}'
-                                                      : ''),
-                                              style: AppTextStyles.titleLarge
-                                                  .copyWith(
-                                                    color: colors.onPrimary,
-                                                  ),
-                                            ),
-                                            if (wp.unit == 'g')
-                                              Text(
-                                                wp.unit,
-                                                style: AppTextStyles.labelMedium
-                                                    .copyWith(
-                                                      color: colors.onPrimary
-                                                          .withValues(
-                                                            alpha: 0.8,
-                                                          ),
-                                                    ),
-                                              ),
-                                          ],
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  // Footer info
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12.sp,
-                                      vertical: 10.sp,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        FaIcon(
-                                          FontAwesomeIcons.box,
-                                          size: 15.sp,
-                                          color: colors.textSecondary,
-                                        ),
-                                        SizedBox(width: 6.sp),
-                                        Text(
-                                          '$itemCount item${itemCount != 1 ? 's' : ''}',
-                                          style: AppTextStyles.bodyMedium
-                                              .copyWith(
-                                                color: colors.textSecondary,
-                                              ),
-                                        ),
-                                        if (trip.activityType != null) ...[
-                                          SizedBox(width: 16.sp),
-                                          FaIcon(
-                                            FontAwesomeIcons.tag,
+                                    // Footer info
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12.sp,
+                                        vertical: 10.sp,
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          PhosphorIcon(
+                                            PhosphorIconsFill.package,
                                             size: 15.sp,
                                             color: colors.textSecondary,
                                           ),
                                           SizedBox(width: 6.sp),
                                           Text(
-                                            trip.activityType!,
+                                            '$itemCount item${itemCount != 1 ? 's' : ''}',
                                             style: AppTextStyles.bodyMedium
                                                 .copyWith(
                                                   color: colors.textSecondary,
                                                 ),
                                           ),
+                                          if (trip.activityType != null) ...[
+                                            SizedBox(width: 16.sp),
+                                            PhosphorIcon(
+                                              PhosphorIconsFill.tag,
+                                              size: 15.sp,
+                                              color: colors.textSecondary,
+                                            ),
+                                            SizedBox(width: 6.sp),
+                                            Text(
+                                              trip.activityType!,
+                                              style: AppTextStyles.bodyMedium
+                                                  .copyWith(
+                                                    color: colors.textSecondary,
+                                                  ),
+                                            ),
+                                          ],
                                         ],
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         );
-                      },
+                        },
                     ),
                   ),
           ),
@@ -431,81 +416,6 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToLogTrip,
         child: const Icon(Icons.add),
-      ),
-    );
-  }
-
-  Widget _buildProGate(AppColorPalette colors) {
-    return Scaffold(
-      backgroundColor: colors.background,
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: UiConstants.spacingXL.sp),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              FaIcon(
-                FontAwesomeIcons.crown,
-                size: 48.sp,
-                color: colors.tertiary,
-              ),
-              SizedBox(height: 20.sp),
-              Text(
-                'PRO Feature',
-                style: AppTextStyles.titleLarge.copyWith(
-                  color: colors.onSurface,
-                ),
-              ),
-              SizedBox(height: 12.sp),
-              Text(
-                'Upgrade to PRO to log trips, track gear usage, and review your adventure history.',
-                textAlign: TextAlign.center,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: colors.textSecondary,
-                ),
-              ),
-              SizedBox(height: 24.sp),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const ProfilePage(),
-                      ),
-                    );
-                  },
-                  icon: FaIcon(
-                    FontAwesomeIcons.crown,
-                    size: 16.sp,
-                    color: colors.onPrimary,
-                  ),
-                  label: Text(
-                    'Go to PRO Settings',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: colors.onPrimary,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.primary,
-                    foregroundColor: colors.onPrimary,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20.sp,
-                      vertical: 12.sp,
-                    ),
-                    minimumSize: Size(0, 44.sp),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        UiConstants.buttonRadius.sp,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

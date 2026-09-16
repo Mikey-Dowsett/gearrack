@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import 'package:gearrack/database/gear_item_dao.dart';
 import 'package:gearrack/database/category_dao.dart';
 import 'package:gearrack/models/gear_item.dart';
@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   String? _selectedCategoryId;
   String _searchQuery = '';
   bool _isLoading = true;
-  int _sortMode = 0; // 0 = name (A-Z), 1 = weight, 2 = price
+  int _sortMode = 0;
 
   @override
   void initState() {
@@ -64,7 +64,6 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(builder: (context) => const AddGearPage()),
     );
 
-    // If a new gear item was added, refresh the list
     if (result != null) {
       _loadGear();
     }
@@ -127,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    'My Inventory',
+                    'Basecamp',
                     style: AppTextStyles.titleLarge.copyWith(
                       color: colors.onBackground,
                     ),
@@ -139,9 +138,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   Text(
-                    '${_gearItems.length} item${_gearItems.length != 1 ? 's' : ''} tracked',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: colors.onBackground,
+                    '${_gearItems.length} ITEMS TRACKED'.toUpperCase(),
+                    style: AppTextStyles.specSmall.copyWith(
+                      color: colors.textSecondary,
                     ),
                   ),
                 ],
@@ -157,7 +156,7 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'No gear yet',
+                          'Pack’s empty — let’s fix that',
                           style: AppTextStyles.bodyMedium.copyWith(
                             color: colors.onBackground,
                           ),
@@ -165,7 +164,7 @@ class _HomePageState extends State<HomePage> {
 
                         const SizedBox(height: 8),
                         Text(
-                          'Tap + to add your first item',
+                          'Log your first piece of kit below',
                           style: AppTextStyles.bodySmall.copyWith(
                             color: colors.textSecondary,
                           ),
@@ -186,17 +185,15 @@ class _HomePageState extends State<HomePage> {
                           ),
                           child: TextField(
                             decoration: InputDecoration(
-                              hintText: 'Search...',
+                              hintText: 'Search kit…',
                               prefixIcon: SizedBox(
                                 width: 40.sp,
                                 child: Center(
-                                  child: FaIcon(FontAwesomeIcons.search),
+                                  child: PhosphorIcon(PhosphorIconsFill.magnifyingGlass),
                                 ),
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  UiConstants.borderRadius.sp,
-                                ),
+                                borderRadius: BorderRadius.circular(UiConstants.borderRadius),
                               ),
                               contentPadding: EdgeInsets.symmetric(
                                 horizontal: 16.sp,
@@ -233,10 +230,6 @@ class _HomePageState extends State<HomePage> {
                                   borderRadius: BorderRadius.circular(
                                     UiConstants.chipRadius.sp,
                                   ),
-                                  side: BorderSide(
-                                    color: colors.border,
-                                    width: UiConstants.borderWidth,
-                                  ),
                                 ),
                               ),
                               ..._categories.map((category) {
@@ -252,7 +245,7 @@ class _HomePageState extends State<HomePage> {
                                     label: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        FaIcon(
+                                        PhosphorIcon(
                                           IconRegistry.resolve(category.icon),
                                           size: 15.sp,
                                           color: catColor,
@@ -277,10 +270,6 @@ class _HomePageState extends State<HomePage> {
                                       borderRadius: BorderRadius.circular(
                                         UiConstants.chipRadius.sp,
                                       ),
-                                      side: BorderSide(
-                                        color: colors.border,
-                                        width: UiConstants.borderWidth,
-                                      ),
                                     ),
                                   ),
                                 );
@@ -293,6 +282,15 @@ class _HomePageState extends State<HomePage> {
                           padding: EdgeInsets.symmetric(horizontal: 12.sp),
                           child: Row(
                             children: [
+                              Container(
+                                width: 4.sp,
+                                height: 16.sp,
+                                decoration: BoxDecoration(
+                                  color: colors.tertiary,
+                                  borderRadius: BorderRadius.circular(1.sp),
+                                ),
+                              ),
+                              SizedBox(width: 6.sp),
                               Text(
                                 '${_filteredGearItems.length} items ∙ ${formatWeight(_totalGrams)} total',
                                 style: AppTextStyles.bodyMedium.copyWith(
@@ -343,9 +341,10 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _navigateToAddGear,
-        child: const Icon(Icons.add),
+        icon: const Icon(Icons.add),
+        label: const Text('LOG GEAR'),
       ),
     );
   }
@@ -375,10 +374,9 @@ class _SortButton extends StatelessWidget {
     final colors = AppColors.of(context);
     return OutlinedButton.icon(
       onPressed: onPressed,
-      icon: FaIcon(FontAwesomeIcons.arrowDownWideShort, size: 14.sp),
+      icon: PhosphorIcon(PhosphorIconsFill.arrowsDownUp, size: 14.sp),
       label: Text(_label, style: TextStyle(fontSize: 12.sp)),
       style: OutlinedButton.styleFrom(
-        side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
         backgroundColor: colors.surface,
         foregroundColor: colors.onSurface,
         padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 4.sp),

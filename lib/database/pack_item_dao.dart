@@ -116,6 +116,19 @@ class PackItemDao {
     return Sqflite.firstIntValue(result) ?? 0;
   }
 
+  /// Get the summed quantity (`quantity_in_pack`) of all items in a pack.
+  /// Matches the count semantics of the pack detail view (plus bag).
+  Future<int> getItemQuantitySumByPack(String packId) async {
+    final result = await db.rawQuery(
+      '''
+      SELECT COALESCE(SUM(quantity_in_pack), 0) AS total
+      FROM pack_items WHERE pack_id = ?
+    ''',
+      [packId],
+    );
+    return ((result.first['total'] as num?)?.toInt()) ?? 0;
+  }
+
   /// Sum weight by category for the progress bar breakdown.
   Future<List<CategoryWeight>> getWeightByCategory(String packId) async {
     final result = await db.rawQuery(

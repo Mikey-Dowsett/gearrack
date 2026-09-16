@@ -1,7 +1,8 @@
 /// Data class representing a gear category loaded from the database.
 ///
 /// Categories are user-configurable. [isDefault] indicates a built-in
-/// category that cannot be deleted but can still be renamed/recustomized.
+/// category that cannot be deleted, renamed, or re-iconed — only its
+/// color can be customized.
 class Category {
   final String id;
   final String name;

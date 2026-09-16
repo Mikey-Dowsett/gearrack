@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/ui_constants.dart';
 
 class InfoCard extends StatelessWidget {
-  final Object icon; // can be IconData or FaIconData
+  final Object icon;
   final String title;
   final String value;
+  final int maxLines;
 
   const InfoCard({
     super.key,
     required this.icon,
     required this.title,
     required this.value,
+    this.maxLines = 2,
   });
 
   @override
@@ -36,8 +38,8 @@ class InfoCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                FaIcon(
-                  icon as FaIconData,
+                PhosphorIcon(
+                  icon as IconData,
                   size: UiConstants.iconMedium.sp,
                   color: colors.onSurface,
                 ),
@@ -54,6 +56,8 @@ class InfoCard extends StatelessWidget {
             Text(
               value,
               style: AppTextStyles.titleLarge.copyWith(color: colors.onSurface),
+              maxLines: maxLines,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

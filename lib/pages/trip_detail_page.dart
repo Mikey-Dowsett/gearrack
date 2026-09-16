@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_colors.dart';
 import '../theme/ui_constants.dart';
@@ -8,11 +8,10 @@ import '../widgets/info_card.dart';
 import '../models/trip.dart';
 import '../models/trip_item.dart';
 import '../database/trip_dao.dart';
+import '../database/app_settings_dao.dart';
 import '../utils/icon_registry.dart';
 import '../utils/weight_formatter.dart';
 import 'log_trip_page.dart';
-import 'package:gearrack/database/app_settings_dao.dart';
-import 'package:gearrack/pages/profile_page.dart';
 
 class TripDetailPage extends StatefulWidget {
   final String tripId;
@@ -28,8 +27,8 @@ class _TripDetailPageState extends State<TripDetailPage> {
   List<TripItemWithDetails> _items = [];
   List<TripCategoryWeight> _categoryWeights = [];
   bool _isLoading = true;
-  bool _proMode = false;
   double _totalWeight = 0;
+  bool _showLbs = false;
   List<TripItem> _tripItems = []; // raw items for editing
 
   @override
@@ -41,23 +40,13 @@ class _TripDetailPageState extends State<TripDetailPage> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final settingsDao = await AppSettingsDao.create();
-      final settings = await settingsDao.get();
-      if (!settings.proMode) {
-        setState(() {
-          _proMode = false;
-          _isLoading = false;
-        });
-        return;
-      }
-      _proMode = true;
-
       final dao = await TripDao.create();
       final trip = await dao.getById(widget.tripId);
       final items = await dao.getItemsByTripWithDetails(widget.tripId);
       final categoryWeights = await dao.getWeightByCategory(widget.tripId);
       final totalWeight = await dao.getTotalWeightByTrip(widget.tripId);
       final rawItems = await dao.getItemsByTrip(widget.tripId);
+      final settings = await (await AppSettingsDao.create()).get();
 
       setState(() {
         _trip = trip;
@@ -65,6 +54,7 @@ class _TripDetailPageState extends State<TripDetailPage> {
         _categoryWeights = categoryWeights;
         _totalWeight = totalWeight;
         _tripItems = rawItems;
+        _showLbs = settings.showLbs;
         _isLoading = false;
       });
     } catch (e) {
@@ -155,25 +145,22 @@ class _TripDetailPageState extends State<TripDetailPage> {
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
 
-    if (!_isLoading && !_proMode) {
-      return _buildProGate(colors);
-    }
-
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
+        centerTitle: false,
         title: Text(
           _trip?.name ?? 'Trip Detail',
-          style: AppTextStyles.bodyLarge.copyWith(color: colors.onBackground),
+          style: AppTextStyles.bodyMedium.copyWith(color: colors.onBackground),
         ),
         backgroundColor: colors.background,
         actions: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.pen, size: 16.sp),
+            icon: PhosphorIcon(PhosphorIconsFill.pen, size: 20.sp),
             onPressed: _editTrip,
           ),
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.trash, size: 16.sp),
+            icon: PhosphorIcon(PhosphorIconsFill.trash, size: 20.sp),
             onPressed: _deleteTrip,
           ),
         ],
@@ -205,33 +192,33 @@ class _TripDetailPageState extends State<TripDetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         InfoCard(
-                          icon: FontAwesomeIcons.calendarDays,
+                          icon: PhosphorIconsFill.calendar,
                           title: 'Date',
                           value: _formatDateRange(_trip!),
                         ),
                         if (_trip!.activityType != null)
                           InfoCard(
-                            icon: FontAwesomeIcons.tag,
+                            icon: PhosphorIconsFill.tag,
                             title: 'Activity',
                             value: _trip!.activityType!,
                           ),
                         if (_trip!.location != null &&
                             _trip!.location!.isNotEmpty)
                           InfoCard(
-                            icon: FontAwesomeIcons.locationDot,
+                            icon: PhosphorIconsFill.mapPin,
                             title: 'Location',
                             value: _trip!.location!,
                           ),
                         if (_trip!.conditions != null &&
                             _trip!.conditions!.isNotEmpty)
                           InfoCard(
-                            icon: FontAwesomeIcons.cloudSun,
+                            icon: PhosphorIconsFill.cloudSun,
                             title: 'Conditions',
                             value: _trip!.conditions!,
                           ),
                         if (_trip!.notes != null && _trip!.notes!.isNotEmpty)
                           InfoCard(
-                            icon: FontAwesomeIcons.solidNoteSticky,
+                            icon: PhosphorIconsFill.note,
                             title: 'Notes',
                             value: _trip!.notes!,
                           ),
@@ -294,8 +281,8 @@ class _TripDetailPageState extends State<TripDetailPage> {
                   ),
                 ),
                 alignment: Alignment.center,
-                child: FaIcon(
-                  FontAwesomeIcons.clipboardList,
+                child: PhosphorIcon(
+                  PhosphorIconsFill.clipboardText,
                   size: 15.sp,
                   color: colors.onPrimary,
                 ),
@@ -327,6 +314,15 @@ class _TripDetailPageState extends State<TripDetailPage> {
                   color: colors.onPrimary,
                 ),
               ),
+              if (_showLbs) ...[
+                SizedBox(width: 8.sp),
+                Text(
+                  '(${formatLbs(_totalWeight)})',
+                  style: AppTextStyles.titleMedium.copyWith(
+                    color: colors.onPrimary,
+                  ),
+                ),
+              ],
             ],
           ),
           SizedBox(height: 8.sp),
@@ -376,173 +372,99 @@ class _TripDetailPageState extends State<TripDetailPage> {
       padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 3.sp),
       child: Card.filled(
         color: colors.surface,
-        elevation: 1,
+        elevation: UiConstants.cardElevation,
+        clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiConstants.compactCardRadius.sp),
-          side: BorderSide(
-            color: colors.border,
-            width: UiConstants.borderWidth,
-          ),
+          side: BorderSide(color: colors.border, width: UiConstants.borderWidth),
         ),
-        child: SizedBox(
-          height: 56.sp,
-          child: Row(
+        child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              // Icon area
               SizedBox(
-                width: 44.sp,
-                child: Center(
-                  child: FaIcon(
-                    IconRegistry.resolve(iconKey),
-                    size: 20.sp,
-                    color: catColor,
-                  ),
-                ),
-              ),
-              // Name, brand, category
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                height: 56.sp,
+                child: Row(
                   children: [
-                    Text(
-                      item.tripItem.itemName,
-                      style: AppTextStyles.titleLarge.copyWith(fontSize: 13.sp),
-                      overflow: TextOverflow.ellipsis,
+                    // Icon area
+                    SizedBox(
+                      width: 44.sp,
+                      child: Center(
+                        child: PhosphorIcon(
+                          IconRegistry.resolve(iconKey),
+                          size: 20.sp,
+                          color: catColor,
+                        ),
+                      ),
                     ),
-                    Row(
-                      children: [
-                        if (item.brand != null)
+                    // Name, brand, category
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
                           Text(
-                            '${item.brand} \u2022 ',
-                            style: AppTextStyles.bodySmall,
+                            item.tripItem.itemName,
+                            style: AppTextStyles.titleLarge.copyWith(fontSize: 13.sp),
                             overflow: TextOverflow.ellipsis,
                           ),
-                        if (item.categoryName != null)
-                          Text(
-                            item.categoryName!,
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: colors.textSecondary,
-                            ),
+                          Row(
+                            children: [
+                              if (item.brand != null)
+                                Text(
+                                  '${item.brand} \u2022 ',
+                                  style: AppTextStyles.bodySmall,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              if (item.categoryName != null)
+                                Text(
+                                  item.categoryName!,
+                                  style: AppTextStyles.bodySmall.copyWith(
+                                    color: colors.textSecondary,
+                                  ),
+                                ),
+                            ],
                           ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
-              // Quantity badge
-              if (item.tripItem.quantity > 1)
-                Padding(
-                  padding: EdgeInsets.only(right: 4.sp),
-                  child: Text(
-                    '\u00d7${item.tripItem.quantity}',
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                ),
-              // Weight
-              Padding(
-                padding: EdgeInsets.only(right: 8.sp),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                      children: [
-                        Text(
-                          wp.value,
-                          style: AppTextStyles.titleLarge.copyWith(
-                            fontSize: 13.sp,
+                    // Quantity badge
+                    if (item.tripItem.quantity > 1)
+                      Padding(
+                        padding: EdgeInsets.only(right: 4.sp),
+                        child: Text(
+                          '\u00d7${item.tripItem.quantity}',
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: colors.textSecondary,
                           ),
                         ),
-                        Text(wp.unit, style: AppTextStyles.bodySmall),
-                      ],
+                      ),
+                    // Weight
+                    Padding(
+                      padding: EdgeInsets.only(right: 8.sp),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            children: [
+                              Text(
+                                wp.value,
+                                style: AppTextStyles.titleLarge.copyWith(
+                                  fontSize: 13.sp,
+                                ),
+                              ),
+                              Text(wp.unit, style: AppTextStyles.bodySmall),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-        ),
       ),
     );
   }
 
-  Widget _buildProGate(AppColorPalette colors) {
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        title: Text(
-          'Trip Detail',
-          style: AppTextStyles.bodyLarge.copyWith(color: colors.onBackground),
-        ),
-        backgroundColor: colors.background,
-      ),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: UiConstants.spacingXL.sp),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              FaIcon(FontAwesomeIcons.crown, size: 48.sp, color: colors.tertiary),
-              SizedBox(height: 20.sp),
-              Text(
-                'PRO Feature',
-                style: AppTextStyles.titleLarge.copyWith(
-                  color: colors.onSurface,
-                ),
-              ),
-              SizedBox(height: 12.sp),
-              Text(
-                'Trip details require PRO mode. Enable it in your profile settings.',
-                textAlign: TextAlign.center,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: colors.textSecondary,
-                ),
-              ),
-              SizedBox(height: 24.sp),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const ProfilePage(),
-                      ),
-                    );
-                  },
-                  icon: FaIcon(
-                    FontAwesomeIcons.crown,
-                    size: 16.sp,
-                    color: colors.onPrimary,
-                  ),
-                  label: Text(
-                    'Go to PRO Settings',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: colors.onPrimary,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.primary,
-                    foregroundColor: colors.onPrimary,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20.sp,
-                      vertical: 12.sp,
-                    ),
-                    minimumSize: Size(0, 44.sp),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        UiConstants.buttonRadius.sp,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
-}
