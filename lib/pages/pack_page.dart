@@ -378,17 +378,20 @@ class _PackPageState extends State<PackPage>
     }
   }
 
-  Future<void> _addGearItem(String gearItemId) async {
+  Future<void> _addGearItem(String gearItemId, {int? quantityInPack}) async {
     try {
       final dao = await PackItemDao.create();
       final gearDao = await GearItemDao.create();
       final gear = await gearDao.getById(gearItemId);
-      final defaultQty = (gear?.quantity ?? 1).clamp(1, 1 << 30);
+      final maxQty = (gear?.quantity ?? 1).clamp(1, 1 << 30);
+      final qty = quantityInPack != null
+          ? quantityInPack.clamp(1, maxQty)
+          : maxQty;
       final packItem = PackItem(
         id: const Uuid().v4(),
         packId: _pack.id,
         gearItemId: gearItemId,
-        quantityInPack: defaultQty,
+        quantityInPack: qty,
         sortOrder: _packItems.length,
       );
       await dao.insert(packItem);
@@ -444,9 +447,9 @@ class _PackPageState extends State<PackPage>
       backgroundColor: Colors.transparent,
       builder: (ctx) => _AddGearBottomSheet(
         excludeGearIds: _gearIdsInPack,
-        onGearSelected: (gearItemId) {
+        onGearSelected: (gearItemId, qty) {
           // Stay open to allow adding more items.
-          _addGearItem(gearItemId);
+          _addGearItem(gearItemId, quantityInPack: qty);
         },
       ),
     ).then((_) async {
@@ -1234,7 +1237,7 @@ class _PackPageState extends State<PackPage>
 // ---------------------------------------------------------------------------
 class _AddGearBottomSheet extends StatefulWidget {
   final Set<String> excludeGearIds;
-  final ValueChanged<String> onGearSelected;
+  final void Function(String gearItemId, int quantity) onGearSelected;
 
   const _AddGearBottomSheet({
     required this.excludeGearIds,
@@ -1302,11 +1305,111 @@ class _AddGearBottomSheetState extends State<_AddGearBottomSheet> {
     }).toList();
   }
 
-  void _handleTap(GearItem gear) {
-    widget.onGearSelected(gear.id);
+  Future<void> _handleTap(GearItem gear) async {
+    final max = gear.quantity.clamp(1, 1 << 30);
+    var qty = max;
+    if (max > 1) {
+      final picked = await _showQuantityPicker(gear, max);
+      if (picked == null) return; // user cancelled
+      qty = picked;
+    }
+    widget.onGearSelected(gear.id, qty);
     setState(() {
       _allGear.removeWhere((g) => g.id == gear.id);
     });
+  }
+
+  Future<int?> _showQuantityPicker(GearItem gear, int max) async {
+    var selected = max;
+    final colors = AppColors.of(context);
+    return showModalBottomSheet<int>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => Container(
+          decoration: BoxDecoration(
+            color: colors.background,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16.sp)),
+          ),
+          padding: EdgeInsets.fromLTRB(16.sp, 8.sp, 16.sp, 24.sp),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40.sp,
+                height: 4.sp,
+                decoration: BoxDecoration(
+                  color: colors.borderStrong,
+                  borderRadius: BorderRadius.circular(2.sp),
+                ),
+              ),
+              SizedBox(height: 12.sp),
+              Text(gear.name, style: AppTextStyles.titleLarge),
+              Text(
+                'Owned: $max — how many to take?',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: colors.textSecondary,
+                ),
+              ),
+              SizedBox(height: 12.sp),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: PhosphorIcon(PhosphorIconsFill.caretUp, size: 24.sp),
+                    onPressed: selected >= max
+                        ? null
+                        : () => setSheetState(() => selected++),
+                    tooltip: 'Increase',
+                  ),
+                  Container(
+                    constraints: BoxConstraints(minWidth: 56.sp),
+                    alignment: Alignment.center,
+                    child: Text(
+                      '$selected',
+                      style: AppTextStyles.titleLarge.copyWith(fontSize: 24.sp),
+                    ),
+                  ),
+                  IconButton(
+                    icon: PhosphorIcon(PhosphorIconsFill.caretDown, size: 24.sp),
+                    onPressed: selected <= 1
+                        ? null
+                        : () => setSheetState(() => selected--),
+                    tooltip: 'Decrease',
+                  ),
+                ],
+              ),
+              SizedBox(height: 4.sp),
+              Text(
+                '×$selected · ${formatWeight(gear.weightGrams * selected)} total',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: colors.textSecondary,
+                ),
+              ),
+              SizedBox(height: 12.sp),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(ctx).pop(selected),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        UiConstants.buttonRadius.sp,
+                      ),
+                    ),
+                  ),
+                  child: Text('Add to Pack', style: AppTextStyles.bodyLarge.copyWith(
+                    color: colors.onPrimary,
+                  )),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override

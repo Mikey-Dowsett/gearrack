@@ -54,6 +54,7 @@ class _GearRackAppState extends State<GearRackApp> {
       title: 'GearRack',
       theme: AppTheme.lightTheme,
       themeMode: ThemeMode.light,
+      debugShowCheckedModeBanner: false,
       home: MainNavigationScreen(onThemeChanged: _onThemeChanged),
       builder: (context, child) {
         return Stack(
