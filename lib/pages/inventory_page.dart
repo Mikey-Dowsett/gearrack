@@ -46,11 +46,23 @@ class _InventoryPageState extends State<InventoryPage> {
     setState(() => _selectedIndex = index);
   }
 
+  Future<void> _refreshAll() async {
+    await Future.wait([
+      _gearKey.currentState?.refresh() ?? Future.value(),
+      _packsKey.currentState?.refresh() ?? Future.value(),
+      _tripsKey.currentState?.refresh() ?? Future.value(),
+    ]);
+    if (mounted) setState(() {});
+  }
+
   void _openSettings() {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => SettingsPage(onThemeChanged: widget.onThemeChanged),
+        builder: (_) => SettingsPage(
+          onThemeChanged: widget.onThemeChanged,
+          onImport: _refreshAll,
+        ),
       ),
     );
   }
@@ -217,6 +229,7 @@ class GearTabState extends State<GearTab> {
   String? _selectedCategoryId;
   String _searchQuery = '';
   bool _isLoading = true;
+  final TextEditingController _searchController = TextEditingController();
   int _sortMode = 0;
   bool _sortAscending = true;
   String _currencySymbol = '\$';
@@ -237,12 +250,33 @@ class GearTabState extends State<GearTab> {
   @override
   void initState() {
     super.initState();
+    _searchController.addListener(_onSearchChanged);
     _loadGear();
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    final text = _searchController.text;
+    if (text != _searchQuery) {
+      _searchQuery = text;
+      _applyFilters();
+    }
   }
 
   Future<void> refresh() => _loadGear();
 
   Future<void> _loadGear() async {
+    // Keep search bar and filter state in sync: if the TextField was
+    // cleared externally (e.g. widget rebuild) ensure results reset.
+    if (_searchController.text != _searchQuery) {
+      _searchQuery = _searchController.text;
+    }
     setState(() => _isLoading = true);
     try {
       final dao = await GearItemDao.create();
@@ -379,6 +413,7 @@ class GearTabState extends State<GearTab> {
                           bottom: 4.sp,
                         ),
                         child: TextField(
+                          controller: _searchController,
                           decoration: InputDecoration(
                             hintText: 'Search kit…',
                             prefixIcon: SizedBox(
@@ -397,10 +432,6 @@ class GearTabState extends State<GearTab> {
                             filled: true,
                             fillColor: colors.surface,
                           ),
-                          onChanged: (value) {
-                            _searchQuery = value;
-                            _applyFilters();
-                          },
                           style: AppTextStyles.bodyMedium.copyWith(
                             color: colors.onSurface,
                           ),

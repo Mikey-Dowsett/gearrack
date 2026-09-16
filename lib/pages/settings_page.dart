@@ -15,8 +15,9 @@ import 'package:gearrack/pages/category_management_page.dart';
 
 class SettingsPage extends StatefulWidget {
   final VoidCallback? onThemeChanged;
+  final Future<void> Function()? onImport;
 
-  const SettingsPage({super.key, this.onThemeChanged});
+  const SettingsPage({super.key, this.onThemeChanged, this.onImport});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -354,6 +355,7 @@ class _SettingsPageState extends State<SettingsPage> {
       await BackupService.importAll(BackupService.decode(json));
       await _loadSettings();
       widget.onThemeChanged?.call();
+      if (widget.onImport != null) await widget.onImport!.call();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Backup imported')),
